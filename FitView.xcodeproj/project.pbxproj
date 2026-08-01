@@ -17,8 +17,10 @@
 		13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
 		14856F98ACF5161A87A78E74 /* SampleBatchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8312C59CA5E3CA718BDBE2D5 /* SampleBatchLoader.swift */; };
 		1940804DC0D62B0FEF3F4C34 /* LoadedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */; };
+		1C9B3FCB9E977F1F448B04EC /* SessionDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */; };
 		1D932088F0238A111AC83708 /* 2026-07-24_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */; };
 		1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
+		24CE8E96A5169EE1C05EE225 /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		273B60E9DCF26C3722494434 /* 2026-07-24_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */; };
 		3563CCD67ACB2B055D40223B /* 2026-07-25_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */; };
 		36AE9B8A5AA9116E3503C165 /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
@@ -47,6 +49,7 @@
 		A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
 		AB1BFCD43781FFAA8D8E6EB4 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
 		B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBB05856B8F40A606A0377B /* SessionDetailView.swift */; };
+		C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		C658980557AFB6F64E0411FB /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
 		C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
 		CBC0D77790836A7EBBC73365 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 02BED5B526334DACF65C5370 /* FitViewCore */; };
@@ -60,6 +63,7 @@
 		ED5B67C85C8AB012B37D2057 /* 2026-07-28_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */; };
 		EE6B9DEB3878E208CDDA405E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3736C57073C2AF495A7D214B /* Assets.xcassets */; };
 		F0C0D394D3A6B1AFDE689803 /* SessionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01D3A90F5A8F9132C718742 /* SessionCard.swift */; };
+		F22B5026FAAEA78CE5D88517 /* SessionDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */; };
 		F31F3F2CB73BBFAFF2A9AE55 /* 2026-07-26-pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */; };
 		F474CDD69FDB4150D0224B48 /* 2026-07-25_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */; };
 		FCB698B3D32662E9BE4879E1 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
@@ -70,6 +74,7 @@
 /* Begin PBXFileReference section */
 		0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadedBatch.swift; sourceTree = "<group>"; };
 		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
+		07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModel.swift; sourceTree = "<group>"; };
 		1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewCardList.swift; sourceTree = "<group>"; };
 		2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2EFBAF76469F54663220648C /* FitViewCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FitViewCore; path = Packages/FitViewCore; sourceTree = SOURCE_ROOT; };
@@ -85,6 +90,7 @@
 		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
 		8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-26_polarSense_run.FIT"; sourceTree = "<group>"; };
 		8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-24_polarSense_run.FIT"; sourceTree = "<group>"; };
+		88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateComparisonChart.swift; sourceTree = "<group>"; };
 		9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-31_polarSense_run.FIT"; sourceTree = "<group>"; };
 		9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-30_polarSense_run.FIT"; sourceTree = "<group>"; };
 		AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModel.swift; sourceTree = "<group>"; };
@@ -152,6 +158,8 @@
 		684655C390F463E448BE5D40 /* SessionDetail */ = {
 			isa = PBXGroup;
 			children = (
+				88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */,
+				07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */,
 				3CBB05856B8F40A606A0377B /* SessionDetailView.swift */,
 			);
 			path = SessionDetail;
@@ -367,9 +375,11 @@
 				E373120611EA55B09D26D0CC /* ContentView.swift in Sources */,
 				585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */,
 				3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */,
+				C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */,
 				1940804DC0D62B0FEF3F4C34 /* LoadedBatch.swift in Sources */,
 				FCBEB5BDE70DA44596502627 /* SampleBatchLoader.swift in Sources */,
 				F0C0D394D3A6B1AFDE689803 /* SessionCard.swift in Sources */,
+				1C9B3FCB9E977F1F448B04EC /* SessionDetailModel.swift in Sources */,
 				137A9895FF49A1E5907F70C2 /* SessionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -385,9 +395,11 @@
 				13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */,
 				85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */,
 				8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */,
+				24CE8E96A5169EE1C05EE225 /* HeartRateComparisonChart.swift in Sources */,
 				E956B9EC76A38C05A66BEA57 /* LoadedBatch.swift in Sources */,
 				14856F98ACF5161A87A78E74 /* SampleBatchLoader.swift in Sources */,
 				E4BF62537462DB10181D83DD /* SessionCard.swift in Sources */,
+				F22B5026FAAEA78CE5D88517 /* SessionDetailModel.swift in Sources */,
 				B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
