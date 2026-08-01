@@ -1,0 +1,636 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01166A02C83230DF205DB8F5 /* 2026-07-23_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */; };
+		072F3611544817D7C56543A6 /* AgreementLevel+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */; };
+		09865599844A60EC062CF51A /* 2026-07-30_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */; };
+		09946B9BA6023FDD595C9C68 /* 2026-07-25_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */; };
+		0A008DA3F50D885D7F5DDEDE /* 2026-07-24_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */; };
+		11DB0904DA81C2499F8F503F /* 2026-07-28_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */; };
+		13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
+		14856F98ACF5161A87A78E74 /* SampleBatchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8312C59CA5E3CA718BDBE2D5 /* SampleBatchLoader.swift */; };
+		1D932088F0238A111AC83708 /* 2026-07-24_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */; };
+		1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
+		273B60E9DCF26C3722494434 /* 2026-07-24_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */; };
+		3563CCD67ACB2B055D40223B /* 2026-07-25_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */; };
+		36AE9B8A5AA9116E3503C165 /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
+		3807329AA3EC621075742BE7 /* 2026-07-28_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */; };
+		3E821CFF140F073D8DF0C4E9 /* 2026-07-27_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */; };
+		3EE4FC8396C43516EBF7617A /* AgreementLevel+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */; };
+		3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C428207FFDEE0AA997974 /* FormatDate.swift */; };
+		405F11FD2F7E57F0B64AB11B /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
+		445FCC4EFFC038C68491C08E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB4DF09A2D0F71B42B61E36C /* Assets.xcassets */; };
+		45129BCB92C9A3C55FE43268 /* 2026-07-28_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */; };
+		4B44160D8472BF5CBF2486D8 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 66F0FBBB1428C87F899106CD /* FitViewCore */; };
+		4CF26FE326797757D63DD0F3 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
+		54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
+		559CE02066E90B65987D20DB /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
+		585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
+		68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
+		6E08F44166CB7A853C1A050B /* 2026-07-23_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */; };
+		6E6CA6D0339946158DEB2489 /* 2026-07-26-pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */; };
+		83152F8889A20271010FAB64 /* 2026-07-23_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */; };
+		85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
+		8842D31520F5F04832AB6572 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
+		8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C428207FFDEE0AA997974 /* FormatDate.swift */; };
+		9249383166C563E968195CCB /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
+		9761BCAF646A10407625B9A4 /* 2026-07-25_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */; };
+		9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
+		A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
+		AB1BFCD43781FFAA8D8E6EB4 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
+		C658980557AFB6F64E0411FB /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
+		C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
+		CBC0D77790836A7EBBC73365 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 02BED5B526334DACF65C5370 /* FitViewCore */; };
+		CF3524DAF2910A17C4470C6E /* 2026-07-30_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */; };
+		CFDE1697CF46BF114FBACE2F /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
+		D43ECC1FC15D40A3152F7F3C /* 2026-07-27_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */; };
+		E373120611EA55B09D26D0CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
+		E4BF62537462DB10181D83DD /* SessionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01D3A90F5A8F9132C718742 /* SessionCard.swift */; };
+		EA98FF81F56281D3858AA1D2 /* 2026-07-24_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */; };
+		ED5B67C85C8AB012B37D2057 /* 2026-07-28_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */; };
+		EE6B9DEB3878E208CDDA405E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3736C57073C2AF495A7D214B /* Assets.xcassets */; };
+		F0C0D394D3A6B1AFDE689803 /* SessionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01D3A90F5A8F9132C718742 /* SessionCard.swift */; };
+		F31F3F2CB73BBFAFF2A9AE55 /* 2026-07-26-pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */; };
+		F474CDD69FDB4150D0224B48 /* 2026-07-25_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */; };
+		FCB698B3D32662E9BE4879E1 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
+		FCBEB5BDE70DA44596502627 /* SampleBatchLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8312C59CA5E3CA718BDBE2D5 /* SampleBatchLoader.swift */; };
+		FD3C7F7627D90F3836BA7AD1 /* 2026-07-23_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
+		1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewCardList.swift; sourceTree = "<group>"; };
+		2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2EFBAF76469F54663220648C /* FitViewCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FitViewCore; path = Packages/FitViewCore; sourceTree = SOURCE_ROOT; };
+		3736C57073C2AF495A7D214B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-23_pace4_run.fit"; sourceTree = "<group>"; };
+		54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-23_polarSense_run.FIT"; sourceTree = "<group>"; };
+		57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "FitView-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-28_pace4_run.fit"; sourceTree = "<group>"; };
+		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
+		779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-25_polarSense_run.FIT"; sourceTree = "<group>"; };
+		8312C59CA5E3CA718BDBE2D5 /* SampleBatchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBatchLoader.swift; sourceTree = "<group>"; };
+		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
+		8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-26_polarSense_run.FIT"; sourceTree = "<group>"; };
+		8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-24_polarSense_run.FIT"; sourceTree = "<group>"; };
+		9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-31_polarSense_run.FIT"; sourceTree = "<group>"; };
+		9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-30_polarSense_run.FIT"; sourceTree = "<group>"; };
+		AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModel.swift; sourceTree = "<group>"; };
+		BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-27_polarSense_run.FIT"; sourceTree = "<group>"; };
+		CC65984041C307E9C026CCB5 /* FitView-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitView-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CD4C428207FFDEE0AA997974 /* FormatDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatDate.swift; sourceTree = "<group>"; };
+		D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AgreementLevel+Color.swift"; sourceTree = "<group>"; };
+		E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-24_pace4_run.fit"; sourceTree = "<group>"; };
+		ED2468CD13769E17A4380CC4 /* FitViewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitViewApp.swift; sourceTree = "<group>"; };
+		F01D3A90F5A8F9132C718742 /* SessionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCard.swift; sourceTree = "<group>"; };
+		F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-27_pace4_run.fit"; sourceTree = "<group>"; };
+		F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewView.swift; sourceTree = "<group>"; };
+		FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-30_pace4_run.fit"; sourceTree = "<group>"; };
+		FB4DF09A2D0F71B42B61E36C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-25_pace4_run.fit"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		13125332620C0FDA2F548171 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CBC0D77790836A7EBBC73365 /* FitViewCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E446F13FBFB6DE3722E8BBF0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4B44160D8472BF5CBF2486D8 /* FitViewCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2BD2BAD089D5D03AD671E96B = {
+			isa = PBXGroup;
+			children = (
+				C4A06C2342336D6B6021149E /* FitView */,
+				E293E2E0D859B34B94B888E6 /* FitView-iOS */,
+				996BC695B72E4F729E9C6869 /* FitView-macOS */,
+				3F3234EF9BCBE45149D0BC90 /* Packages */,
+				D9EA7C92DF44EF8212995442 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3A21FB5F2EF9AC7E1CF02D3C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BD365FB5BB04BCC30F4F1412 /* SampleData */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		3F3234EF9BCBE45149D0BC90 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				2EFBAF76469F54663220648C /* FitViewCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		996BC695B72E4F729E9C6869 /* FitView-macOS */ = {
+			isa = PBXGroup;
+			children = (
+				FB4DF09A2D0F71B42B61E36C /* Assets.xcassets */,
+			);
+			name = "FitView-macOS";
+			path = "Sources/FitView-macOS";
+			sourceTree = "<group>";
+		};
+		BD365FB5BB04BCC30F4F1412 /* SampleData */ = {
+			isa = PBXGroup;
+			children = (
+				398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */,
+				54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */,
+				E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */,
+				8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */,
+				FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */,
+				779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */,
+				8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */,
+				835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */,
+				F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */,
+				BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */,
+				5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */,
+				6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */,
+				FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */,
+				9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */,
+				01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */,
+				9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */,
+			);
+			path = SampleData;
+			sourceTree = "<group>";
+		};
+		C4A06C2342336D6B6021149E /* FitView */ = {
+			isa = PBXGroup;
+			children = (
+				D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */,
+				1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */,
+				AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */,
+				F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */,
+				2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */,
+				ED2468CD13769E17A4380CC4 /* FitViewApp.swift */,
+				CD4C428207FFDEE0AA997974 /* FormatDate.swift */,
+				8312C59CA5E3CA718BDBE2D5 /* SampleBatchLoader.swift */,
+				F01D3A90F5A8F9132C718742 /* SessionCard.swift */,
+				3A21FB5F2EF9AC7E1CF02D3C /* Resources */,
+			);
+			name = FitView;
+			path = Sources/FitView;
+			sourceTree = "<group>";
+		};
+		D9EA7C92DF44EF8212995442 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */,
+				CC65984041C307E9C026CCB5 /* FitView-macOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		E293E2E0D859B34B94B888E6 /* FitView-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				3736C57073C2AF495A7D214B /* Assets.xcassets */,
+			);
+			name = "FitView-iOS";
+			path = "Sources/FitView-iOS";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		AC7ED7F447DC2734CBFA509F /* FitView-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DF43DDDAA38AC032DEB5CF07 /* Build configuration list for PBXNativeTarget "FitView-iOS" */;
+			buildPhases = (
+				B577CFF9B822C1A5F1DAE166 /* Sources */,
+				AE6EDD055FD6F4AC52BF21DA /* Resources */,
+				13125332620C0FDA2F548171 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "FitView-iOS";
+			packageProductDependencies = (
+				02BED5B526334DACF65C5370 /* FitViewCore */,
+			);
+			productName = "FitView-iOS";
+			productReference = 57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EDAD7ED43F5769299B50F163 /* FitView-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A5F078FD0B44D11AAC60A9C9 /* Build configuration list for PBXNativeTarget "FitView-macOS" */;
+			buildPhases = (
+				1811BB97689CFE41F8CF4460 /* Sources */,
+				331C71BA4F407492E6901D96 /* Resources */,
+				E446F13FBFB6DE3722E8BBF0 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "FitView-macOS";
+			packageProductDependencies = (
+				66F0FBBB1428C87F899106CD /* FitViewCore */,
+			);
+			productName = "FitView-macOS";
+			productReference = CC65984041C307E9C026CCB5 /* FitView-macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F3D49D2D8A0602D53DD2B1A4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 707D5E854DD1E1EA09606157 /* Build configuration list for PBXProject "FitView" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2BD2BAD089D5D03AD671E96B;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7EC9B36884F7F8FBC5157B91 /* XCLocalSwiftPackageReference "Packages/FitViewCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D9EA7C92DF44EF8212995442 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				AC7ED7F447DC2734CBFA509F /* FitView-iOS */,
+				EDAD7ED43F5769299B50F163 /* FitView-macOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		331C71BA4F407492E6901D96 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				83152F8889A20271010FAB64 /* 2026-07-23_pace4_run.fit in Resources */,
+				6E08F44166CB7A853C1A050B /* 2026-07-23_polarSense_run.FIT in Resources */,
+				EA98FF81F56281D3858AA1D2 /* 2026-07-24_pace4_run.fit in Resources */,
+				0A008DA3F50D885D7F5DDEDE /* 2026-07-24_polarSense_run.FIT in Resources */,
+				9761BCAF646A10407625B9A4 /* 2026-07-25_pace4_run.fit in Resources */,
+				09946B9BA6023FDD595C9C68 /* 2026-07-25_polarSense_run.FIT in Resources */,
+				6E6CA6D0339946158DEB2489 /* 2026-07-26-pace4_run.fit in Resources */,
+				A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */,
+				C658980557AFB6F64E0411FB /* 2026-07-27_pace4_run.fit in Resources */,
+				D43ECC1FC15D40A3152F7F3C /* 2026-07-27_polarSense_run.FIT in Resources */,
+				11DB0904DA81C2499F8F503F /* 2026-07-28_pace4_run.fit in Resources */,
+				3807329AA3EC621075742BE7 /* 2026-07-28_polarSense_run.FIT in Resources */,
+				9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */,
+				09865599844A60EC062CF51A /* 2026-07-30_polarSense_run.FIT in Resources */,
+				AB1BFCD43781FFAA8D8E6EB4 /* 2026-07-31_pace4_run.fit in Resources */,
+				559CE02066E90B65987D20DB /* 2026-07-31_polarSense_run.FIT in Resources */,
+				445FCC4EFFC038C68491C08E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AE6EDD055FD6F4AC52BF21DA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FD3C7F7627D90F3836BA7AD1 /* 2026-07-23_pace4_run.fit in Resources */,
+				01166A02C83230DF205DB8F5 /* 2026-07-23_polarSense_run.FIT in Resources */,
+				1D932088F0238A111AC83708 /* 2026-07-24_pace4_run.fit in Resources */,
+				273B60E9DCF26C3722494434 /* 2026-07-24_polarSense_run.FIT in Resources */,
+				F474CDD69FDB4150D0224B48 /* 2026-07-25_pace4_run.fit in Resources */,
+				3563CCD67ACB2B055D40223B /* 2026-07-25_polarSense_run.FIT in Resources */,
+				F31F3F2CB73BBFAFF2A9AE55 /* 2026-07-26-pace4_run.fit in Resources */,
+				4CF26FE326797757D63DD0F3 /* 2026-07-26_polarSense_run.FIT in Resources */,
+				405F11FD2F7E57F0B64AB11B /* 2026-07-27_pace4_run.fit in Resources */,
+				3E821CFF140F073D8DF0C4E9 /* 2026-07-27_polarSense_run.FIT in Resources */,
+				45129BCB92C9A3C55FE43268 /* 2026-07-28_pace4_run.fit in Resources */,
+				ED5B67C85C8AB012B37D2057 /* 2026-07-28_polarSense_run.FIT in Resources */,
+				36AE9B8A5AA9116E3503C165 /* 2026-07-30_pace4_run.fit in Resources */,
+				CF3524DAF2910A17C4470C6E /* 2026-07-30_polarSense_run.FIT in Resources */,
+				8842D31520F5F04832AB6572 /* 2026-07-31_pace4_run.fit in Resources */,
+				CFDE1697CF46BF114FBACE2F /* 2026-07-31_polarSense_run.FIT in Resources */,
+				EE6B9DEB3878E208CDDA405E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1811BB97689CFE41F8CF4460 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3EE4FC8396C43516EBF7617A /* AgreementLevel+Color.swift in Sources */,
+				68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */,
+				9249383166C563E968195CCB /* BatchOverviewModel.swift in Sources */,
+				FCB698B3D32662E9BE4879E1 /* BatchOverviewView.swift in Sources */,
+				E373120611EA55B09D26D0CC /* ContentView.swift in Sources */,
+				585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */,
+				3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */,
+				FCBEB5BDE70DA44596502627 /* SampleBatchLoader.swift in Sources */,
+				F0C0D394D3A6B1AFDE689803 /* SessionCard.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B577CFF9B822C1A5F1DAE166 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				072F3611544817D7C56543A6 /* AgreementLevel+Color.swift in Sources */,
+				1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */,
+				54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */,
+				C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */,
+				13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */,
+				85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */,
+				8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */,
+				14856F98ACF5161A87A78E74 /* SampleBatchLoader.swift in Sources */,
+				E4BF62537462DB10181D83DD /* SessionCard.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		20A195CB0B655D4E3B648D9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FitView;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app;
+				PRODUCT_NAME = FitView;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		465DAFE5C5F0C48C99F4D30F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5A6AABC2CDA76A0315A520E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		65D9C1546D2B4E8F2372341D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FitView;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac;
+				PRODUCT_NAME = FitView;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		D3C25B32E5BB63C597B050AF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FitView;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app;
+				PRODUCT_NAME = FitView;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E4589310915C6963A2AF2403 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = FitView;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac;
+				PRODUCT_NAME = FitView;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		707D5E854DD1E1EA09606157 /* Build configuration list for PBXProject "FitView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				465DAFE5C5F0C48C99F4D30F /* Debug */,
+				5A6AABC2CDA76A0315A520E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A5F078FD0B44D11AAC60A9C9 /* Build configuration list for PBXNativeTarget "FitView-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4589310915C6963A2AF2403 /* Debug */,
+				65D9C1546D2B4E8F2372341D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		DF43DDDAA38AC032DEB5CF07 /* Build configuration list for PBXNativeTarget "FitView-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3C25B32E5BB63C597B050AF /* Debug */,
+				20A195CB0B655D4E3B648D9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7EC9B36884F7F8FBC5157B91 /* XCLocalSwiftPackageReference "Packages/FitViewCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/FitViewCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		02BED5B526334DACF65C5370 /* FitViewCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FitViewCore;
+		};
+		66F0FBBB1428C87F899106CD /* FitViewCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FitViewCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F3D49D2D8A0602D53DD2B1A4 /* Project object */;
+}
