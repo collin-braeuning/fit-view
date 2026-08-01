@@ -43,6 +43,9 @@ struct SessionDetailView: View {
                     yDomain: model.chartYDomain,
                     minHeight: chartMinHeight
                 )
+                statsGrid(for: model)
+                coverageSection(for: model)
+                deviceFactsSection(for: model)
             }
             .padding()
         }
@@ -60,5 +63,107 @@ struct SessionDetailView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+    }
+
+    @ViewBuilder
+    private func statsGrid(for model: SessionDetailModel) -> some View {
+        if model.agreement != nil {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
+                if let matchedSecondsText = model.matchedSecondsText {
+                    StatTile(label: "Matched Seconds", value: matchedSecondsText)
+                }
+                if let bias = model.bias {
+                    StatTile(label: "Bias", value: bias.text, level: bias.level)
+                }
+                if let loaText = model.loaText {
+                    StatTile(label: "95% LoA", value: loaText)
+                }
+                if let meanAbsDiff = model.meanAbsDiff {
+                    StatTile(label: "Mean |Diff|", value: meanAbsDiff.text, level: meanAbsDiff.level)
+                }
+                if let maxAbsDiffText = model.maxAbsDiffText {
+                    StatTile(label: "Max |Diff|", value: maxAbsDiffText)
+                }
+                if let ccc = model.ccc {
+                    StatTile(label: "CCC", value: ccc.text, level: ccc.level, detail: model.cccDetailText)
+                }
+            }
+        }
+    }
+
+    private func coverageSection(for model: SessionDetailModel) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Coverage")
+                .font(.headline)
+            ForEach(model.coverageDetails, id: \.label) { detail in
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text(detail.label)
+                            .font(.subheadline.weight(.medium))
+                        Spacer()
+                        Text(detail.percentText)
+                            .font(.subheadline.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    Text(detail.ownSpanText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private func deviceFactsSection(for model: SessionDetailModel) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Devices")
+                .font(.headline)
+            ForEach(model.deviceFacts, id: \.label) { facts in
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(facts.label)
+                        .font(.subheadline.weight(.medium))
+                    Text("\(facts.fileName) · \(facts.sport)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("\(facts.startTimeText) – \(facts.endTimeText)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("\(facts.recordCount.formatted()) records · \(facts.lapCount) laps")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text("avg \(facts.avgHeartRate) bpm · max \(facts.maxHeartRate) bpm")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+}
+
+/// A stat value paired with its label and, optionally, the agreement level
+/// that colours it and a qualifying detail line — e.g. CCC's McBride word and
+/// HR range, which overview.md §7 requires stay adjacent to the number.
+private struct StatTile: View {
+    let label: String
+    let value: String
+    var level: AgreementLevel?
+    var detail: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(value)
+                .font(.title3.monospacedDigit())
+                .foregroundStyle(level?.color ?? .primary)
+            if let detail {
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
     }
 }

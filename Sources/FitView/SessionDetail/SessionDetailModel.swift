@@ -17,13 +17,19 @@ struct DeviceFacts {
     var label: String
     var fileName: String
     var sport: String
-    var startTime: Date
-    var endTime: Date
+    var startTimeText: String
+    var endTimeText: String
     var recordCount: Int
     var lapCount: Int
     var avgHeartRate: Int
     var maxHeartRate: Int
 }
+
+private func decimal(_ value: Double, places: Int) -> String {
+    String(format: "%.\(places)f", value)
+}
+
+private let deviceFactTimeFormat = Date.FormatStyle().hour().minute().second()
 
 /// Plain, SwiftUI-free presenter for the session detail screen — same spirit
 /// as `BatchOverviewModel`. A pure function of `(LoadedBatch, sessionId)`.
@@ -42,6 +48,19 @@ struct SessionDetailModel {
     /// Non-nil for a normal session; nil for a skipped one.
     var agreement: SessionAgreement?
     var coverage: [DeviceCoverage]
+    var coverageDetails: [DeviceCoverageDetail]
+
+    /// All nil when `agreement` is nil (skipped session — no stats to show).
+    var matchedSecondsText: String?
+    var hrRangeText: String?
+    var bias: Metric?
+    var loaText: String?
+    var meanAbsDiff: Metric?
+    var maxAbsDiffText: String?
+    var ccc: Metric?
+    /// "substantial · 90–173 bpm" — CCC's McBride word plus the HR range it
+    /// was measured over, kept together per overview.md §7.
+    var cccDetailText: String?
 
     init?(batch: LoadedBatch, sessionId: String) {
         guard let session = batch.grouping.sessions.first(where: { $0.id == sessionId }) else { return nil }
@@ -65,8 +84,8 @@ struct SessionDetailModel {
                 label: label,
                 fileName: loaded.fileName,
                 sport: loaded.activity.sport,
-                startTime: loaded.activity.startTime,
-                endTime: loaded.activity.endTime,
+                startTimeText: loaded.activity.startTime.formatted(deviceFactTimeFormat),
+                endTimeText: loaded.activity.endTime.formatted(deviceFactTimeFormat),
                 recordCount: loaded.activity.totalRecords,
                 lapCount: loaded.activity.laps.count,
                 avgHeartRate: loaded.activity.avgHeartRate,
@@ -120,6 +139,42 @@ struct SessionDetailModel {
             ]).coverage
         } else {
             coverage = []
+        }
+
+        var coverageByDeviceKey: [String: DeviceCoverage] = [:]
+        for entry in coverage { coverageByDeviceKey[entry.deviceKey] = entry }
+        coverageDetails = zip(devices, labels).map { device, label in
+            let own = coverageByDeviceKey[device.deviceKey]
+            return DeviceCoverageDetail(
+                label: label,
+                percentText: own.map { "\(Int(($0.coverage * 100).rounded()))%" } ?? "—",
+                ownSpanText: own.map { "\($0.ownSeconds.formatted())s recorded over a \($0.spanSeconds.formatted())s span" } ?? "—"
+            )
+        }
+
+        if let sessionAgreement {
+            matchedSecondsText = sessionAgreement.matchedSeconds.formatted()
+            hrRangeText = "\(Int(sessionAgreement.hrRange.min))–\(Int(sessionAgreement.hrRange.max)) bpm"
+
+            if let blandAltman = sessionAgreement.blandAltman {
+                bias = Metric(
+                    text: "\(decimal(blandAltman.meanDiff, places: 1)) bpm",
+                    level: differenceLevel(abs(blandAltman.meanDiff))
+                )
+                loaText = "[\(decimal(blandAltman.lowerLimit, places: 1)), \(decimal(blandAltman.upperLimit, places: 1))]"
+            }
+
+            meanAbsDiff = Metric(
+                text: "\(decimal(sessionAgreement.difference.avgAbsDiff, places: 1)) bpm",
+                level: differenceLevel(sessionAgreement.difference.avgAbsDiff)
+            )
+            maxAbsDiffText = "\(Int(sessionAgreement.difference.maxAbsDiff)) bpm"
+
+            if let concordance = sessionAgreement.concordance {
+                let level = cccLevel(concordance.ccc)
+                ccc = Metric(text: decimal(concordance.ccc, places: 3), level: level)
+                cccDetailText = "\(cccLabel(concordance.ccc)) · \(hrRangeText ?? "")"
+            }
         }
     }
 }
