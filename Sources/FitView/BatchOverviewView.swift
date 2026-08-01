@@ -27,6 +27,12 @@ struct BatchOverviewView: View {
     @State private var selectedSessionId: String?
     @State private var isPresentingImportSheet = false
     @State private var isPresentingDeviceAliasSheet = false
+    @State private var isPresentingSyncSheet = false
+    /// Owns the folder-sync configuration (bookmark, remote folder) for the
+    /// view's lifetime — a single instance so choosing a folder in one
+    /// `SyncView` presentation is still remembered the next time it's opened
+    /// without a relaunch.
+    @State private var syncStore = FolderSyncStore()
     /// Owns the currently in-flight import, if any — a single instance for
     /// the view's lifetime so a new import (or dismissing the sheet) can
     /// cancel whatever's already running, per `overview.md` §11's
@@ -96,6 +102,14 @@ struct BatchOverviewView: View {
         .toolbar {
             ToolbarItem {
                 Button {
+                    isPresentingSyncSheet = true
+                } label: {
+                    Label("Sync", systemImage: "arrow.triangle.2.circlepath.icloud")
+                }
+                .disabled(store == nil)
+            }
+            ToolbarItem {
+                Button {
                     isPresentingDeviceAliasSheet = true
                 } label: {
                     Label("Devices", systemImage: "gearshape")
@@ -121,6 +135,13 @@ struct BatchOverviewView: View {
         .sheet(isPresented: $isPresentingDeviceAliasSheet) {
             if let store, let batch {
                 DeviceAliasSheet(store: store, devices: batch.grouping.devices) {
+                    Task { await reloadBatch(store: store) }
+                }
+            }
+        }
+        .sheet(isPresented: $isPresentingSyncSheet) {
+            if let store {
+                SyncView(syncStore: syncStore, libraryStore: store) {
                     Task { await reloadBatch(store: store) }
                 }
             }
