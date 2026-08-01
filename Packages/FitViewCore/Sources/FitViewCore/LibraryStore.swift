@@ -132,6 +132,20 @@ public protocol LibraryStore: Sendable {
     /// Polar's raw device key to `"polarSense"` and the two identities
     /// collapse into one without touching a single stored item.
     func updateDeviceAlias(deviceKey: String, label: String) async throws
+    /// The raw alias table `updateDeviceAlias` writes into — raw (pre-alias)
+    /// `deviceKey` -> display label. `allItems()` only ever exposes items
+    /// with aliases already applied, which isn't enough for `RemoteLibraryStore`
+    /// to merge two stores' alias tables field-by-field, so this exposes read
+    /// access to the table itself.
+    func deviceAliases() async throws -> [String: String]
+    /// Inserts an already-fully-formed `LibraryItem` (and its bytes) exactly
+    /// as given, rather than re-deriving its fields from an `ImportCandidate`
+    /// the way `add(_:)` does. A no-op if `item.id` is already present — for
+    /// `RemoteLibraryStore` pulling an item another device already imported
+    /// and described: the item's identity (id, date, device, …) must survive
+    /// the round trip unchanged, or the same activity would fork into a new
+    /// id on every sync.
+    func addRawItem(_ item: LibraryItem, data: Data) async throws
 }
 
 /// Builds the descriptor fields a `LibraryItem` needs from an

@@ -50,17 +50,30 @@ public actor ImportCoordinator {
     /// Returns `nil` if another `startImport`/`cancelAll` happened before this
     /// one finished — the caller must treat that as "ignore this result",
     /// never merge it with whatever superseded it.
+    ///
+    /// - Parameter store: when non-nil, every successfully decoded activity
+    ///   is written through to `store.add(_:)` before being reported as a
+    ///   success. Defaulted to `nil` so the pinned `ImportCoordinatorTests`
+    ///   (which predate persistence) keep compiling and passing unchanged.
+    ///   The store is the only path a batch is ever rebuilt from
+    ///   (`BatchBuilder.load(store:)`), so an activity that decoded fine but
+    ///   couldn't be saved must not appear in `files` — including it would
+    ///   make the in-memory result diverge from what a relaunch (or any other
+    ///   store reload) would show. It's reported as a failure instead, never
+    ///   silently dropped, matching this package's "a broken join should be
+    ///   visible" principle.
     @discardableResult
     public func startImport(
         from source: any ActivitySource,
-        candidates: [ImportCandidate]
+        candidates: [ImportCandidate],
+        store: (any LibraryStore)? = nil
     ) async -> ImportResult? {
         currentTask?.cancel()
         generation += 1
         let myGeneration = generation
 
         let task = Task<ImportResult, Never> {
-            await Self.run(source: source, candidates: candidates)
+            await Self.run(source: source, candidates: candidates, store: store)
         }
         currentTask = task
 
@@ -82,7 +95,9 @@ public actor ImportCoordinator {
         case failure(ImportFailure)
     }
 
-    private static func run(source: any ActivitySource, candidates: [ImportCandidate]) async -> ImportResult {
+    private static func run(
+        source: any ActivitySource, candidates: [ImportCandidate], store: (any LibraryStore)?
+    ) async -> ImportResult {
         await withTaskGroup(of: Outcome.self) { group in
             for candidate in candidates {
                 group.addTask {
@@ -90,6 +105,20 @@ public actor ImportCoordinator {
                         try Task.checkCancellation()
                         let imported = try await source.fetch(candidate)
                         let loaded = try loadFitFile(data: imported.data, fileName: candidate.suggestedName)
+                        if let store {
+                            do {
+                                try await store.add(imported)
+                            } catch {
+                                // Decoded fine, but the store write failed — exclude it from
+                                // `files` (see the doc comment on `startImport`) and report it
+                                // loudly rather than silently succeeding in memory only.
+                                return .failure(ImportFailure(
+                                    candidate: candidate,
+                                    message: "Decoded successfully but couldn't be saved to the library: "
+                                        + String(describing: error)
+                                ))
+                            }
+                        }
                         return .success(loaded)
                     } catch {
                         return .failure(ImportFailure(candidate: candidate, message: String(describing: error)))

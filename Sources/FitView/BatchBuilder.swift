@@ -16,20 +16,20 @@ enum BatchBuilder {
     static func load(store: some LibraryStore) async throws -> LoadedBatch {
         try await seedBundledSamplesIfNeeded(store: store)
 
-        var files: [LoadedFile] = []
+        var entries: [BatchAssembler.Entry] = []
         for item in try await store.allItems() {
             let data = try await store.data(for: item.id)
-            // `item.originalName` is filename-shaped for every activity this
-            // phase can actually produce (bundled samples, file imports), so
-            // handing it to `loadFitFile` keeps `BatchAssembler`'s existing
-            // `groupActivityFiles` path working unchanged — reusing Phase 1's
-            // assembler as-is rather than routing through `ActivityDescriptor`
-            // here, which only pays off once a real API import (no filename
-            // to begin with) is wired into the store.
-            files.append(try loadFitFile(data: data, fileName: item.originalName))
+            // `item.originalName` is only used for `LoadedFile.fileName`/decode
+            // bookkeeping (display, debugging) here — grouping itself goes
+            // through `item.descriptor`, built from the item's real
+            // date/device/activity fields rather than a re-parsed filename, so
+            // an API-sourced item (no filename to begin with) groups exactly
+            // like a file-backed one.
+            let file = try loadFitFile(data: data, fileName: item.originalName)
+            entries.append(BatchAssembler.Entry(descriptor: item.descriptor, file: file))
         }
 
-        return BatchAssembler.assemble(files)
+        return BatchAssembler.assemble(entries)
     }
 
     /// Imports every bundled sample exactly once. Guarded by "the store is

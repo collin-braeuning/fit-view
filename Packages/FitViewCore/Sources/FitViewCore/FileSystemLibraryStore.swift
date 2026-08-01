@@ -92,6 +92,30 @@ public actor FileSystemLibraryStore: LibraryStore {
         try saveManifest(manifest)
     }
 
+    public func deviceAliases() async throws -> [String: String] {
+        try loadManifest().deviceAliases
+    }
+
+    public func addRawItem(_ item: LibraryItem, data: Data) async throws {
+        var manifest = try loadManifest()
+        guard !manifest.items.contains(where: { $0.id == item.id }) else { return }
+
+        // Recompute rather than trust `item.blobId` outright — cheap, and it
+        // keeps this store's own content-addressing invariant (a blob id
+        // always matches its bytes) true even for items handed in from
+        // outside, not just ones built by `add(_:)`.
+        let blobId = Self.sha256Hex(data)
+        let url = blobURL(for: blobId)
+        if !FileManager.default.fileExists(atPath: url.path) {
+            try data.write(to: url, options: .atomic)
+        }
+
+        var stored = item
+        stored.blobId = blobId
+        manifest.items.append(stored)
+        try saveManifest(manifest)
+    }
+
     // MARK: - Manifest I/O
 
     /// The on-disk shape of `manifest.json`. Kept private to this file —

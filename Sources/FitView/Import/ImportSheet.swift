@@ -9,12 +9,18 @@ import UniformTypeIdentifiers
 /// principle for the existing filename-grouping code.
 struct ImportSheet: View {
     let coordinator: ImportCoordinator
-    /// Called once, only when at least one activity actually imported, with
-    /// the full new set of files. The caller (`BatchOverviewView`) treats
-    /// this as replacing the current batch outright — the atomic-batch rule
-    /// from `overview.md` §11 applies from the moment an import is
-    /// confirmed, not just while it's in flight.
-    var onImported: ([LoadedFile]) -> Void
+    /// Every successfully-decoded activity is written through to this store
+    /// before being reported as imported (`ImportCoordinator.startImport`'s
+    /// `store:` parameter) — the store is the only path a batch is ever
+    /// rebuilt from, so this sheet never hands `LoadedFile`s back directly.
+    let store: any LibraryStore
+    /// Called once, only when at least one activity actually imported.
+    /// The caller (`BatchOverviewView`) reloads the batch from `store`
+    /// (`BatchBuilder.load(store:)`) rather than accepting files here — the
+    /// atomic-batch rule from `overview.md` §11 applies from the moment an
+    /// import is confirmed, not just while it's in flight, and rebuilding
+    /// from the store keeps memory and disk from ever diverging.
+    var onImported: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var phase: Phase = .pickingSource
@@ -34,7 +40,7 @@ struct ImportSheet: View {
 
     private struct Summary {
         var sourceName: String
-        var files: [LoadedFile]
+        var fileCount: Int
         var failures: [ImportFailure]
         var unparsedNames: [String]
     }
@@ -136,7 +142,7 @@ struct ImportSheet: View {
 
     private func summaryView(_ summary: Summary) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("\(summary.files.count) imported from \(summary.sourceName).")
+            Text("\(summary.fileCount) imported from \(summary.sourceName).")
                 .font(.headline)
 
             if !summary.failures.isEmpty {
@@ -163,11 +169,11 @@ struct ImportSheet: View {
 
             Spacer()
 
-            if summary.files.isEmpty {
+            if summary.fileCount == 0 {
                 Button("Close") { dismiss() }
             } else {
-                Button("Use these \(summary.files.count) activities") {
-                    onImported(summary.files)
+                Button("Use these \(summary.fileCount) activities") {
+                    onImported()
                     dismiss()
                 }
                 .buttonStyle(.borderedProminent)
@@ -219,7 +225,7 @@ struct ImportSheet: View {
                 sourceName: source.displayName,
                 message: "Importing \(candidates.count) activit\(candidates.count == 1 ? "y" : "ies")…"
             )
-            guard let result = await coordinator.startImport(from: source, candidates: candidates) else {
+            guard let result = await coordinator.startImport(from: source, candidates: candidates, store: store) else {
                 // Superseded by a newer import (e.g. the sheet was dismissed
                 // and reopened quickly) — that newer run owns the sheet's
                 // state now, so this stale result is discarded outright.
@@ -228,7 +234,7 @@ struct ImportSheet: View {
             let unparsed = groupActivityFiles(result.files.map(\.fileName)).unparsed.map(\.fileName)
             phase = .summary(Summary(
                 sourceName: source.displayName,
-                files: result.files,
+                fileCount: result.files.count,
                 failures: result.failures,
                 unparsedNames: unparsed
             ))

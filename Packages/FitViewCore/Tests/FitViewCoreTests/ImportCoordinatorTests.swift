@@ -26,6 +26,37 @@ private struct FakeActivitySource: ActivitySource {
     }
 }
 
+/// An in-memory `LibraryStore` double — `.add` either records the activity or
+/// throws, depending on `shouldFail`, so tests can exercise both the
+/// write-through-succeeds and write-through-fails paths without touching real
+/// disk I/O.
+private actor FakeLibraryStore: LibraryStore {
+    private var shouldFail = false
+    private(set) var added: [ImportedActivity] = []
+
+    func setShouldFail(_ value: Bool) { shouldFail = value }
+
+    func allItems() async throws -> [LibraryItem] { [] }
+    func data(for itemId: String) async throws -> Data { Data() }
+    func deviceAliases() async throws -> [String: String] { [:] }
+    func addRawItem(_ item: LibraryItem, data: Data) async throws {}
+    func remove(itemId: String) async throws {}
+    func updateDeviceAlias(deviceKey: String, label: String) async throws {}
+
+    @discardableResult
+    func add(_ activity: ImportedActivity) async throws -> LibraryItem {
+        if shouldFail {
+            throw LibraryStoreError.corruptManifest(underlying: "simulated store failure")
+        }
+        added.append(activity)
+        return LibraryItem(
+            id: UUID().uuidString, blobId: "fake", date: "2026-07-23", device: "pace4", deviceKey: "pace4",
+            activity: "run", activityKey: "run", source: activity.source,
+            originalName: activity.candidate.suggestedName, importedAt: Date()
+        )
+    }
+}
+
 /// Real `.fit` bytes are needed to exercise the actual `loadFitFile` decode
 /// path (`ImportCoordinator` must not invent its own parsing), so this reads
 /// one of the app's bundled sample files straight off disk by relative path —
@@ -108,6 +139,40 @@ struct ImportCoordinatorTests {
         let resolvedFirst = await firstResult
         #expect(resolvedFirst == nil, "a superseded import's result must be discarded, not surfaced")
         #expect(secondResult?.files.first?.fileName == "2026-07-24_pace4_run")
+    }
+
+    @Test("a successful import writes the decoded activity through to the store")
+    func successfulImportWritesThroughToStore() async throws {
+        let data = try realFitData()
+        let candidate = ImportCandidate(sourceId: "1", suggestedName: "2026-07-23_pace4_run")
+        let source = FakeActivitySource(dataBySourceId: ["1": data])
+        let store = FakeLibraryStore()
+        let coordinator = ImportCoordinator()
+
+        let result = await coordinator.startImport(from: source, candidates: [candidate], store: store)
+
+        #expect(result?.files.count == 1)
+        #expect(result?.failures.isEmpty == true)
+        let added = await store.added
+        #expect(added.count == 1)
+        #expect(added.first?.candidate == candidate)
+    }
+
+    @Test("a store-write failure is reported as a failure, excluded from files, never a silent success")
+    func storeWriteFailureIsReported() async throws {
+        let data = try realFitData()
+        let candidate = ImportCandidate(sourceId: "1", suggestedName: "2026-07-23_pace4_run")
+        let source = FakeActivitySource(dataBySourceId: ["1": data])
+        let store = FakeLibraryStore()
+        await store.setShouldFail(true)
+        let coordinator = ImportCoordinator()
+
+        let result = await coordinator.startImport(from: source, candidates: [candidate], store: store)
+
+        #expect(result?.files.isEmpty == true, "an activity that couldn't be saved must not appear in files")
+        #expect(result?.failures.count == 1)
+        let message = try #require(result?.failures.first?.message)
+        #expect(message.contains("saved"), "the failure message should make clear it decoded but couldn't save")
     }
 
     @Test("cancelAll stops an in-flight import without starting a new one")
