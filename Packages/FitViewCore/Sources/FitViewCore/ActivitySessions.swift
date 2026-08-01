@@ -136,9 +136,20 @@ public func groupActivities(_ descriptors: [ActivityDescriptor]) -> BatchGroupin
         a.date == b.date ? a.activity < b.activity : a.date < b.date
     }
 
+    // Most files first, then by key — the key tiebreak is what makes this
+    // deterministic. `deviceLabels` is a Dictionary, so its iteration order
+    // varies run to run, and `sorted(by:)` is not stable; ranking on
+    // `fileCount` alone therefore returned an arbitrary order whenever two
+    // devices had recorded the same number of files. The reference corpus is
+    // exactly that case (pace4 and polarSense both have 8), so the default
+    // pair selection could silently swap primary and secondary between
+    // launches — flipping the sign of every reported bias.
     let devices = deviceLabels
         .map { key, label in DeviceIdentity(key: key, label: label, fileCount: deviceFileCounts[key] ?? 0) }
-        .sorted { $0.fileCount > $1.fileCount }
+        .sorted { lhs, rhs in
+            if lhs.fileCount != rhs.fileCount { return lhs.fileCount > rhs.fileCount }
+            return lhs.key < rhs.key
+        }
 
     return BatchGrouping(sessions: sessions, devices: devices, unparsed: unparsed)
 }
