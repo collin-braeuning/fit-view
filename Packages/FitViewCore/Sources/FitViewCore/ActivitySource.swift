@@ -46,10 +46,17 @@ public struct ImportCandidate: Sendable, Equatable {
 public struct ImportedActivity: Sendable {
     public var candidate: ImportCandidate
     public var data: Data
+    /// The `ActivitySource.id` this came from ("bundled", "files", "polar",
+    /// "coros") — `LibraryStore.add` records it on the resulting `LibraryItem`
+    /// so the library can show provenance. Defaulted rather than required so
+    /// Phase 1 call sites (and their tests) that only care about
+    /// `candidate`/`data` don't need updating for a Phase 2 concern.
+    public var source: String
 
-    public init(candidate: ImportCandidate, data: Data) {
+    public init(candidate: ImportCandidate, data: Data, source: String = "unknown") {
         self.candidate = candidate
         self.data = data
+        self.source = source
     }
 }
 
