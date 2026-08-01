@@ -17,14 +17,16 @@ settings:
 packages:
   FitViewCore:
     path: Packages/FitViewCore
-# Untracked (see .gitignore) — populated from Secrets.xcconfig.template.
-# Supplies POLAR_CLIENT_ID / POLAR_CLIENT_SECRET, substituted into each
-# target's Info.plist. Both keys ship as placeholder text until a Polar
-# client is registered; PolarConfiguration.isConfigured treats placeholders
-# as "not configured" so the app degrades gracefully rather than crashing.
+# Tracked base config; it optionally `#include?`s the gitignored
+# Secrets.xcconfig. Supplies POLAR_CLIENT_ID / POLAR_CLIENT_SECRET, which are
+# substituted into each target's Info.plist. Both ship as placeholder text
+# until a Polar client is registered; PolarConfiguration.isConfigured treats
+# placeholders as "not configured" so the app degrades gracefully.
+# Referencing Secrets.xcconfig here directly would break `xcodegen generate`
+# on any clone that doesn't have it.
 configFiles:
-  Debug: Secrets.xcconfig
-  Release: Secrets.xcconfig
+  Debug: Config.xcconfig
+  Release: Config.xcconfig
 targets:
   FitView-iOS:
     type: application

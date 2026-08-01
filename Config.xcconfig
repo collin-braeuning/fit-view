@@ -1,0 +1,19 @@
+// Tracked base configuration for both app targets.
+//
+// This exists so a fresh clone can run `xcodegen generate` and build with no
+// untracked file present. Pointing `project.yml`'s `configFiles:` straight at
+// the gitignored `Secrets.xcconfig` made generation fail outright for anyone
+// who hadn't created that file yet ("Invalid config file").
+//
+// The placeholders below are the fallback. `#include?` — note the `?`, which
+// is the optional form that treats a missing file as a no-op rather than an
+// error — pulls in real values when they exist. It comes last because in an
+// xcconfig the final assignment wins, so Secrets.xcconfig overrides these.
+//
+// PolarConfiguration.isConfigured recognizes these placeholder strings and
+// reports "not configured", so the Polar source degrades gracefully instead
+// of attempting a doomed OAuth round-trip.
+POLAR_CLIENT_ID = YOUR_POLAR_CLIENT_ID
+POLAR_CLIENT_SECRET = YOUR_POLAR_CLIENT_SECRET
+
+#include? "Secrets.xcconfig"
