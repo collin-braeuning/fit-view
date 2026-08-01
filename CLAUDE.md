@@ -16,6 +16,11 @@ numbers) — read it before making changes to domain logic.
     otherwise — check at the start of a new conversation if unsure which mode applies.
 - Project structure is managed via `project.yml` (XcodeGen) rather than hand-edited
   `.xcodeproj` files. Add new files under `Sources/...` and re-run `xcodegen generate`.
+- This repo has a GitHub Projects (v2) board named **"Kanban"** (owned by `collin-braeuning`,
+  project number 1). When a bug, decision point, or feature request comes up in conversation
+  — not necessarily something to act on immediately — file it as a GitHub issue on
+  `collin-braeuning/fit-view` and add it to that board (`gh project item-add 1 --owner
+  collin-braeuning --url <issue-url>`) so it isn't lost once the session ends.
 - **Pause for manual verification before/after any step that changes the UI significantly**
   (when the user is doing their own verification). Land the change, then stop and let the user
   review it before continuing, rather than chaining several UI-affecting changes together

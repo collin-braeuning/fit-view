@@ -6,9 +6,10 @@ import Foundation
 /// filename, extract each file's per-second heart rate once, then compare the
 /// two most common devices.
 enum SampleBatchLoader {
-    static func load() throws -> BatchAgreement {
+    static func load() throws -> LoadedBatch {
         let files = try loadSampleFiles()
         let grouping = groupActivityFiles(files.map(\.fileName))
+        let filesByName = Dictionary(uniqueKeysWithValues: files.map { ($0.fileName, $0) })
 
         var samplesByName: [String: [Int: Int]] = [:]
         for file in files {
@@ -16,8 +17,15 @@ enum SampleBatchLoader {
         }
 
         guard let primaryDeviceKey = grouping.devices.first?.key else {
-            return BatchAgreement(
-                primaryName: "", secondaryName: "", sessions: [], spread: nil, pooled: nil, skipped: []
+            return LoadedBatch(
+                agreement: BatchAgreement(
+                    primaryName: "", secondaryName: "", sessions: [], spread: nil, pooled: nil, skipped: []
+                ),
+                grouping: grouping,
+                filesByName: filesByName,
+                primaryDeviceKey: "",
+                secondaryDeviceKey: "",
+                deviceLabels: [:]
             )
         }
         let secondaryDeviceKey = grouping.devices.first { $0.key != primaryDeviceKey }?.key ?? primaryDeviceKey
@@ -41,7 +49,14 @@ enum SampleBatchLoader {
             deviceLabels: deviceLabels
         )
 
-        return buildBatchAgreement(input)
+        return LoadedBatch(
+            agreement: buildBatchAgreement(input),
+            grouping: grouping,
+            filesByName: filesByName,
+            primaryDeviceKey: primaryDeviceKey,
+            secondaryDeviceKey: secondaryDeviceKey,
+            deviceLabels: deviceLabels
+        )
     }
 
     /// Sample files are bundled under both extension cases by design

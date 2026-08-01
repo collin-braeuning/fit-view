@@ -18,11 +18,14 @@ struct BatchOverviewCardList: View {
             } else {
                 Section {
                     ForEach(model.rows) { row in
-                        SessionCard(
-                            row: row,
-                            isExpanded: expandedSessionIds.contains(row.id),
-                            onToggleExpanded: { toggleExpanded(row.id) }
-                        )
+                        NavigationLink(value: SessionRoute(sessionId: row.id)) {
+                            SessionCard(
+                                row: row,
+                                isExpanded: expandedSessionIds.contains(row.id),
+                                onToggleExpanded: { toggleExpanded(row.id) }
+                            )
+                        }
+                        .buttonStyle(.plain)
                         .listRowSeparator(.hidden)
                         .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     }
@@ -32,14 +35,17 @@ struct BatchOverviewCardList: View {
             if !model.skipped.isEmpty {
                 Section("Skipped (\(model.skipped.count))") {
                     ForEach(model.skipped) { skipped in
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(skipped.formattedDate) · \(skipped.activity)")
-                                .font(.subheadline)
-                            Text(skipped.reasonText)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        NavigationLink(value: SessionRoute(sessionId: skipped.sessionId)) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(skipped.formattedDate) · \(skipped.activity)")
+                                    .font(.subheadline)
+                                Text(skipped.reasonText)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 2)
                         }
-                        .padding(.vertical, 2)
+                        .buttonStyle(.plain)
                     }
                 }
             }

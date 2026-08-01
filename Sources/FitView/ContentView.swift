@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var path: [SessionRoute] = []
+
     var body: some View {
-        NavigationStack {
-            BatchOverviewView()
+        NavigationStack(path: $path) {
+            BatchOverviewView(path: $path)
         }
     }
 }
