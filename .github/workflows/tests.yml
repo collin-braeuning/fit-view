@@ -1,0 +1,16 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  fitviewcore-tests:
+    name: FitViewCore unit tests
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run FitViewCore tests
+        working-directory: Packages/FitViewCore
+        run: swift test
