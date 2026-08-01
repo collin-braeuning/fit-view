@@ -18,16 +18,19 @@ struct BatchOverviewView: View {
     /// Overrides the size-class-derived layout. Lets `#Preview` render the
     /// card layout on a Mac canvas without booting a simulator.
     var layoutOverride: OverviewLayout?
+    @Binding var path: [SessionRoute]
 
-    @State private var agreement: BatchAgreement?
+    @State private var batch: LoadedBatch?
     @State private var model: BatchOverviewModel?
     @State private var loadError: String?
+    @State private var selectedSessionId: String?
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
 
-    init(layoutOverride: OverviewLayout? = nil) {
+    init(layoutOverride: OverviewLayout? = nil, path: Binding<[SessionRoute]> = .constant([])) {
         self.layoutOverride = layoutOverride
+        self._path = path
     }
 
     private var layout: OverviewLayout {
@@ -53,13 +56,20 @@ struct BatchOverviewView: View {
                 ProgressView("Loading sample activities…")
             }
         }
+        .navigationDestination(for: SessionRoute.self) { route in
+            if let batch {
+                SessionDetailView(batch: batch, sessionId: route.sessionId)
+            } else {
+                ContentUnavailableView("Session unavailable", systemImage: "questionmark.folder")
+            }
+        }
         .task {
             do {
                 let loaded = try await Task.detached(priority: .userInitiated) {
                     try SampleBatchLoader.load()
                 }.value
-                agreement = loaded
-                model = BatchOverviewModel(agreement: loaded)
+                batch = loaded
+                model = BatchOverviewModel(agreement: loaded.agreement)
             } catch {
                 loadError = String(describing: error)
             }
@@ -102,20 +112,28 @@ struct BatchOverviewView: View {
                     Text("Skipped")
                         .font(.headline)
                     ForEach(model.skipped) { skipped in
-                        Text("\(skipped.formattedDate) — \(skipped.reasonText)")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
+                        NavigationLink(value: SessionRoute(sessionId: skipped.sessionId)) {
+                            Text("\(skipped.formattedDate) — \(skipped.reasonText)")
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding()
             }
+        }
+        .onChange(of: selectedSessionId) { _, newValue in
+            guard let newValue else { return }
+            path.append(SessionRoute(sessionId: newValue))
+            selectedSessionId = nil
         }
     }
 
     private static let narrowTableWidthThreshold: CGFloat = 900
 
     private func fullSessionsTable(for model: BatchOverviewModel) -> some View {
-        Table(model.rows) {
+        Table(model.rows, selection: $selectedSessionId) {
             TableColumn("Date") { row in
                 Text(row.formattedDate)
             }
@@ -153,7 +171,7 @@ struct BatchOverviewView: View {
     /// headline signal; LoA and max are exactly what the (already-built)
     /// card disclosure exists to hold on the narrow side.
     private func narrowSessionsTable(for model: BatchOverviewModel) -> some View {
-        Table(model.rows) {
+        Table(model.rows, selection: $selectedSessionId) {
             TableColumn("Date") { row in
                 Text(row.formattedDate)
             }

@@ -5,9 +5,10 @@ import Foundation
 /// The devices in this app aren't synchronised — they're started and stopped
 /// by hand, and `pace4` auto-pauses — so a session's comparable samples are
 /// only the whole seconds where *every* selected device produced a usable
-/// reading. That's an intersection, not a union: unlike the pairwise
+/// reading. That's an intersection, not a union: unlike the per-session
 /// comparison screen (which draws a time series and so needs every second,
-/// nil-filled, on a shared x-axis), the batch view draws no time series, so
+/// nil-filled, on a shared x-axis — see `buildComparisonTimeline` in
+/// `ComparisonTimeline.swift`), the batch view draws no time series, so
 /// building a union timeline with nil-filled arrays would be pure waste.
 
 public struct DeviceSamples: Sendable {
