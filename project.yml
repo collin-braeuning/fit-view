@@ -17,6 +17,14 @@ settings:
 packages:
   FitViewCore:
     path: Packages/FitViewCore
+# Untracked (see .gitignore) — populated from Secrets.xcconfig.template.
+# Supplies POLAR_CLIENT_ID / POLAR_CLIENT_SECRET, substituted into each
+# target's Info.plist. Both keys ship as placeholder text until a Polar
+# client is registered; PolarConfiguration.isConfigured treats placeholders
+# as "not configured" so the app degrades gracefully rather than crashing.
+configFiles:
+  Debug: Secrets.xcconfig
+  Release: Secrets.xcconfig
 targets:
   FitView-iOS:
     type: application
@@ -31,9 +39,7 @@ targets:
       base:
         PRODUCT_NAME: FitView
         PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_CFBundleDisplayName: FitView
+        INFOPLIST_FILE: Sources/FitView-iOS/Info.plist
         TARGETED_DEVICE_FAMILY: "1,2"
   FitView-macOS:
     type: application
@@ -48,7 +54,5 @@ targets:
       base:
         PRODUCT_NAME: FitView
         PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app.mac
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_CFBundleDisplayName: FitView
-        INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        INFOPLIST_FILE: Sources/FitView-macOS/Info.plist
         ENABLE_HARDENED_RUNTIME: YES
