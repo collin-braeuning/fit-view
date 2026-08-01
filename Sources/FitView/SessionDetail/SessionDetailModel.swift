@@ -62,6 +62,14 @@ struct SessionDetailModel {
     /// was measured over, kept together per overview.md §7.
     var cccDetailText: String?
 
+    /// Non-nil only for a skipped session — explains why the stats grid is
+    /// replaced with a banner instead of numbers.
+    var skipBannerText: String?
+    /// "first sample 17:06:53 vs 17:00:41 — 6:12 apart" — with no clock-offset
+    /// correction anywhere in the app, the start-time gap often *is* the
+    /// explanation for a skip, so it's shown next to the banner.
+    var startTimeDeltaText: String?
+
     init?(batch: LoadedBatch, sessionId: String) {
         guard let session = batch.grouping.sessions.first(where: { $0.id == sessionId }) else { return nil }
         self.sessionId = sessionId
@@ -130,13 +138,16 @@ struct SessionDetailModel {
 
         let sessionAgreement = batch.agreement.sessions.first { $0.sessionId == sessionId }
         agreement = sessionAgreement
+        var matchedSecondsWhenSkipped: Int?
         if let sessionAgreement {
             coverage = sessionAgreement.coverage
         } else if devices.count == 2 {
-            coverage = intersectHeartRate([
+            let aligned = intersectHeartRate([
                 DeviceSamples(deviceKey: devices[0].deviceKey, bySecond: heartRateBySecond(devices[0].records)),
                 DeviceSamples(deviceKey: devices[1].deviceKey, bySecond: heartRateBySecond(devices[1].records)),
-            ]).coverage
+            ])
+            coverage = aligned.coverage
+            matchedSecondsWhenSkipped = aligned.seconds.count
         } else {
             coverage = []
         }
@@ -174,6 +185,32 @@ struct SessionDetailModel {
                 let level = cccLevel(concordance.ccc)
                 ccc = Metric(text: decimal(concordance.ccc, places: 3), level: level)
                 cccDetailText = "\(cccLabel(concordance.ccc)) · \(hrRangeText ?? "")"
+            }
+        } else {
+            // A broken join should be visible, not quietly hidden: distinguish
+            // "only one file exists" (undetectable from BatchAgreement alone —
+            // it also lands in `.skipped` as `.noOverlap`) from a genuine
+            // no-overlap or too-few-points skip using `grouping`.
+            if orderedDeviceKeys.contains(where: { session.filesByDeviceKey[$0] == nil }) {
+                let missingKey = orderedDeviceKeys.first { session.filesByDeviceKey[$0] == nil }!
+                let missingLabel = batch.deviceLabels[missingKey] ?? missingKey
+                skipBannerText = "No \(missingLabel) file for this date."
+            } else if let matchedSecondsWhenSkipped, matchedSecondsWhenSkipped > 0 {
+                skipBannerText = "Only \(matchedSecondsWhenSkipped) matched "
+                    + "second\(matchedSecondsWhenSkipped == 1 ? "" : "s") between these recordings — "
+                    + "too few to compute agreement statistics."
+            } else {
+                skipBannerText = "No overlapping seconds. These recordings never share a whole "
+                    + "second, so no agreement statistics can be computed."
+            }
+
+            if devices.count == 2,
+               let firstA = devices[0].records.first?.timestamp,
+               let firstB = devices[1].records.first?.timestamp {
+                let deltaSeconds = Int(abs(firstA.timeIntervalSince(firstB)).rounded())
+                let deltaText = "\(deltaSeconds / 60):\(String(format: "%02d", deltaSeconds % 60))"
+                startTimeDeltaText = "first sample \(firstA.formatted(deviceFactTimeFormat)) vs "
+                    + "\(firstB.formatted(deviceFactTimeFormat)) — \(deltaText) apart"
             }
         }
     }

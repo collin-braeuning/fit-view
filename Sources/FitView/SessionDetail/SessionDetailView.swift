@@ -88,6 +88,20 @@ struct SessionDetailView: View {
                     StatTile(label: "CCC", value: ccc.text, level: ccc.level, detail: model.cccDetailText)
                 }
             }
+        } else if let skipBannerText = model.skipBannerText {
+            VStack(alignment: .leading, spacing: 6) {
+                Label(skipBannerText, systemImage: "exclamationmark.triangle")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                if let startTimeDeltaText = model.startTimeDeltaText {
+                    Text(startTimeDeltaText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(12)
+            .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
         }
     }
 
@@ -165,5 +179,29 @@ private struct StatTile: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(12)
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
+    }
+}
+
+#Preview("Normal") {
+    NavigationStack {
+        SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-01|run")
+    }
+}
+
+#Preview("No overlap") {
+    NavigationStack {
+        SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-02|run")
+    }
+}
+
+#Preview("Too few points") {
+    NavigationStack {
+        SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-03|run")
+    }
+}
+
+#Preview("Missing device") {
+    NavigationStack {
+        SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-04|run")
     }
 }

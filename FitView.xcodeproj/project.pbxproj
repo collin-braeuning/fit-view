@@ -12,6 +12,7 @@
 		09865599844A60EC062CF51A /* 2026-07-30_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */; };
 		09946B9BA6023FDD595C9C68 /* 2026-07-25_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */; };
 		0A008DA3F50D885D7F5DDEDE /* 2026-07-24_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */; };
+		0F94CD109B3B7CE55CF4308D /* SessionDetailPreviewFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */; };
 		11DB0904DA81C2499F8F503F /* 2026-07-28_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */; };
 		137A9895FF49A1E5907F70C2 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBB05856B8F40A606A0377B /* SessionDetailView.swift */; };
 		13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
@@ -49,6 +50,7 @@
 		A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
 		AB1BFCD43781FFAA8D8E6EB4 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
 		B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBB05856B8F40A606A0377B /* SessionDetailView.swift */; };
+		BC218D82609504468CC5AB15 /* SessionDetailPreviewFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */; };
 		C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		C658980557AFB6F64E0411FB /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
 		C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
@@ -85,6 +87,7 @@
 		57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "FitView-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-28_pace4_run.fit"; sourceTree = "<group>"; };
 		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
+		746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailPreviewFixture.swift; sourceTree = "<group>"; };
 		779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-25_polarSense_run.FIT"; sourceTree = "<group>"; };
 		8312C59CA5E3CA718BDBE2D5 /* SampleBatchLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleBatchLoader.swift; sourceTree = "<group>"; };
 		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
@@ -160,6 +163,7 @@
 			children = (
 				88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */,
 				07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */,
+				746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */,
 				3CBB05856B8F40A606A0377B /* SessionDetailView.swift */,
 			);
 			path = SessionDetail;
@@ -380,6 +384,7 @@
 				FCBEB5BDE70DA44596502627 /* SampleBatchLoader.swift in Sources */,
 				F0C0D394D3A6B1AFDE689803 /* SessionCard.swift in Sources */,
 				1C9B3FCB9E977F1F448B04EC /* SessionDetailModel.swift in Sources */,
+				0F94CD109B3B7CE55CF4308D /* SessionDetailPreviewFixture.swift in Sources */,
 				137A9895FF49A1E5907F70C2 /* SessionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,6 +405,7 @@
 				14856F98ACF5161A87A78E74 /* SampleBatchLoader.swift in Sources */,
 				E4BF62537462DB10181D83DD /* SessionCard.swift in Sources */,
 				F22B5026FAAEA78CE5D88517 /* SessionDetailModel.swift in Sources */,
+				BC218D82609504468CC5AB15 /* SessionDetailPreviewFixture.swift in Sources */,
 				B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
