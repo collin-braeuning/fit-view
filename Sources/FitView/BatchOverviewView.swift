@@ -1,5 +1,6 @@
 import FitViewCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Which presentation to use for the batch overview. `Table` collapses to a
 /// single visible column below `horizontalSizeClass == .regular` (iPhone,
@@ -24,6 +25,15 @@ struct BatchOverviewView: View {
     @State private var model: BatchOverviewModel?
     @State private var loadError: String?
     @State private var selectedSessionId: String?
+    @State private var isPresentingImportSheet = false
+    /// Owns the currently in-flight import, if any — a single instance for
+    /// the view's lifetime so a new import (or dismissing the sheet) can
+    /// cancel whatever's already running, per `overview.md` §11's
+    /// atomic-batch rule.
+    @State private var importCoordinator = ImportCoordinator()
+    #if os(macOS)
+    @State private var isDropTargeted = false
+    #endif
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -74,7 +84,74 @@ struct BatchOverviewView: View {
                 loadError = String(describing: error)
             }
         }
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    isPresentingImportSheet = true
+                } label: {
+                    Label("Import", systemImage: "square.and.arrow.down")
+                }
+            }
+        }
+        .sheet(isPresented: $isPresentingImportSheet) {
+            ImportSheet(coordinator: importCoordinator) { files in
+                applyImport(files)
+            }
+        }
+        #if os(macOS)
+        .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
+            handleDrop(providers: providers)
+        }
+        .overlay {
+            if isDropTargeted {
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(.tint, lineWidth: 3)
+                    .padding(8)
+                    .allowsHitTesting(false)
+            }
+        }
+        #endif
     }
+
+    /// Replaces the current batch outright with a freshly imported set of
+    /// files — the atomic-batch rule from `overview.md` §11: a new load
+    /// replaces, it never merges with what was there before.
+    private func applyImport(_ files: [LoadedFile]) {
+        let loaded = BatchAssembler.assemble(files)
+        batch = loaded
+        model = BatchOverviewModel(agreement: loaded.agreement)
+        loadError = nil
+    }
+
+    #if os(macOS)
+    /// macOS drag-and-drop onto the overview — the same import path as
+    /// picking "Files" from the toolbar sheet, just skipping the picker UI.
+    private func handleDrop(providers: [NSItemProvider]) -> Bool {
+        guard !providers.isEmpty else { return false }
+        Task {
+            var urls: [URL] = []
+            for provider in providers {
+                guard
+                    let item = try? await provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil),
+                    let data = item as? Data,
+                    let url = URL(dataRepresentation: data, relativeTo: nil)
+                else { continue }
+                urls.append(url)
+            }
+            guard !urls.isEmpty else { return }
+
+            let source = FileImportSource()
+            await source.setSelection(urls)
+            let candidates = (try? await source.listAvailable()) ?? []
+            guard !candidates.isEmpty else { return }
+
+            if let result = await importCoordinator.startImport(from: source, candidates: candidates) {
+                applyImport(result.files)
+            }
+        }
+        return true
+    }
+    #endif
 
     @ViewBuilder
     private func content(for model: BatchOverviewModel) -> some View {
