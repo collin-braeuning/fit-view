@@ -76,7 +76,8 @@ struct BatchOverviewView: View {
         .task {
             do {
                 let loaded = try await Task.detached(priority: .userInitiated) {
-                    try SampleBatchLoader.load()
+                    let store = try FileSystemLibraryStore(rootURL: FileSystemLibraryStore.defaultRootURL())
+                    return try await BatchBuilder.load(store: store)
                 }.value
                 batch = loaded
                 model = BatchOverviewModel(agreement: loaded.agreement)

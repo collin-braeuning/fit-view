@@ -93,7 +93,7 @@ actor PolarAccessLinkSource: ActivitySource {
         guard let session else { throw ActivitySourceError.unauthorized }
 
         let data = try await apiClient.downloadFit(exerciseId: candidate.sourceId, accessToken: session.accessToken)
-        return ImportedActivity(candidate: candidate, data: data)
+        return ImportedActivity(candidate: candidate, data: data, source: id)
     }
 }
 

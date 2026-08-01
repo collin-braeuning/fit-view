@@ -55,6 +55,6 @@ actor FileImportSource: ActivitySource {
         defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
 
         let data = try Data(contentsOf: url)
-        return ImportedActivity(candidate: candidate, data: data)
+        return ImportedActivity(candidate: candidate, data: data, source: id)
     }
 }

@@ -4,7 +4,7 @@ import FitViewCore
 /// filename, extract each file's per-second heart rate once, pick the two
 /// most common devices, run the batch comparison pipeline.
 ///
-/// Factored out of `SampleBatchLoader` so the bundled-sample load and an
+/// Factored out of `BatchBuilder` so the store-backed load and an
 /// imported batch (`ImportCoordinator`'s `ImportResult.files`) go through
 /// exactly one place that turns "some `LoadedFile`s" into "a `LoadedBatch`" —
 /// mirroring `BatchOverviewModel`'s reasoning that there should be exactly
