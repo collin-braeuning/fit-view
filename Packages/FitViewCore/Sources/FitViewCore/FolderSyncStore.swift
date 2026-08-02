@@ -16,6 +16,17 @@ public enum FolderSyncError: Error, Sendable, Equatable {
     case materializationTimedOut(path: String)
 }
 
+/// Carries a `UserDefaults` across an isolation boundary without relying on
+/// the SDK to declare it `Sendable` — it does in some SDK versions and not in
+/// others, and `FolderSyncStore` needs a synchronous, nonisolated read of it
+/// either way. `UserDefaults` is documented as thread-safe, and the only
+/// access here is a read and a write of one key, so the `@unchecked` promise
+/// is narrow and local rather than an assumption about how the class is
+/// annotated elsewhere.
+private struct SendableUserDefaults: @unchecked Sendable {
+    let store: UserDefaults
+}
+
 /// Syncs a local `LibraryStore` against a folder the user picked once via the
 /// directory document picker — in practice an iCloud Drive folder, though
 /// nothing here assumes that; a plain local folder works identically (and is
@@ -40,13 +51,16 @@ public enum FolderSyncError: Error, Sendable, Equatable {
 /// and reusing it here means there's only one manifest shape in the codebase
 /// to reason about.
 public actor FolderSyncStore: RemoteLibraryStore {
-    // `nonisolated(unsafe)`: both are immutable (`let`) and of `Sendable`
-    // types (`UserDefaults` is `@unchecked Sendable`, `String` is `Sendable`),
-    // so a nonisolated read can never race a mutation — there isn't one.
-    // Needed so the protocol's synchronous `isConfigured` requirement can be
-    // satisfied without making it `async`.
-    private nonisolated(unsafe) let defaults: UserDefaults
-    private nonisolated(unsafe) let bookmarkKey: String
+    // Both are immutable and read without `await`, so the protocol's
+    // synchronous `isConfigured` requirement can be satisfied without making
+    // it `async`. `bookmarkKey` is a plain `Sendable` `String`; `defaults`
+    // needs the box below, because `UserDefaults` is not annotated `Sendable`
+    // in every SDK this package builds against and a bare
+    // `nonisolated(unsafe)` stored property of a non-`Sendable` type is
+    // rejected outright by some compilers ("cannot exit nonisolated(unsafe)
+    // context") rather than merely warned about.
+    private nonisolated let defaults: SendableUserDefaults
+    private nonisolated let bookmarkKey: String
     /// How long to wait for a single `.icloud` placeholder to materialise
     /// before giving up. Generous relative to typical Wi-Fi sync latency for
     /// a single small `.fit` file, but still bounded — a hung sync must fail
@@ -58,7 +72,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
         bookmarkKey: String = "FitView.FolderSyncStore.bookmark",
         materializationTimeout: TimeInterval = 15
     ) {
-        self.defaults = defaults
+        self.defaults = SendableUserDefaults(store: defaults)
         self.bookmarkKey = bookmarkKey
         self.materializationTimeout = materializationTimeout
     }
@@ -66,10 +80,10 @@ public actor FolderSyncStore: RemoteLibraryStore {
     // `nonisolated` (rather than actor-isolated, which is the default for a
     // computed property on an actor) because the protocol requirement is
     // synchronous — reading `defaults`/`bookmarkKey` without `await` is sound
-    // here because both are `let`s of `Sendable` types, so there's no way
-    // for this read to race a mutation.
+    // here because both are immutable `let`s, so there's no way for this
+    // read to race a mutation.
     public nonisolated var isConfigured: Bool {
-        defaults.data(forKey: bookmarkKey) != nil
+        defaults.store.data(forKey: bookmarkKey) != nil
     }
 
     /// Called once the user picks a folder via the directory document
@@ -80,7 +94,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
         let didAccess = url.startAccessingSecurityScopedResource()
         defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
         let bookmark = try Self.makeBookmark(for: url)
-        defaults.set(bookmark, forKey: bookmarkKey)
+        defaults.store.set(bookmark, forKey: bookmarkKey)
     }
 
     @discardableResult
@@ -162,7 +176,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
     // MARK: - Bookmark resolution
 
     private func resolveFolder() throws -> URL {
-        guard let bookmark = defaults.data(forKey: bookmarkKey) else {
+        guard let bookmark = defaults.store.data(forKey: bookmarkKey) else {
             throw FolderSyncError.notConfigured
         }
         var isStale = false
@@ -173,7 +187,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
             throw FolderSyncError.bookmarkResolutionFailed(underlying: String(describing: error))
         }
         if isStale, let refreshed = try? Self.makeBookmark(for: url) {
-            defaults.set(refreshed, forKey: bookmarkKey)
+            defaults.store.set(refreshed, forKey: bookmarkKey)
         }
         return url
     }
