@@ -11,13 +11,15 @@ let package = Package(
         .library(name: "FitViewCore", targets: ["FitViewCore"])
     ],
     dependencies: [
-        .package(url: "https://github.com/garmin/fit-swift-sdk.git", from: "21.205.0")
+        // Wraps Garmin's official C SDK. Chosen over the pure-Swift
+        // `garmin/fit-swift-sdk` purely on decode speed — see `FitDecoder.swift`.
+        .package(url: "https://github.com/roznet/FitFileParser.git", from: "1.5.2")
     ],
     targets: [
         .target(
             name: "FitViewCore",
             dependencies: [
-                .product(name: "FITSwiftSDK", package: "fit-swift-sdk")
+                .product(name: "FitFileParser", package: "FitFileParser")
             ]
         ),
         .testTarget(name: "FitViewCoreTests", dependencies: ["FitViewCore"]),

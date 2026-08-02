@@ -41,8 +41,14 @@ struct SessionDetailView: View {
                     points: model.chartPoints,
                     deviceLabels: model.deviceLabels,
                     yDomain: model.chartYDomain,
+                    lapBoundaries: model.lapBoundaries,
                     minHeight: chartMinHeight
                 )
+                if let lapSourceLabel = model.lapSourceLabel {
+                    Text("Lap dividers from \(lapSourceLabel)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 statsGrid(for: model)
                 coverageSection(for: model)
                 deviceFactsSection(for: model)

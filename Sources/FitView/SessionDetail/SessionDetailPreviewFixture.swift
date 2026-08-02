@@ -6,7 +6,7 @@ import Foundation
 /// sample corpus can't — it has 16 files across 8 complete date pairs, so
 /// none of them are actually skipped. Runs the real grouping/agreement
 /// pipeline (not hand-built `BatchAgreement` objects) over made-up records,
-/// so it exercises the same code path `SampleBatchLoader` does.
+/// so it exercises the same code path `BatchBuilder` does.
 enum SessionDetailPreviewFixture {
     static func makeBatch() -> LoadedBatch {
         func record(_ secondOffset: Int, heartRate: Int) -> FitRecord {

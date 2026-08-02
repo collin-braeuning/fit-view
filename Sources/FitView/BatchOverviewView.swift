@@ -1,5 +1,6 @@
 import FitViewCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Which presentation to use for the batch overview. `Table` collapses to a
 /// single visible column below `horizontalSizeClass == .regular` (iPhone,
@@ -24,6 +25,28 @@ struct BatchOverviewView: View {
     @State private var model: BatchOverviewModel?
     @State private var loadError: String?
     @State private var selectedSessionId: String?
+    @State private var isPresentingImportSheet = false
+    @State private var isPresentingDeviceAliasSheet = false
+    @State private var isPresentingSyncSheet = false
+    /// Owns the folder-sync configuration (bookmark, remote folder) for the
+    /// view's lifetime — a single instance so choosing a folder in one
+    /// `SyncView` presentation is still remembered the next time it's opened
+    /// without a relaunch.
+    @State private var syncStore = FolderSyncStore()
+    /// Owns the currently in-flight import, if any — a single instance for
+    /// the view's lifetime so a new import (or dismissing the sheet) can
+    /// cancel whatever's already running, per `overview.md` §11's
+    /// atomic-batch rule.
+    @State private var importCoordinator = ImportCoordinator()
+    /// The single on-disk store every batch load and import writes through —
+    /// created once in `.task` and held for the view's lifetime so the import
+    /// sheet and the device-alias sheet share the exact same instance the
+    /// initial load used, rather than each opening its own handle onto the
+    /// same manifest.
+    @State private var store: (any LibraryStore)?
+    #if os(macOS)
+    @State private var isDropTargeted = false
+    #endif
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -65,8 +88,10 @@ struct BatchOverviewView: View {
         }
         .task {
             do {
+                let store = try FileSystemLibraryStore(rootURL: FileSystemLibraryStore.defaultRootURL())
+                self.store = store
                 let loaded = try await Task.detached(priority: .userInitiated) {
-                    try SampleBatchLoader.load()
+                    try await BatchBuilder.load(store: store)
                 }.value
                 batch = loaded
                 model = BatchOverviewModel(agreement: loaded.agreement)
@@ -74,7 +99,116 @@ struct BatchOverviewView: View {
                 loadError = String(describing: error)
             }
         }
+        .toolbar {
+            ToolbarItem {
+                Button {
+                    isPresentingSyncSheet = true
+                } label: {
+                    Label("Sync", systemImage: "arrow.triangle.2.circlepath.icloud")
+                }
+                .disabled(store == nil)
+            }
+            ToolbarItem {
+                Button {
+                    isPresentingDeviceAliasSheet = true
+                } label: {
+                    Label("Devices", systemImage: "gearshape")
+                }
+                .disabled(store == nil || model == nil)
+            }
+            ToolbarItem {
+                Button {
+                    isPresentingImportSheet = true
+                } label: {
+                    Label("Import", systemImage: "square.and.arrow.down")
+                }
+                .disabled(store == nil)
+            }
+        }
+        .sheet(isPresented: $isPresentingImportSheet) {
+            if let store {
+                ImportSheet(coordinator: importCoordinator, store: store) {
+                    Task { await reloadBatch(store: store) }
+                }
+            }
+        }
+        .sheet(isPresented: $isPresentingDeviceAliasSheet) {
+            if let store, let batch {
+                DeviceAliasSheet(store: store, devices: batch.grouping.devices) {
+                    Task { await reloadBatch(store: store) }
+                }
+            }
+        }
+        .sheet(isPresented: $isPresentingSyncSheet) {
+            if let store {
+                SyncView(syncStore: syncStore, libraryStore: store) {
+                    Task { await reloadBatch(store: store) }
+                }
+            }
+        }
+        #if os(macOS)
+        .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
+            handleDrop(providers: providers)
+        }
+        .overlay {
+            if isDropTargeted {
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(.tint, lineWidth: 3)
+                    .padding(8)
+                    .allowsHitTesting(false)
+            }
+        }
+        #endif
     }
+
+    /// Rebuilds the batch from `store` outright — the atomic-batch rule from
+    /// `overview.md` §11: a new load replaces, it never merges with what was
+    /// there before. Reloading from the store (rather than assembling
+    /// whatever files an import happened to produce in memory) is what keeps
+    /// the on-screen batch and the on-disk library from ever diverging: the
+    /// store is the only path a batch is ever built from.
+    private func reloadBatch(store: some LibraryStore) async {
+        do {
+            let loaded = try await Task.detached(priority: .userInitiated) {
+                try await BatchBuilder.load(store: store)
+            }.value
+            batch = loaded
+            model = BatchOverviewModel(agreement: loaded.agreement)
+            loadError = nil
+        } catch {
+            loadError = String(describing: error)
+        }
+    }
+
+    #if os(macOS)
+    /// macOS drag-and-drop onto the overview — the same import path as
+    /// picking "Files" from the toolbar sheet, just skipping the picker UI.
+    private func handleDrop(providers: [NSItemProvider]) -> Bool {
+        guard !providers.isEmpty, let store else { return false }
+        Task {
+            var urls: [URL] = []
+            for provider in providers {
+                guard
+                    let item = try? await provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil),
+                    let data = item as? Data,
+                    let url = URL(dataRepresentation: data, relativeTo: nil)
+                else { continue }
+                urls.append(url)
+            }
+            guard !urls.isEmpty else { return }
+
+            let source = FileImportSource()
+            await source.setSelection(urls)
+            let candidates = (try? await source.listAvailable()) ?? []
+            guard !candidates.isEmpty else { return }
+
+            if await importCoordinator.startImport(from: source, candidates: candidates, store: store) != nil {
+                await reloadBatch(store: store)
+            }
+        }
+        return true
+    }
+    #endif
 
     @ViewBuilder
     private func content(for model: BatchOverviewModel) -> some View {

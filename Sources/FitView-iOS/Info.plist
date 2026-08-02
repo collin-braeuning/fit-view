@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundleDisplayName</key>
+	<string>FitView</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<!-- Registered so ASWebAuthenticationSession can round-trip back into the
+	     app after Polar's OAuth consent screen. Must match the redirect URI
+	     registered in the Polar admin console and PolarAPIClient.redirectURI. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.fitview.app.polar</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fitview</string>
+			</array>
+		</dict>
+	</array>
+	<!-- Populated from Secrets.xcconfig (untracked — see
+	     Secrets.xcconfig.template) via build-setting substitution. Left as
+	     literal placeholder text if Secrets.xcconfig hasn't been filled in,
+	     which PolarConfiguration.isConfigured treats as "not configured". -->
+	<key>PolarClientID</key>
+	<string>$(POLAR_CLIENT_ID)</string>
+	<key>PolarClientSecret</key>
+	<string>$(POLAR_CLIENT_SECRET)</string>
+</dict>
+</plist>
