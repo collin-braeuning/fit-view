@@ -17,20 +17,7 @@ struct SessionCard: View {
         VStack(alignment: .leading, spacing: 10) {
             header
             headline
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .top) {
-                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
-                    Spacer()
-                    matchedTile(alignment: .trailing)
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
-                    matchedTile(alignment: .leading)
-                }
-            }
-            Text(row.coverageSummary)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            primaryStats
 
             if isExpanded {
                 VStack(alignment: .leading, spacing: 10) {
@@ -86,29 +73,54 @@ struct SessionCard: View {
         }
     }
 
+    /// Bias, LoA, and Max |Diff| — the numbers a glance at the card should
+    /// lead with, alongside Mean |Diff| in the headline row. Matched-seconds
+    /// and per-device coverage percentages are secondary (how much data
+    /// backs the numbers, not the numbers themselves), so they live in
+    /// `expandedContent` instead.
     @ViewBuilder
-    private var expandedContent: some View {
-        VStack(alignment: .leading, spacing: 10) {
+    private var primaryStats: some View {
+        VStack(alignment: .leading, spacing: 8) {
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top) {
+                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
+                    Spacer()
                     if let bias = row.bias {
                         detailTile(label: "Bias", value: bias.text, level: bias.level)
-                    }
-                    Spacer()
-                    if let loaText = row.loaText {
-                        detailTile(label: "95% LoA", value: loaText, level: nil)
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
+                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
                     if let bias = row.bias {
                         detailTile(label: "Bias", value: bias.text, level: bias.level)
                     }
+                }
+            }
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top) {
                     if let loaText = row.loaText {
                         detailTile(label: "95% LoA", value: loaText, level: nil)
                     }
+                    Spacer()
+                    detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    if let loaText = row.loaText {
+                        detailTile(label: "95% LoA", value: loaText, level: nil)
+                    }
+                    detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
                 }
             }
-            detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
+        }
+    }
+
+    @ViewBuilder
+    private var expandedContent: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            matchedTile(alignment: .leading)
+            Text(row.coverageSummary)
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             // The own-seconds/span-seconds auto-pause diagnostic from
             // overview.md §7 — not in the Mac table today, and cheap to add
