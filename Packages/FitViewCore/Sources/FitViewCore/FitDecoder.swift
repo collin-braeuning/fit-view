@@ -1,4 +1,4 @@
-import FITSwiftSDK
+import FitFileParser
 import Foundation
 
 /// Errors surfaced when turning raw `.fit` bytes into ``ParsedFitFile``/``LoadedFile``.
@@ -9,32 +9,59 @@ public enum FitDecodingError: Error, Sendable, Equatable {
 
 /// Decode raw `.fit` bytes into the app's domain model.
 ///
-/// FIT files stream flat messages in chronological order; this reconstructs the
-/// cascade-mode nesting `fit-file-parser` used to provide on the web — every
-/// `record` since the previous `lap` belongs to that lap, and every `lap` since
-/// the previous `session` belongs to that session.
+/// Backed by `FitFileParser`, which wraps Garmin's official C SDK. The previous
+/// pure-Swift `FITSwiftSDK` decoded the same 16-file corpus in 5.9s (Debug) /
+/// 671ms (Release) across a task group; this does it in 307ms / 98ms — the
+/// difference being that the hot loop is optimised C regardless of the build
+/// configuration Swift code is compiled with, which is what made a Debug build
+/// (Xcode's default) an order of magnitude worse rather than the usual 2-3x.
+///
+/// `FitFileParser` hands back a flat, file-ordered message list rather than the
+/// cascade nesting the web's `fit-file-parser` provided, so the `session` ->
+/// `lap` -> `record` hierarchy is rebuilt here by timestamp window (see
+/// ``distribute(records:into:)``).
 public func decodeFitFile(data: Data) throws -> ParsedFitFile {
-    let stream = FITSwiftSDK.InputStream(data: data)
-    let decoder = FITSwiftSDK.Decoder(stream: stream)
-    let collector = FitMesgCollector()
-    let broadcaster = MesgBroadcaster()
-    broadcaster.addListener(collector as RecordMesgListener)
-    broadcaster.addListener(collector as LapMesgListener)
-    broadcaster.addListener(collector as SessionMesgListener)
-    broadcaster.addListener(collector as UserProfileMesgListener)
-    decoder.addMesgListener(broadcaster)
+    // `.fast` explicitly, not just by default: `.generic` crashes outright
+    // ("Not enough bits to represent the passed value") on this app's own
+    // sample corpus, and nothing here needs the extra field coverage it buys.
+    let fit = FitFile(data: data, parsingType: .fast)
 
-    do {
-        try decoder.read()
-    } catch {
-        throw FitDecodingError.unreadable(underlying: String(describing: error))
+    // A well-formed FIT file always carries at least a `file_id`. An empty
+    // message list means the C SDK rejected the bytes outright — `FitFile`'s
+    // initialiser isn't failable, so this is the only signal it gives.
+    guard !fit.messages.isEmpty else {
+        throw FitDecodingError.unreadable(underlying: "no FIT messages could be read from \(data.count) bytes")
     }
 
-    guard !collector.activities.isEmpty else {
+    var activities = messages(in: fit, ofType: "session")
+        .map { makeFitActivity(from: $0.interpretedFields()) }
+        .sorted { $0.startTime < $1.startTime }
+    guard !activities.isEmpty else {
         throw FitDecodingError.noActivitySessions
     }
 
-    return ParsedFitFile(userProfile: collector.userProfile ?? FitUserProfile(), activities: collector.activities)
+    var laps = messages(in: fit, ofType: "lap")
+        .map { makeFitLap(from: $0.interpretedFields()) }
+        .sorted { $0.startTime < $1.startTime }
+    // Records stay in file order, which is chronological — both `distribute`
+    // passes below are merge-joins that depend on it.
+    let records = messages(in: fit, ofType: "record")
+        .map { makeFitRecord(from: $0.interpretedFields()) }
+
+    // Some devices write records without ever emitting a `lap`. `FitActivity`
+    // stores its samples only inside laps, so without a stand-in every record
+    // in such a file would be silently dropped.
+    if laps.isEmpty, !records.isEmpty {
+        laps = [syntheticLap(spanning: records)]
+    }
+
+    activities = distribute(laps: distribute(records: records, into: laps), into: activities)
+
+    let userProfile = messages(in: fit, ofType: "user_profile")
+        .first
+        .map { makeFitUserProfile(from: $0.interpretedFields()) }
+
+    return ParsedFitFile(userProfile: userProfile ?? FitUserProfile(), activities: activities)
 }
 
 /// Parse a `.fit` file's bytes into the app's usable shape.
@@ -46,107 +73,158 @@ public func loadFitFile(data: Data, fileName: String) throws -> LoadedFile {
     return LoadedFile(fileName: stripFileExtension(fileName), activity: parsed.activities[0])
 }
 
-/// Buffers `record`/`lap` messages as they stream in and folds them into their
-/// enclosing `lap`/`session` the moment the enclosing message arrives.
-private final class FitMesgCollector: RecordMesgListener, LapMesgListener, SessionMesgListener, UserProfileMesgListener {
-    private(set) var activities: [FitActivity] = []
-    private(set) var userProfile: FitUserProfile?
+// --- Message lookup -------------------------------------------------------
 
-    private var pendingRecords: [FitRecord] = []
-    private var pendingLaps: [FitLap] = []
-
-    func onMesg(_ mesg: RecordMesg) throws {
-        pendingRecords.append(makeFitRecord(from: mesg))
-    }
-
-    func onMesg(_ mesg: LapMesg) throws {
-        var lap = makeFitLap(from: mesg)
-        lap.records = pendingRecords
-        pendingRecords = []
-        pendingLaps.append(lap)
-    }
-
-    func onMesg(_ mesg: SessionMesg) throws {
-        var activity = makeFitActivity(from: mesg)
-        activity.laps = pendingLaps
-        pendingLaps = []
-        activities.append(activity)
-    }
-
-    func onMesg(_ mesg: UserProfileMesg) throws {
-        userProfile = makeFitUserProfile(from: mesg)
-    }
+/// Every message of a named type, in file order. Returns empty rather than
+/// trapping if the profile doesn't know the name — a missing message type is
+/// "this file has none of those", not a programmer error worth crashing over.
+private func messages(in fit: FitFile, ofType description: String) -> [FitMessage] {
+    guard let type = FitFile.messageType(forDescription: description) else { return [] }
+    return fit.messages(forMessageType: type)
 }
 
-// --- SDK message -> domain model -----------------------------------------
+// --- Hierarchy reconstruction ---------------------------------------------
+
+/// Buckets chronological `records` into `laps` by timestamp window.
+///
+/// Replaces the previous arrival-order reconstruction, which assumed records
+/// were interleaved between `lap` messages. These devices don't write that way
+/// — every `record` arrives before the first `lap` — so the first lap used to
+/// swallow the entire file and every later lap came back empty.
+///
+/// A merge-join rather than a per-record window search, so it stays O(records)
+/// and, more importantly, is *lossless*: a record falling in a gap between two
+/// laps (or before the first, or after the last) attaches to the nearest
+/// preceding lap instead of being dropped. `FitActivity.records` therefore
+/// still returns every sample, in order, exactly as before.
+private func distribute(records: [FitRecord], into laps: [FitLap]) -> [FitLap] {
+    guard !laps.isEmpty else { return laps }
+    var laps = laps
+    var index = 0
+    for record in records {
+        while index < laps.count - 1, record.timestamp > laps[index].endTime {
+            index += 1
+        }
+        laps[index].records.append(record)
+    }
+    return laps
+}
+
+/// Buckets chronological `laps` into `activities` by the same merge-join, so a
+/// multisport file's laps land in the session they belong to.
+private func distribute(laps: [FitLap], into activities: [FitActivity]) -> [FitActivity] {
+    guard !activities.isEmpty else { return activities }
+    var activities = activities
+    var index = 0
+    for lap in laps {
+        while index < activities.count - 1, lap.startTime > activities[index].endTime {
+            index += 1
+        }
+        activities[index].laps.append(lap)
+    }
+    return activities
+}
+
+/// A stand-in lap spanning every record, for files that emit no `lap` message.
+private func syntheticLap(spanning records: [FitRecord]) -> FitLap {
+    FitLap(
+        startTime: records.first?.timestamp ?? epoch,
+        endTime: records.last?.timestamp ?? epoch,
+        elapsedSeconds: 0, distance: 0,
+        avgHeartRate: 0, maxHeartRate: 0, minHeartRate: 0,
+        avgSpeed: 0, maxSpeed: 0, avgCadence: 0, maxCadence: 0,
+        totalAscent: 0, totalDescent: 0, calories: 0
+    )
+}
+
+// --- Field access ---------------------------------------------------------
+
+/// `FitFileParser` exposes every field as a string-keyed `FitFieldValue`
+/// rather than the generated typed accessors `FITSwiftSDK` had, so these
+/// keep the unit-and-optionality handling in one place instead of at every
+/// call site below.
+private extension [FitFieldKey: FitFieldValue] {
+    /// The numeric value, whether or not the profile attached a unit to it.
+    func number(_ key: FitFieldKey) -> Double? {
+        guard let field = self[key] else { return nil }
+        return field.valueUnit?.value ?? field.value
+    }
+
+    func int(_ key: FitFieldKey) -> Int? {
+        number(key).map(Int.init)
+    }
+
+    /// The first key that's present — for fields the profile names differently
+    /// per sport (`avg_running_cadence` on a run, `avg_cadence` otherwise).
+    func int(_ keys: FitFieldKey...) -> Int? {
+        keys.lazy.compactMap { int($0) }.first
+    }
+
+    func date(_ key: FitFieldKey) -> Date? { self[key]?.time }
+
+    func name(_ key: FitFieldKey) -> String? { self[key]?.name }
+}
+
+// --- Message -> domain model ----------------------------------------------
 
 private let metersPerKilometer = 1000.0
 private let kmhPerMetersPerSecond = 3.6
 private let epoch = Date(timeIntervalSince1970: 0)
 
-private func semicirclesToDegrees(_ semicircles: Int32) -> Double {
-    Double(semicircles) * (180.0 / 2_147_483_648.0)
-}
-
-private func sportName(_ sport: Sport?) -> String {
-    sport.map { String(describing: $0) } ?? "unknown"
-}
-
-private func subSportName(_ subSport: SubSport?) -> String {
-    subSport.map { String(describing: $0) } ?? "unknown"
-}
-
-private func makeFitRecord(from mesg: RecordMesg) -> FitRecord {
-    FitRecord(
-        timestamp: mesg.getTimestamp()?.date ?? epoch,
-        heartRate: mesg.getHeartRate().map(Int.init),
-        speed: mesg.getSpeed().map { $0 * kmhPerMetersPerSecond },
-        cadence: mesg.getCadence().map(Int.init),
-        altitude: mesg.getAltitude(),
-        power: mesg.getPower().map(Int.init),
-        distance: mesg.getDistance().map { $0 / metersPerKilometer },
-        positionLat: mesg.getPositionLat().map(semicirclesToDegrees),
-        positionLong: mesg.getPositionLong().map(semicirclesToDegrees)
+private func makeFitRecord(from fields: [FitFieldKey: FitFieldValue]) -> FitRecord {
+    // Already degrees: `FitFileParser` folds `position_lat`/`position_long`
+    // into one `position` coordinate and converts out of semicircles itself.
+    let position = fields["position"]?.coordinate
+    return FitRecord(
+        timestamp: fields.date("timestamp") ?? epoch,
+        heartRate: fields.int("heart_rate"),
+        speed: fields.number("speed").map { $0 * kmhPerMetersPerSecond },
+        cadence: fields.int("cadence"),
+        altitude: fields.number("altitude"),
+        power: fields.int("power"),
+        distance: fields.number("distance").map { $0 / metersPerKilometer },
+        positionLat: position?.latitude,
+        positionLong: position?.longitude
     )
 }
 
-private func makeFitLap(from mesg: LapMesg) -> FitLap {
+private func makeFitLap(from fields: [FitFieldKey: FitFieldValue]) -> FitLap {
     FitLap(
-        startTime: mesg.getStartTime()?.date ?? epoch,
-        endTime: mesg.getTimestamp()?.date ?? epoch,
-        elapsedSeconds: mesg.getTotalElapsedTime() ?? 0,
-        distance: (mesg.getTotalDistance() ?? 0) / metersPerKilometer,
-        avgHeartRate: Int(mesg.getAvgHeartRate() ?? 0),
-        maxHeartRate: Int(mesg.getMaxHeartRate() ?? 0),
-        minHeartRate: Int(mesg.getMinHeartRate() ?? 0),
-        avgSpeed: (mesg.getAvgSpeed() ?? 0) * kmhPerMetersPerSecond,
-        maxSpeed: (mesg.getMaxSpeed() ?? 0) * kmhPerMetersPerSecond,
-        avgCadence: Int(mesg.getAvgCadence() ?? 0),
-        maxCadence: Int(mesg.getMaxCadence() ?? 0),
-        totalAscent: Double(mesg.getTotalAscent() ?? 0),
-        totalDescent: Double(mesg.getTotalDescent() ?? 0),
-        avgPower: mesg.getAvgPower().map(Int.init),
-        maxPower: mesg.getMaxPower().map(Int.init),
-        calories: Double(mesg.getTotalCalories() ?? 0)
+        startTime: fields.date("start_time") ?? epoch,
+        endTime: fields.date("timestamp") ?? epoch,
+        elapsedSeconds: fields.number("total_elapsed_time") ?? 0,
+        distance: (fields.number("total_distance") ?? 0) / metersPerKilometer,
+        avgHeartRate: fields.int("avg_heart_rate") ?? 0,
+        maxHeartRate: fields.int("max_heart_rate") ?? 0,
+        minHeartRate: fields.int("min_heart_rate") ?? 0,
+        avgSpeed: (fields.number("avg_speed") ?? 0) * kmhPerMetersPerSecond,
+        maxSpeed: (fields.number("max_speed") ?? 0) * kmhPerMetersPerSecond,
+        avgCadence: fields.int("avg_running_cadence", "avg_cadence") ?? 0,
+        maxCadence: fields.int("max_running_cadence", "max_cadence") ?? 0,
+        totalAscent: fields.number("total_ascent") ?? 0,
+        totalDescent: fields.number("total_descent") ?? 0,
+        avgPower: fields.int("avg_power"),
+        maxPower: fields.int("max_power"),
+        calories: fields.number("total_calories") ?? 0
     )
 }
 
-private func makeFitActivity(from mesg: SessionMesg) -> FitActivity {
+private func makeFitActivity(from fields: [FitFieldKey: FitFieldValue]) -> FitActivity {
     FitActivity(
-        sport: sportName(mesg.getSport()),
-        subSport: subSportName(mesg.getSubSport()),
-        startTime: mesg.getStartTime()?.date ?? epoch,
-        endTime: mesg.getTimestamp()?.date ?? epoch,
-        avgHeartRate: Int(mesg.getAvgHeartRate() ?? 0),
-        maxHeartRate: Int(mesg.getMaxHeartRate() ?? 0)
+        sport: fields.name("sport") ?? "unknown",
+        subSport: fields.name("sub_sport") ?? "unknown",
+        startTime: fields.date("start_time") ?? epoch,
+        endTime: fields.date("timestamp") ?? epoch,
+        avgHeartRate: fields.int("avg_heart_rate") ?? 0,
+        maxHeartRate: fields.int("max_heart_rate") ?? 0
     )
 }
 
-private func makeFitUserProfile(from mesg: UserProfileMesg) -> FitUserProfile {
+private func makeFitUserProfile(from fields: [FitFieldKey: FitFieldValue]) -> FitUserProfile {
     FitUserProfile(
-        friendlyName: mesg.getFriendlyName(),
-        weight: mesg.getWeight(),
-        gender: mesg.getGender().map { String(describing: $0) },
-        restingHeartRate: mesg.getRestingHeartRate().map(Int.init)
+        friendlyName: fields.name("friendly_name"),
+        weight: fields.number("weight"),
+        gender: fields.name("gender"),
+        restingHeartRate: fields.int("resting_heart_rate")
     )
 }

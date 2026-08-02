@@ -1,22 +1,13 @@
 {
-  "originHash" : "d06df412eca5df2c14726e26aec7af51d7f925000ae0134254bcab05077f94cf",
+  "originHash" : "cf341b4f81625a658e0d4bca56d5f9439cde13cfba388bb1cab371aa2fb679c0",
   "pins" : [
     {
-      "identity" : "fit-swift-sdk",
+      "identity" : "fitfileparser",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/garmin/fit-swift-sdk.git",
+      "location" : "https://github.com/roznet/FitFileParser.git",
       "state" : {
-        "revision" : "c63062e86c241772e303f6d9f61a7be0e8a839cb",
-        "version" : "21.205.0"
-      }
-    },
-    {
-      "identity" : "swift-collections",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-collections.git",
-      "state" : {
-        "revision" : "8c0c0a8b49e080e54e5e328cc552821ff07cd341",
-        "version" : "1.2.1"
+        "revision" : "afcdf1677d89819f305f7714bb3b6a18dca05cc6",
+        "version" : "1.5.2"
       }
     }
   ],
