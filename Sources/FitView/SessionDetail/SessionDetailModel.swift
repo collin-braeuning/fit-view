@@ -44,6 +44,14 @@ struct SessionDetailModel {
 
     var chartPoints: [HeartRatePoint]
     var chartYDomain: ClosedRange<Double>
+    /// Where to draw lap divider lines on the chart, bucketed to whole seconds
+    /// so they land on the same axis as `chartPoints`. Interior boundaries
+    /// only — the first lap starts at the chart's left edge, where a rule would
+    /// just double the plot border.
+    var lapBoundaries: [Date]
+    /// The device `lapBoundaries` came from, for the chart's caption. Nil when
+    /// no device in this session recorded more than one lap.
+    var lapSourceLabel: String?
 
     /// Non-nil for a normal session; nil for a skipped one.
     var agreement: SessionAgreement?
@@ -80,6 +88,7 @@ struct SessionDetailModel {
         var devices: [DeviceRecords] = []
         var labels: [String] = []
         var facts: [DeviceFacts] = []
+        var lapsByDevice: [(label: String, laps: [FitLap])] = []
         for deviceKey in orderedDeviceKeys {
             guard let sessionFile = session.filesByDeviceKey[deviceKey],
                   let loaded = batch.filesByName[sessionFile.fileName]
@@ -88,6 +97,7 @@ struct SessionDetailModel {
             let label = batch.deviceLabels[deviceKey] ?? deviceKey
             devices.append(DeviceRecords(deviceKey: deviceKey, records: loaded.activity.records))
             labels.append(label)
+            lapsByDevice.append((label: label, laps: loaded.activity.laps))
             facts.append(DeviceFacts(
                 label: label,
                 fileName: loaded.fileName,
@@ -102,6 +112,27 @@ struct SessionDetailModel {
         }
         deviceLabels = labels
         deviceFacts = facts
+
+        // Lap lines come from one device, not both. The two devices lap
+        // independently — polarSense writes a single lap spanning the entire
+        // run, pace4 auto-laps every kilometre — so overlaying both would mean
+        // drawing one meaningless rule at the start on top of the real
+        // divisions. Most laps wins, which picks the device that actually
+        // recorded them. `lapsByDevice` is built in [primary, secondary]
+        // order and the comparison is strict, so a tie keeps the primary and
+        // the choice can't flip between loads (same reasoning as the
+        // deterministic device ranking in `groupActivities`).
+        var lapSource: (label: String, laps: [FitLap])?
+        for candidate in lapsByDevice where candidate.laps.count > (lapSource?.laps.count ?? 0) {
+            lapSource = candidate
+        }
+        let boundaries = (lapSource?.laps ?? [])
+            .map(\.startTime)
+            .sorted()
+            .dropFirst()
+            .map { Date(timeIntervalSince1970: Double(secondBucket(for: $0))) }
+        lapBoundaries = boundaries
+        lapSourceLabel = boundaries.isEmpty ? nil : lapSource?.label
 
         let timeline = buildComparisonTimeline(devices)
 
