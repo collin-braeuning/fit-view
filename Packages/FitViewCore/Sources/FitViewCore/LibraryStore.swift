@@ -102,10 +102,19 @@ public enum LibraryStoreError: Error, Sendable, Equatable {
 ///
 /// Blobs are the source of truth; nothing here caches a decoded
 /// `FitActivity` — `loadFitFile` re-decodes `data(for:)`'s bytes on every
-/// launch. `overview.md` §8 measures the whole 14-file reference corpus at
-/// ~323ms in Node, comfortably under a second natively across a task group,
-/// so a decoded-record cache buys little today and costs an invalidation
+/// launch. That's now measured rather than assumed: the whole 16-file sample
+/// corpus decodes in ~300ms (Debug) / ~115ms (Release) across a task group,
+/// so a decoded-record cache still buys little and would cost an invalidation
 /// problem — deliberately not built here.
+///
+/// It was a much closer call under the previous pure-Swift `FITSwiftSDK`,
+/// where the same corpus took ~5.9s in a Debug build and a content-addressed
+/// `derived/<sha256>.json` cache was the obvious fix. Switching to
+/// `FitFileParser` (see `FitDecoder.swift`) removed the need. If decode ever
+/// creeps back up — a much larger library, a slower device — that cache is
+/// the answer, and content addressing makes it cheap: a blob id can never
+/// refer to two different byte sequences, so a decode result keyed by blobId
+/// can never go stale.
 public protocol LibraryStore: Sendable {
     /// Every item currently in the library, with device aliases already
     /// resolved. No ordering is guaranteed — callers that care (batch
@@ -114,6 +123,15 @@ public protocol LibraryStore: Sendable {
     /// The raw `.fit` bytes for one item, re-fetched from `blobs/` every call
     /// — see the no-cache note on the protocol itself.
     func data(for itemId: String) async throws -> Data
+    /// The raw `.fit` bytes for several items at once, keyed by item id.
+    /// Behaviorally equivalent to calling `data(for:)` once per id — same
+    /// per-item `LibraryStoreError.itemNotFound` if any id is stale — but
+    /// gives a conforming store the chance to look up all of them against
+    /// one read of its index instead of one per item, since a caller
+    /// decoding a whole batch (`BatchBuilder.load`) otherwise turns "read the
+    /// index" into an O(items) cost paid serially before decoding even
+    /// starts.
+    func data(for itemIds: [String]) async throws -> [String: Data]
     /// Adds an imported activity, writing its bytes to a content-addressed
     /// blob (a no-op if that exact content is already stored) and appending
     /// an entry to the manifest. Returns the new `LibraryItem`, alias-resolved

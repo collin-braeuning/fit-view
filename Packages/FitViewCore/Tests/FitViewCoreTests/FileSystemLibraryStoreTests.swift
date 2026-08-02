@@ -60,6 +60,34 @@ struct FileSystemLibraryStoreTests {
         }
     }
 
+    @Test("bulk data(for:) returns every item's bytes keyed by id, same as fetching each one individually")
+    func bulkDataFetchMatchesPerItemFetch() async throws {
+        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let first = try await store.add(ImportedActivity(
+            candidate: makeCandidate(suggestedName: "2026-07-23_pace4_run"), data: Data("first".utf8), source: "files"
+        ))
+        let second = try await store.add(ImportedActivity(
+            candidate: makeCandidate(suggestedName: "2026-07-25_polarSense_run"), data: Data("second".utf8), source: "files"
+        ))
+
+        let byId = try await store.data(for: [first.id, second.id])
+
+        #expect(byId[first.id] == Data("first".utf8))
+        #expect(byId[second.id] == Data("second".utf8))
+    }
+
+    @Test("bulk data(for:) reports itemNotFound if any requested id is stale, same as the single-item form")
+    func bulkDataFetchThrowsOnAnyMissingId() async throws {
+        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let added = try await store.add(ImportedActivity(
+            candidate: makeCandidate(), data: Data("fake fit bytes".utf8), source: "files"
+        ))
+
+        await #expect(throws: LibraryStoreError.itemNotFound(itemId: "nonexistent")) {
+            _ = try await store.data(for: [added.id, "nonexistent"])
+        }
+    }
+
     @Test("identical bytes imported twice collapse onto one blob")
     func duplicateBytesCollapseOntoOneBlob() async throws {
         let root = try makeTempRoot()

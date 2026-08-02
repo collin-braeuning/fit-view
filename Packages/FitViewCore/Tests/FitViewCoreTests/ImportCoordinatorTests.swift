@@ -38,6 +38,9 @@ private actor FakeLibraryStore: LibraryStore {
 
     func allItems() async throws -> [LibraryItem] { [] }
     func data(for itemId: String) async throws -> Data { Data() }
+    func data(for itemIds: [String]) async throws -> [String: Data] {
+        Dictionary(uniqueKeysWithValues: itemIds.map { ($0, Data()) })
+    }
     func deviceAliases() async throws -> [String: String] { [:] }
     func addRawItem(_ item: LibraryItem, data: Data) async throws {}
     func remove(itemId: String) async throws {}

@@ -47,6 +47,18 @@ public actor FileSystemLibraryStore: LibraryStore {
         return try Data(contentsOf: blobURL(for: item.blobId))
     }
 
+    public func data(for itemIds: [String]) async throws -> [String: Data] {
+        let manifest = try loadManifest()
+        var byId: [String: Data] = [:]
+        for itemId in itemIds {
+            guard let item = manifest.items.first(where: { $0.id == itemId }) else {
+                throw LibraryStoreError.itemNotFound(itemId: itemId)
+            }
+            byId[itemId] = try Data(contentsOf: blobURL(for: item.blobId))
+        }
+        return byId
+    }
+
     @discardableResult
     public func add(_ activity: ImportedActivity) async throws -> LibraryItem {
         let blobId = Self.sha256Hex(activity.data)
