@@ -28,6 +28,14 @@ struct HeartRateComparisonChart: View {
     /// dividers behind the traces. See `SessionDetailModel.lapBoundaries`.
     var lapBoundaries: [Date] = []
     var minHeight: CGFloat = 240
+    /// Whether the scrub tooltip must stay within the chart's own bounds
+    /// vertically. Embedded in the scrollable session page, the chart is
+    /// compact and there's page content above it, so letting the tooltip
+    /// overflow above the plot (the default) looks better than squeezing it
+    /// inside a short chart. Full-screen, there's nothing above the chart to
+    /// overflow into — off the top edge there just means off the screen —
+    /// so that presentation opts into constraining it.
+    var constrainsTooltipToChart: Bool = false
 
     /// Drag/hover position while scrubbing, in chart-plot coordinates. Nil
     /// when nothing is being scrubbed.
@@ -109,13 +117,15 @@ struct HeartRateComparisonChart: View {
                     position: .top,
                     alignment: .leading,
                     spacing: 8,
-                    // Keeps the tooltip from overflowing the chart's right
-                    // edge as the cursor nears it — an overflowing
-                    // annotation isn't clipped, so without this the chart's
-                    // natural layout size (and with it the plotted timeline)
-                    // grows to fit it, making the axis look like it extends
-                    // past the actual data.
-                    overflowResolution: AnnotationOverflowResolution(x: .fit(to: .chart), y: .disabled)
+                    // x is always kept within the chart's bounds — without
+                    // it, an overflowing annotation isn't clipped, so it
+                    // grows the chart's natural layout size, making the
+                    // x-axis look like it extends past the actual data.
+                    // y is caller-controlled: see `constrainsTooltipToChart`.
+                    overflowResolution: AnnotationOverflowResolution(
+                        x: .fit(to: .chart),
+                        y: constrainsTooltipToChart ? .fit(to: .chart) : .disabled
+                    )
                 ) {
                     scrubTooltip
                 }
@@ -172,6 +182,11 @@ struct HeartRateComparisonChart: View {
         .padding(8)
         .background(.background, in: RoundedRectangle(cornerRadius: 8))
         .shadow(radius: 2)
+        // Annotation alignment is .leading, which pins this view's leading
+        // edge exactly at the cursor's x-position — `spacing:` on the
+        // annotation only offsets vertically (position: .top), so this is
+        // the only way to keep the card off the scrubbed point horizontally.
+        .padding(.leading, 12)
     }
 
     var body: some View {

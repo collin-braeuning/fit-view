@@ -6,6 +6,7 @@ struct SessionDetailView: View {
     let sessionId: String
 
     @State private var model: SessionDetailModel?
+    @State private var isPresentingFullScreenChart = false
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -44,6 +45,9 @@ struct SessionDetailView: View {
                     lapBoundaries: model.lapBoundaries,
                     minHeight: chartMinHeight
                 )
+                .overlay(alignment: .topTrailing) {
+                    expandChartButton
+                }
                 if let lapSourceLabel = model.lapSourceLabel {
                     Text("Lap dividers from \(lapSourceLabel)")
                         .font(.caption)
@@ -59,6 +63,39 @@ struct SessionDetailView: View {
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
+        #if os(iOS)
+        .fullScreenCover(isPresented: $isPresentingFullScreenChart) {
+            fullScreenChart(for: model)
+        }
+        #else
+        .sheet(isPresented: $isPresentingFullScreenChart) {
+            fullScreenChart(for: model)
+                .frame(minWidth: 700, minHeight: 420)
+        }
+        #endif
+    }
+
+    private var expandChartButton: some View {
+        Button {
+            isPresentingFullScreenChart = true
+        } label: {
+            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                .font(.caption)
+                .padding(6)
+                .background(.background.secondary, in: Circle())
+        }
+        .buttonStyle(.plain)
+        .padding(6)
+        .accessibilityLabel("Expand chart")
+    }
+
+    private func fullScreenChart(for model: SessionDetailModel) -> some View {
+        FullScreenHeartRateChartView(
+            points: model.chartPoints,
+            deviceLabels: model.deviceLabels,
+            yDomain: model.chartYDomain,
+            lapBoundaries: model.lapBoundaries
+        )
     }
 
     private func header(for model: SessionDetailModel) -> some View {
