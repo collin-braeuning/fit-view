@@ -14,7 +14,9 @@ struct BatchOverviewModel {
 
     init(agreement: BatchAgreement) {
         title = "\(agreement.primaryName) vs \(agreement.secondaryName)"
-        rows = agreement.sessions.map { SessionRow(session: $0, agreement: agreement) }
+        rows = agreement.sessions
+            .map { SessionRow(session: $0, agreement: agreement) }
+            .sorted { $0.date > $1.date }
         skipped = agreement.skipped.map { SkippedRow(skipped: $0) }
     }
 }
