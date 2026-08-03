@@ -64,6 +64,9 @@ final class AppModel {
     /// opening a second handle onto the same manifest.
     private var storesByMode: [DataSourceMode: any LibraryStore] = [:]
     private var lastScanFinishedAt: Date?
+    /// Set when a rescan is requested while one is already running, so it
+    /// isn't silently dropped — see `scanFolder`.
+    private var rescanQueued = false
 
     private static let dataSourceKey = "FitView.dataSource"
     /// How recently a scan must have run for the next automatic one to be
@@ -72,7 +75,7 @@ final class AppModel {
     /// back is pure waste. "Scan Now" bypasses it.
     private static let rescanDebounce: TimeInterval = 2
 
-    init(defaults: UserDefaults = .standard) {
+    init(defaults: UserDefaults = AppGroup.defaults) {
         self.defaults = defaults
         let watchedFolder = WatchedFolderSource(defaults: defaults)
         self.watchedFolder = watchedFolder
@@ -125,6 +128,34 @@ final class AppModel {
         } catch {
             loadError = String(describing: error)
         }
+    }
+
+    // MARK: - Deletion
+
+    /// Removes every device file backing `session` from the library and
+    /// reloads the batch. `session.filesByDeviceKey`'s values carry
+    /// `LibraryItem.id` for a store-backed batch — `BatchAssembler` builds
+    /// each session's descriptors with `id: item.id` — so this deletes
+    /// exactly the files making up this one (date, activity) session and
+    /// nothing else.
+    ///
+    /// Every removal is attempted even if an earlier one fails, and the batch
+    /// is always reloaded afterward, so the UI reflects whatever actually
+    /// happened on disk rather than stopping partway through. Returns the
+    /// first error encountered, if any.
+    @discardableResult
+    func deleteSession(_ session: ActivitySession) async -> String? {
+        guard let store else { return "No library open." }
+        var firstError: String?
+        for file in session.filesByDeviceKey.values {
+            do {
+                try await store.remove(itemId: file.fileName)
+            } catch {
+                if firstError == nil { firstError = String(describing: error) }
+            }
+        }
+        await reload()
+        return firstError
     }
 
     private func loadBatch(store: some LibraryStore, mode: DataSourceMode) async throws {
@@ -199,7 +230,17 @@ final class AppModel {
     }
 
     private func scanFolder(store: some LibraryStore, force: Bool, reloadIfChanged: Bool) async {
-        guard watchedFolder.isConfigured, !isScanning else { return }
+        guard watchedFolder.isConfigured else { return }
+        guard !isScanning else {
+            // Don't drop this request on the floor — a share extension can
+            // write a new file while a scan triggered moments earlier is
+            // still waiting on iCloud materialization (up to 15s), and
+            // without this the card list would stay stale until the next
+            // foreground event or a full relaunch, since nothing else would
+            // ever trigger the rescan that new file needs.
+            rescanQueued = true
+            return
+        }
         if !force, let lastScanFinishedAt,
            Date().timeIntervalSince(lastScanFinishedAt) < Self.rescanDebounce {
             return
@@ -224,6 +265,13 @@ final class AppModel {
             }
         } catch {
             folderError = describeFolderError(error)
+        }
+
+        if rescanQueued {
+            rescanQueued = false
+            // `force: true` — a request that arrived mid-scan must not then
+            // be swallowed by the debounce too.
+            await scanFolder(store: store, force: true, reloadIfChanged: reloadIfChanged)
         }
     }
 

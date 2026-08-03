@@ -78,7 +78,11 @@ public func loadFitFile(data: Data, fileName: String) throws -> LoadedFile {
 /// Every message of a named type, in file order. Returns empty rather than
 /// trapping if the profile doesn't know the name — a missing message type is
 /// "this file has none of those", not a programmer error worth crashing over.
-private func messages(in fit: FitFile, ofType description: String) -> [FitMessage] {
+///
+/// Not `private` — `SharedActivityMetadata.swift` reuses it for
+/// `file_id`/`device_info`, the one other place in this module that needs to
+/// look up FIT messages by type.
+func messages(in fit: FitFile, ofType description: String) -> [FitMessage] {
     guard let type = FitFile.messageType(forDescription: description) else { return [] }
     return fit.messages(forMessageType: type)
 }
@@ -143,7 +147,9 @@ private func syntheticLap(spanning records: [FitRecord]) -> FitLap {
 /// rather than the generated typed accessors `FITSwiftSDK` had, so these
 /// keep the unit-and-optionality handling in one place instead of at every
 /// call site below.
-private extension [FitFieldKey: FitFieldValue] {
+///
+/// Not `private` — `.name(_:)` is reused by `SharedActivityMetadata.swift`.
+extension [FitFieldKey: FitFieldValue] {
     /// The numeric value, whether or not the profile attached a unit to it.
     func number(_ key: FitFieldKey) -> Double? {
         guard let field = self[key] else { return nil }

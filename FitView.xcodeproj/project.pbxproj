@@ -14,6 +14,7 @@
 		0A008DA3F50D885D7F5DDEDE /* 2026-07-24_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */; };
 		0A476D14854D15AD7C1DCBC5 /* PolarAccessLinkSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */; };
 		0F94CD109B3B7CE55CF4308D /* SessionDetailPreviewFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */; };
+		1138B22A54FF8408A8AC1F69 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = C53564CABEE0EF227C839435 /* FitViewCore */; };
 		11DB0904DA81C2499F8F503F /* 2026-07-28_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */; };
 		137A9895FF49A1E5907F70C2 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBB05856B8F40A606A0377B /* SessionDetailView.swift */; };
 		13956237C4ADF5BC0D8AFEC8 /* FileImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B51F5A38FDA84472FE20F9 /* FileImportSource.swift */; };
@@ -28,6 +29,7 @@
 		296D84F5D89039E64F0E2778 /* FileImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B51F5A38FDA84472FE20F9 /* FileImportSource.swift */; };
 		2CFDED03C1F3B48A5BC39455 /* DeviceAliasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */; };
 		2EECF90FC75AEDDA6FE8FED2 /* PolarAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E70098EDEF6B3DD1A7E03EE5 /* PolarAPIClient.swift */; };
+		34444929FDD7EDC5D8CFED4C /* ShareEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C159DD253A36EBC7D725AEC /* ShareEditView.swift */; };
 		3563CCD67ACB2B055D40223B /* 2026-07-25_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */; };
 		36AE9B8A5AA9116E3503C165 /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
 		3807329AA3EC621075742BE7 /* 2026-07-28_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */; };
@@ -42,6 +44,7 @@
 		4B44160D8472BF5CBF2486D8 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 66F0FBBB1428C87F899106CD /* FitViewCore */; };
 		4B5E0522DB6E69CFBDD34ED9 /* DeviceAliasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */; };
 		4CF26FE326797757D63DD0F3 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
+		54AAD6688D91BD6A67272DFE /* ShareEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C159DD253A36EBC7D725AEC /* ShareEditView.swift */; };
 		54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
 		559CE02066E90B65987D20DB /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
 		585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
@@ -50,7 +53,9 @@
 		6B70A1571DE203879E45249D /* PolarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */; };
 		6E08F44166CB7A853C1A050B /* 2026-07-23_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */; };
 		6E6CA6D0339946158DEB2489 /* 2026-07-26-pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */; };
+		70A653DD82FD317863AEA376 /* ShareImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */; };
 		70AD62F62EF0A54F8F045244 /* BundledSampleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3886B442F95B35D4EB410680 /* BundledSampleSource.swift */; };
+		7256BCD37293F05E79CFB8D0 /* FitViewShareExtension-macOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		751D5200DADA3B4ECEBA84F1 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
 		764F8BE8121F9006DA92C284 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744711A6152DC8D944BBAC03 /* AppModel.swift */; };
 		7FBF08D8B7D1B4BA410F7FA2 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
@@ -62,6 +67,9 @@
 		90FA6E52F152682B2DEE52E9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F0AC88A64D83AABDE82B43 /* SettingsView.swift */; };
 		9249383166C563E968195CCB /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
 		9761BCAF646A10407625B9A4 /* 2026-07-25_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */; };
+		97E86A2BA796E72967987FBB /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D9CF7CA8098BBE6CBF566A /* ShareViewController.swift */; };
+		9D480D73639EDCCE60A52ADD /* ShareImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */; };
+		9DB756380643642C717F29BB /* FitViewShareExtension-iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
 		A11E7DB613738CD62AE0234E /* PolarAccessLinkSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */; };
 		A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
@@ -73,6 +81,7 @@
 		C01325CDEE8B6A8582EFBDBF /* DataSourceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */; };
 		C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		C47CF6A546C34288B2AB2B32 /* BatchAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */; };
+		C631C5637FCAF9568A8DED63 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A575BE2CC196DA43BD6D6E /* ShareViewController.swift */; };
 		C658980557AFB6F64E0411FB /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
 		C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
 		C8E66D6AF8F4696B2E1B4CC2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F0AC88A64D83AABDE82B43 /* SettingsView.swift */; };
@@ -84,6 +93,7 @@
 		D5B2A1E978F25A298A3A6FDD /* ImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EEFD40AC516981A1C8CC0C /* ImportSheet.swift */; };
 		E373120611EA55B09D26D0CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
 		E4BF62537462DB10181D83DD /* SessionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01D3A90F5A8F9132C718742 /* SessionCard.swift */; };
+		E4F44096071B6593FB8A7E42 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4F74B73EF88181791D1724CF /* FitViewCore */; };
 		E6873DF465A51F235279B07D /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77BE2D9A414813D4E3F6BF /* TokenStore.swift */; };
 		E956B9EC76A38C05A66BEA57 /* LoadedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */; };
 		EA98FF81F56281D3858AA1D2 /* 2026-07-24_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */; };
@@ -101,27 +111,76 @@
 		FD6ED1B74D8F570F59531856 /* TokenStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77BE2D9A414813D4E3F6BF /* TokenStore.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9B4BBD4EA1075E053ECAE107 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3D49D2D8A0602D53DD2B1A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B456014F1837BF6670586880;
+			remoteInfo = "FitViewShareExtension-macOS";
+		};
+		F47AE2D938D8086C2B8D6AF1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3D49D2D8A0602D53DD2B1A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6B471912DE0FDF3E72BB33AF;
+			remoteInfo = "FitViewShareExtension-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8BB06FD13A0D5FB3AD2763C6 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				9DB756380643642C717F29BB /* FitViewShareExtension-iOS.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		957F1A0D1EC8BCA7A4C00EE1 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7256BCD37293F05E79CFB8D0 /* FitViewShareExtension-macOS.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadedBatch.swift; sourceTree = "<group>"; };
 		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
 		06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenHeartRateChartView.swift; sourceTree = "<group>"; };
 		07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModel.swift; sourceTree = "<group>"; };
+		0D88540FFC88A8BE00B67CC8 /* FitView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitView.entitlements; sourceTree = "<group>"; };
 		1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewCardList.swift; sourceTree = "<group>"; };
 		1A5BCD71CF4B86B7D492685B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		1C159DD253A36EBC7D725AEC /* ShareEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareEditView.swift; sourceTree = "<group>"; };
 		2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		2EFBAF76469F54663220648C /* FitViewCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FitViewCore; path = Packages/FitViewCore; sourceTree = SOURCE_ROOT; };
 		3736C57073C2AF495A7D214B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3886B442F95B35D4EB410680 /* BundledSampleSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledSampleSource.swift; sourceTree = "<group>"; };
 		398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-23_pace4_run.fit"; sourceTree = "<group>"; };
 		3CBB05856B8F40A606A0377B /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareImportViewModel.swift; sourceTree = "<group>"; };
 		46F0AC88A64D83AABDE82B43 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4F2BB1F8F0D3B0BC65CCB3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-23_polarSense_run.FIT"; sourceTree = "<group>"; };
 		54B398142104968E231BDF7E /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "FitView-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-28_pace4_run.fit"; sourceTree = "<group>"; };
+		5EA9E25D23AA7688456330C8 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
+		6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = "FitViewShareExtension-iOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
+		6E8C62A64BDB36B547972409 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchBuilder.swift; sourceTree = "<group>"; };
+		7307DB1EFFEAE4CB45B138D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		73B51F5A38FDA84472FE20F9 /* FileImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportSource.swift; sourceTree = "<group>"; };
 		744711A6152DC8D944BBAC03 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailPreviewFixture.swift; sourceTree = "<group>"; };
@@ -134,15 +193,20 @@
 		8B77BE2D9A414813D4E3F6BF /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
 		9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-31_polarSense_run.FIT"; sourceTree = "<group>"; };
 		9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-30_polarSense_run.FIT"; sourceTree = "<group>"; };
+		A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "FitViewShareExtension-macOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConfiguration.swift; sourceTree = "<group>"; };
 		AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModel.swift; sourceTree = "<group>"; };
 		BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-27_polarSense_run.FIT"; sourceTree = "<group>"; };
 		BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceMode.swift; sourceTree = "<group>"; };
+		C5B9760BE34970E1C74C305F /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
+		C5D9CF7CA8098BBE6CBF566A /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarAccessLinkSource.swift; sourceTree = "<group>"; };
 		CC65984041C307E9C026CCB5 /* FitView-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitView-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4C428207FFDEE0AA997974 /* FormatDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatDate.swift; sourceTree = "<group>"; };
 		CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchAssembler.swift; sourceTree = "<group>"; };
+		D1A575BE2CC196DA43BD6D6E /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AgreementLevel+Color.swift"; sourceTree = "<group>"; };
+		E1C8063E07F5506B1752D2A8 /* FitView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitView.entitlements; sourceTree = "<group>"; };
 		E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-24_pace4_run.fit"; sourceTree = "<group>"; };
 		E70098EDEF6B3DD1A7E03EE5 /* PolarAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarAPIClient.swift; sourceTree = "<group>"; };
 		EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAliasSheet.swift; sourceTree = "<group>"; };
@@ -162,6 +226,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				CBC0D77790836A7EBBC73365 /* FitViewCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		283F622D0D284305F715FFB7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4F44096071B6593FB8A7E42 /* FitViewCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD34FD76B2731137A5558241 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1138B22A54FF8408A8AC1F69 /* FitViewCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,9 +274,22 @@
 				C4A06C2342336D6B6021149E /* FitView */,
 				E293E2E0D859B34B94B888E6 /* FitView-iOS */,
 				996BC695B72E4F729E9C6869 /* FitView-macOS */,
+				F555DC876649314F8CB220ED /* iOS */,
+				F30AF3289FD4FCF5A854ABC5 /* macOS */,
 				3F3234EF9BCBE45149D0BC90 /* Packages */,
+				325D767A4C216BBBA608E9CD /* Shared */,
 				D9EA7C92DF44EF8212995442 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		325D767A4C216BBBA608E9CD /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				1C159DD253A36EBC7D725AEC /* ShareEditView.swift */,
+				40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */,
+			);
+			name = Shared;
+			path = Sources/ShareExtension/Shared;
 			sourceTree = "<group>";
 		};
 		3A21FB5F2EF9AC7E1CF02D3C /* Resources */ = {
@@ -251,6 +344,7 @@
 			isa = PBXGroup;
 			children = (
 				FB4DF09A2D0F71B42B61E36C /* Assets.xcassets */,
+				0D88540FFC88A8BE00B67CC8 /* FitView.entitlements */,
 				1A5BCD71CF4B86B7D492685B /* Info.plist */,
 			);
 			name = "FitView-macOS";
@@ -320,6 +414,8 @@
 			children = (
 				57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */,
 				CC65984041C307E9C026CCB5 /* FitView-macOS.app */,
+				6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */,
+				A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -328,15 +424,57 @@
 			isa = PBXGroup;
 			children = (
 				3736C57073C2AF495A7D214B /* Assets.xcassets */,
+				E1C8063E07F5506B1752D2A8 /* FitView.entitlements */,
 				4F2BB1F8F0D3B0BC65CCB3D3 /* Info.plist */,
 			);
 			name = "FitView-iOS";
 			path = "Sources/FitView-iOS";
 			sourceTree = "<group>";
 		};
+		F30AF3289FD4FCF5A854ABC5 /* macOS */ = {
+			isa = PBXGroup;
+			children = (
+				7307DB1EFFEAE4CB45B138D9 /* Info.plist */,
+				5EA9E25D23AA7688456330C8 /* ShareExtension.entitlements */,
+				D1A575BE2CC196DA43BD6D6E /* ShareViewController.swift */,
+			);
+			name = macOS;
+			path = Sources/ShareExtension/macOS;
+			sourceTree = "<group>";
+		};
+		F555DC876649314F8CB220ED /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				6E8C62A64BDB36B547972409 /* Info.plist */,
+				C5B9760BE34970E1C74C305F /* ShareExtension.entitlements */,
+				C5D9CF7CA8098BBE6CBF566A /* ShareViewController.swift */,
+			);
+			name = iOS;
+			path = Sources/ShareExtension/iOS;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		6B471912DE0FDF3E72BB33AF /* FitViewShareExtension-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 833BB656BAF6478FF786CFFD /* Build configuration list for PBXNativeTarget "FitViewShareExtension-iOS" */;
+			buildPhases = (
+				85879631B0CFA61D15BA97E0 /* Sources */,
+				DD34FD76B2731137A5558241 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "FitViewShareExtension-iOS";
+			packageProductDependencies = (
+				C53564CABEE0EF227C839435 /* FitViewCore */,
+			);
+			productName = "FitViewShareExtension-iOS";
+			productReference = 6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		AC7ED7F447DC2734CBFA509F /* FitView-iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DF43DDDAA38AC032DEB5CF07 /* Build configuration list for PBXNativeTarget "FitView-iOS" */;
@@ -344,10 +482,12 @@
 				B577CFF9B822C1A5F1DAE166 /* Sources */,
 				AE6EDD055FD6F4AC52BF21DA /* Resources */,
 				13125332620C0FDA2F548171 /* Frameworks */,
+				8BB06FD13A0D5FB3AD2763C6 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				C938E09AF2BDAE0623218ED2 /* PBXTargetDependency */,
 			);
 			name = "FitView-iOS";
 			packageProductDependencies = (
@@ -357,6 +497,25 @@
 			productReference = 57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B456014F1837BF6670586880 /* FitViewShareExtension-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 97664F9A2771483E2168CA9A /* Build configuration list for PBXNativeTarget "FitViewShareExtension-macOS" */;
+			buildPhases = (
+				3177D17CAC466164CC255C44 /* Sources */,
+				283F622D0D284305F715FFB7 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "FitViewShareExtension-macOS";
+			packageProductDependencies = (
+				4F74B73EF88181791D1724CF /* FitViewCore */,
+			);
+			productName = "FitViewShareExtension-macOS";
+			productReference = A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		EDAD7ED43F5769299B50F163 /* FitView-macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A5F078FD0B44D11AAC60A9C9 /* Build configuration list for PBXNativeTarget "FitView-macOS" */;
@@ -364,10 +523,12 @@
 				1811BB97689CFE41F8CF4460 /* Sources */,
 				331C71BA4F407492E6901D96 /* Resources */,
 				E446F13FBFB6DE3722E8BBF0 /* Frameworks */,
+				957F1A0D1EC8BCA7A4C00EE1 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				737A0E9BD06E75943A124DE8 /* PBXTargetDependency */,
 			);
 			name = "FitView-macOS";
 			packageProductDependencies = (
@@ -386,6 +547,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					6B471912DE0FDF3E72BB33AF = {
+						DevelopmentTeam = 4GP83563V4;
+					};
 					AC7ED7F447DC2734CBFA509F = {
 						DevelopmentTeam = 4GP83563V4;
 					};
@@ -410,6 +574,8 @@
 			targets = (
 				AC7ED7F447DC2734CBFA509F /* FitView-iOS */,
 				EDAD7ED43F5769299B50F163 /* FitView-macOS */,
+				6B471912DE0FDF3E72BB33AF /* FitViewShareExtension-iOS */,
+				B456014F1837BF6670586880 /* FitViewShareExtension-macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -501,6 +667,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		3177D17CAC466164CC255C44 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54AAD6688D91BD6A67272DFE /* ShareEditView.swift in Sources */,
+				9D480D73639EDCCE60A52ADD /* ShareImportViewModel.swift in Sources */,
+				C631C5637FCAF9568A8DED63 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		85879631B0CFA61D15BA97E0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34444929FDD7EDC5D8CFED4C /* ShareEditView.swift in Sources */,
+				70A653DD82FD317863AEA376 /* ShareImportViewModel.swift in Sources */,
+				97E86A2BA796E72967987FBB /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B577CFF9B822C1A5F1DAE166 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -538,11 +724,25 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		737A0E9BD06E75943A124DE8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B456014F1837BF6670586880 /* FitViewShareExtension-macOS */;
+			targetProxy = 9B4BBD4EA1075E053ECAE107 /* PBXContainerItemProxy */;
+		};
+		C938E09AF2BDAE0623218ED2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6B471912DE0FDF3E72BB33AF /* FitViewShareExtension-iOS */;
+			targetProxy = F47AE2D938D8086C2B8D6AF1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		20A195CB0B655D4E3B648D9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-iOS/FitView.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = "Sources/FitView-iOS/Info.plist";
@@ -691,6 +891,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-macOS/FitView.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Sources/FitView-macOS/Info.plist";
@@ -705,10 +906,68 @@
 			};
 			name = Release;
 		};
+		6FCB73A3295F44AFA7B9AF70 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/macOS/ShareExtension.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Sources/ShareExtension/macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac.share;
+				PRODUCT_NAME = FitViewShare;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8A34B3DAFEDD64037FAF3F41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/macOS/ShareExtension.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = Sources/ShareExtension/macOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac.share;
+				PRODUCT_NAME = FitViewShare;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A9B9885A3E4371B2839B77B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/iOS/ShareExtension.entitlements;
+				DEVELOPMENT_TEAM = 4GP83563V4;
+				INFOPLIST_FILE = Sources/ShareExtension/iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.share;
+				PRODUCT_NAME = FitViewShare;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		D3C25B32E5BB63C597B050AF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-iOS/FitView.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = "Sources/FitView-iOS/Info.plist";
@@ -724,10 +983,30 @@
 			};
 			name = Debug;
 		};
+		E1445BFA5D81A4F83825A965 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/iOS/ShareExtension.entitlements;
+				DEVELOPMENT_TEAM = 4GP83563V4;
+				INFOPLIST_FILE = Sources/ShareExtension/iOS/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.share;
+				PRODUCT_NAME = FitViewShare;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		E4589310915C6963A2AF2403 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-macOS/FitView.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Sources/FitView-macOS/Info.plist";
@@ -750,6 +1029,24 @@
 			buildConfigurations = (
 				465DAFE5C5F0C48C99F4D30F /* Debug */,
 				5A6AABC2CDA76A0315A520E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		833BB656BAF6478FF786CFFD /* Build configuration list for PBXNativeTarget "FitViewShareExtension-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E1445BFA5D81A4F83825A965 /* Debug */,
+				A9B9885A3E4371B2839B77B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		97664F9A2771483E2168CA9A /* Build configuration list for PBXNativeTarget "FitViewShareExtension-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8A34B3DAFEDD64037FAF3F41 /* Debug */,
+				6FCB73A3295F44AFA7B9AF70 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
@@ -786,7 +1083,15 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = FitViewCore;
 		};
+		4F74B73EF88181791D1724CF /* FitViewCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FitViewCore;
+		};
 		66F0FBBB1428C87F899106CD /* FitViewCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FitViewCore;
+		};
+		C53564CABEE0EF227C839435 /* FitViewCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FitViewCore;
 		};
