@@ -176,22 +176,50 @@ struct SessionDetailView: View {
         if model.agreement != nil {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
                 if let matchedSecondsText = model.matchedSecondsText {
-                    StatTile(label: "Matched Seconds", value: matchedSecondsText)
+                    StatTile(
+                        label: "Matched Seconds",
+                        value: matchedSecondsText,
+                        explainer: MetricKind.matchedSeconds.explainer
+                    )
                 }
                 if let bias = model.bias {
-                    StatTile(label: "Bias", value: bias.text, level: bias.level)
+                    StatTile(
+                        label: "Bias",
+                        value: bias.text,
+                        level: bias.level,
+                        explainer: MetricKind.bias.explainer
+                    )
                 }
                 if let loaText = model.loaText {
-                    StatTile(label: "95% LoA", value: loaText)
+                    StatTile(
+                        label: "95% LoA",
+                        value: loaText,
+                        explainer: MetricKind.limitsOfAgreement.explainer
+                    )
                 }
                 if let meanAbsDiff = model.meanAbsDiff {
-                    StatTile(label: "Mean |Diff|", value: meanAbsDiff.text, level: meanAbsDiff.level)
+                    StatTile(
+                        label: "Mean |Diff|",
+                        value: meanAbsDiff.text,
+                        level: meanAbsDiff.level,
+                        explainer: MetricKind.meanAbsoluteDifference.explainer
+                    )
                 }
                 if let maxAbsDiffText = model.maxAbsDiffText {
-                    StatTile(label: "Max |Diff|", value: maxAbsDiffText)
+                    StatTile(
+                        label: "Max |Diff|",
+                        value: maxAbsDiffText,
+                        explainer: MetricKind.maxAbsoluteDifference.explainer
+                    )
                 }
                 if let ccc = model.ccc {
-                    StatTile(label: "CCC", value: ccc.text, level: ccc.level, detail: model.cccDetailText)
+                    StatTile(
+                        label: "CCC",
+                        value: ccc.text,
+                        level: ccc.level,
+                        detail: model.cccDetailText,
+                        explainer: MetricKind.concordance.explainer
+                    )
                 }
             }
         } else if let skipBannerText = model.skipBannerText {
@@ -256,35 +284,6 @@ struct SessionDetailView: View {
                 }
             }
         }
-    }
-}
-
-/// A stat value paired with its label and, optionally, the agreement level
-/// that colours it and a qualifying detail line — e.g. CCC's McBride word and
-/// HR range, which overview.md §7 requires stay adjacent to the number.
-private struct StatTile: View {
-    let label: String
-    let value: String
-    var level: AgreementLevel?
-    var detail: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text(value)
-                .font(.title3.monospacedDigit())
-                .foregroundStyle(level?.color ?? .primary)
-            if let detail {
-                Text(detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(.background.secondary, in: RoundedRectangle(cornerRadius: 10))
     }
 }
 
