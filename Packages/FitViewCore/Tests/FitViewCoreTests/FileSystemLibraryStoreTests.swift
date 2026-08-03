@@ -102,6 +102,10 @@ struct FileSystemLibraryStoreTests {
         ))
 
         #expect(first.blobId == second.blobId, "identical bytes must hash to the same blob id")
+        // The descriptor half of the dedupe rule: same content, but a
+        // different date (from the different suggestedName) means these are
+        // two genuinely distinct activities that happen to share bytes, so
+        // both must land as separate items.
         #expect(first.id != second.id, "each import is still its own library item")
 
         let items = try await store.allItems()
@@ -111,6 +115,43 @@ struct FileSystemLibraryStoreTests {
             at: root.appendingPathComponent("blobs"), includingPropertiesForKeys: nil
         )
         #expect(blobFiles.count == 1, "...but only one physical blob on disk")
+    }
+
+    @Test("adding the identical activity twice is a no-op: one item, and the id is stable")
+    func addingIdenticalActivityTwiceIsANoOp() async throws {
+        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let activity = ImportedActivity(
+            candidate: makeCandidate(suggestedName: "2026-07-23_pace4_run"), data: Data("same bytes".utf8), source: "files"
+        )
+
+        let first = try await store.add(activity)
+        let second = try await store.add(activity)
+
+        // Same blobId *and* same (date, deviceKey, activityKey) descriptor
+        // triple: `add` must recognise this as the activity already on file
+        // and hand back the existing item rather than appending a new one.
+        #expect(second.id == first.id, "a re-import of the same activity must return the existing item's id")
+
+        let items = try await store.allItems()
+        #expect(items.count == 1, "the second add must not append a second manifest entry")
+    }
+
+    @Test("the same descriptor with different bytes still produces two items — the content half of the rule")
+    func sameDescriptorDifferentBytesProducesTwoItems() async throws {
+        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let candidate = makeCandidate(suggestedName: "2026-07-23_pace4_run")
+
+        let first = try await store.add(ImportedActivity(candidate: candidate, data: Data("bytes one".utf8), source: "files"))
+        let second = try await store.add(ImportedActivity(candidate: candidate, data: Data("bytes two".utf8), source: "files"))
+
+        // Same date/deviceKey/activityKey, but different content hashes to a
+        // different blobId — matching descriptor alone must never collapse
+        // two genuinely different files into one item.
+        #expect(first.blobId != second.blobId)
+        #expect(first.id != second.id)
+
+        let items = try await store.allItems()
+        #expect(items.count == 2)
     }
 
     @Test("the manifest survives a relaunch — a fresh store instance over the same root sees prior items")
@@ -206,5 +247,56 @@ struct FileSystemLibraryStoreTests {
         #expect(added.date == "2026-07-26")
         #expect(added.device == "pace4")
         #expect(added.activity == "run")
+    }
+
+    @Test("add records the candidate's sourceId, so a re-scan can recognise what it already imported")
+    func addRecordsSourceId() async throws {
+        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let added = try await store.add(ImportedActivity(
+            candidate: ImportCandidate(
+                sourceId: "nested/2026-07-23_pace4_run.fit", suggestedName: "2026-07-23_pace4_run"
+            ),
+            data: Data([1]),
+            source: "folder"
+        ))
+
+        #expect(added.sourceId == "nested/2026-07-23_pace4_run.fit")
+        let listed = try await store.allItems()
+        #expect(listed.first?.sourceId == "nested/2026-07-23_pace4_run.fit", "it must survive a manifest round trip")
+    }
+
+    @Test("a manifest written before sourceId existed still decodes, with sourceId nil")
+    func manifestWithoutSourceIdStillDecodes() async throws {
+        // Guards every library already on disk, and every remote sync mirror
+        // another device may have written — losing the whole index over one
+        // added field would be a far bigger surprise than any it could fix.
+        let root = try makeTempRoot()
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        let legacyManifest = """
+        {
+          "deviceAliases" : {},
+          "items" : [
+            {
+              "activity" : "run",
+              "activityKey" : "run",
+              "blobId" : "abc123",
+              "date" : "2026-07-23",
+              "device" : "pace4",
+              "deviceKey" : "pace4",
+              "id" : "11111111-2222-3333-4444-555555555555",
+              "importedAt" : "2026-07-23T10:00:00Z",
+              "originalName" : "2026-07-23_pace4_run",
+              "source" : "bundled"
+            }
+          ]
+        }
+        """
+        try Data(legacyManifest.utf8).write(to: root.appendingPathComponent("manifest.json"))
+
+        let store = try FileSystemLibraryStore(rootURL: root)
+        let items = try await store.allItems()
+        #expect(items.count == 1)
+        #expect(items.first?.sourceId == nil)
+        #expect(items.first?.originalName == "2026-07-23_pace4_run")
     }
 }

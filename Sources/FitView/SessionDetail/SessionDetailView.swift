@@ -5,8 +5,17 @@ struct SessionDetailView: View {
     let batch: LoadedBatch
     let sessionId: String
 
+    // Named `appModel` rather than `model` so it can't shadow the local
+    // `SessionDetailModel` — same reasoning as `BatchOverviewView`'s builder
+    // functions.
+    @Environment(AppModel.self) private var appModel
+    @Environment(\.dismiss) private var dismiss
+
     @State private var model: SessionDetailModel?
     @State private var isPresentingFullScreenChart = false
+    @State private var isPresentingDeleteConfirmation = false
+    @State private var isDeleting = false
+    @State private var deleteErrorMessage: String?
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -73,6 +82,60 @@ struct SessionDetailView: View {
                 .frame(minWidth: 700, minHeight: 420)
         }
         #endif
+        .toolbar {
+            ToolbarItem {
+                Menu {
+                    Button(role: .destructive) {
+                        isPresentingDeleteConfirmation = true
+                    } label: {
+                        Label("Delete Activity", systemImage: "trash")
+                    }
+                } label: {
+                    Label("More", systemImage: "ellipsis.circle")
+                }
+                .disabled(isDeleting)
+            }
+        }
+        // A separate confirmation step even though this is already tucked
+        // behind a "..." menu — deletion is unrecoverable (the manifest entry
+        // is gone; the blob is left orphaned, per `LibraryStore.remove`'s
+        // contract, but nothing in this app exposes recovering it), so one
+        // tap should never be enough to lose data.
+        .confirmationDialog(
+            "Delete this activity?",
+            isPresented: $isPresentingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) { delete(model) }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Removes it from FitView's library. The original file, if any, is left untouched.")
+        }
+        .alert(
+            "Couldn't Delete",
+            isPresented: Binding(
+                get: { deleteErrorMessage != nil },
+                set: { if !$0 { deleteErrorMessage = nil } }
+            ),
+            presenting: deleteErrorMessage
+        ) { _ in
+            Button("OK", role: .cancel) {}
+        } message: { message in
+            Text(message)
+        }
+    }
+
+    private func delete(_ model: SessionDetailModel) {
+        isDeleting = true
+        Task {
+            let error = await appModel.deleteSession(model.session)
+            isDeleting = false
+            if let error {
+                deleteErrorMessage = error
+            } else {
+                dismiss()
+            }
+        }
     }
 
     private var expandChartButton: some View {

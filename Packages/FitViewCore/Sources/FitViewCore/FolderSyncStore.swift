@@ -16,17 +16,6 @@ public enum FolderSyncError: Error, Sendable, Equatable {
     case materializationTimedOut(path: String)
 }
 
-/// Carries a `UserDefaults` across an isolation boundary without relying on
-/// the SDK to declare it `Sendable` — it does in some SDK versions and not in
-/// others, and `FolderSyncStore` needs a synchronous, nonisolated read of it
-/// either way. `UserDefaults` is documented as thread-safe, and the only
-/// access here is a read and a write of one key, so the `@unchecked` promise
-/// is narrow and local rather than an assumption about how the class is
-/// annotated elsewhere.
-private struct SendableUserDefaults: @unchecked Sendable {
-    let store: UserDefaults
-}
-
 /// Syncs a local `LibraryStore` against a folder the user picked once via the
 /// directory document picker — in practice an iCloud Drive folder, though
 /// nothing here assumes that; a plain local folder works identically (and is
@@ -50,21 +39,18 @@ private struct SendableUserDefaults: @unchecked Sendable {
 /// solves content-addressing and manifest merging for a single local store,
 /// and reusing it here means there's only one manifest shape in the codebase
 /// to reason about.
+///
+/// This is the *mirror* half of folder support and is unrelated to
+/// `WatchedFolderSource`, which scans a folder of loose `.fit` files the user
+/// manages themselves. Both go through `FolderBookmark`, but each keeps its
+/// own bookmark under its own key — they are different folders serving
+/// different purposes, and picking one must never silently repoint the other.
 public actor FolderSyncStore: RemoteLibraryStore {
-    // Both are immutable and read without `await`, so the protocol's
-    // synchronous `isConfigured` requirement can be satisfied without making
-    // it `async`. `bookmarkKey` is a plain `Sendable` `String`; `defaults`
-    // needs the box below, because `UserDefaults` is not annotated `Sendable`
-    // in every SDK this package builds against and a bare
-    // `nonisolated(unsafe)` stored property of a non-`Sendable` type is
-    // rejected outright by some compilers ("cannot exit nonisolated(unsafe)
-    // context") rather than merely warned about.
-    private nonisolated let defaults: SendableUserDefaults
-    private nonisolated let bookmarkKey: String
+    /// Immutable, so the protocol's synchronous `isConfigured` requirement can
+    /// be satisfied `nonisolated`, without making it `async`.
+    private nonisolated let bookmark: FolderBookmark
     /// How long to wait for a single `.icloud` placeholder to materialise
-    /// before giving up. Generous relative to typical Wi-Fi sync latency for
-    /// a single small `.fit` file, but still bounded — a hung sync must fail
-    /// loudly rather than hang the UI forever.
+    /// before giving up.
     private let materializationTimeout: TimeInterval
 
     public init(
@@ -72,18 +58,16 @@ public actor FolderSyncStore: RemoteLibraryStore {
         bookmarkKey: String = "FitView.FolderSyncStore.bookmark",
         materializationTimeout: TimeInterval = 15
     ) {
-        self.defaults = SendableUserDefaults(store: defaults)
-        self.bookmarkKey = bookmarkKey
+        self.bookmark = FolderBookmark(defaults: defaults, key: bookmarkKey)
         self.materializationTimeout = materializationTimeout
     }
 
     // `nonisolated` (rather than actor-isolated, which is the default for a
     // computed property on an actor) because the protocol requirement is
-    // synchronous — reading `defaults`/`bookmarkKey` without `await` is sound
-    // here because both are immutable `let`s, so there's no way for this
-    // read to race a mutation.
+    // synchronous — `FolderBookmark` is a `Sendable` struct of immutable
+    // `let`s, so there's no way for this read to race a mutation.
     public nonisolated var isConfigured: Bool {
-        defaults.store.data(forKey: bookmarkKey) != nil
+        bookmark.isConfigured
     }
 
     /// Called once the user picks a folder via the directory document
@@ -91,10 +75,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
     /// Persists a security-scoped bookmark so future syncs don't need the
     /// picker again.
     public func setFolder(_ url: URL) throws {
-        let didAccess = url.startAccessingSecurityScopedResource()
-        defer { if didAccess { url.stopAccessingSecurityScopedResource() } }
-        let bookmark = try Self.makeBookmark(for: url)
-        defaults.store.set(bookmark, forKey: bookmarkKey)
+        try bookmark.store(url)
     }
 
     @discardableResult
@@ -142,7 +123,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
         defer { if didAccess { folderURL.stopAccessingSecurityScopedResource() } }
 
         let manifestURL = manifestURL(under: folderURL)
-        guard try await coordinatedFileExists(manifestURL) else {
+        guard try coordinatedFileExists(manifestURL) else {
             // Nothing has ever been pushed to this folder — an empty pull,
             // not an error (a first-time sync from a device that only ever
             // pulls shouldn't look like a failure).
@@ -156,7 +137,7 @@ public actor FolderSyncStore: RemoteLibraryStore {
         var blobsCopied = 0
         for item in remoteManifest.items where !localIds.contains(item.id) {
             let blobURL = blobURL(for: item.blobId, under: folderURL)
-            try await ensureMaterialized(blobURL)
+            try await materialize(blobURL)
             let data = try coordinatedRead(blobURL)
             try await local.addRawItem(item, data: data)
             itemsCopied += 1
@@ -175,40 +156,26 @@ public actor FolderSyncStore: RemoteLibraryStore {
 
     // MARK: - Bookmark resolution
 
+    /// Restates `FolderBookmark`'s errors in this type's own vocabulary, so
+    /// `FolderSyncError` stays the single error type callers (and the settings
+    /// UI's error copy) have to know about.
     private func resolveFolder() throws -> URL {
-        guard let bookmark = defaults.store.data(forKey: bookmarkKey) else {
-            throw FolderSyncError.notConfigured
-        }
-        var isStale = false
-        let url: URL
         do {
-            url = try Self.resolveBookmark(bookmark, isStale: &isStale)
-        } catch {
-            throw FolderSyncError.bookmarkResolutionFailed(underlying: String(describing: error))
+            return try bookmark.resolve()
+        } catch FolderBookmarkError.notConfigured {
+            throw FolderSyncError.notConfigured
+        } catch let FolderBookmarkError.resolutionFailed(underlying) {
+            throw FolderSyncError.bookmarkResolutionFailed(underlying: underlying)
         }
-        if isStale, let refreshed = try? Self.makeBookmark(for: url) {
-            defaults.store.set(refreshed, forKey: bookmarkKey)
+    }
+
+    private func materialize(_ url: URL) async throws {
+        do {
+            try await ensureMaterialized(url, timeout: materializationTimeout)
+        } catch let FileCoordinationError.materializationTimedOut(path) {
+            throw FolderSyncError.materializationTimedOut(path: path)
         }
-        return url
     }
-
-    #if os(macOS)
-    private static func makeBookmark(for url: URL) throws -> Data {
-        try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
-    }
-
-    private static func resolveBookmark(_ bookmark: Data, isStale: inout Bool) throws -> URL {
-        try URL(resolvingBookmarkData: bookmark, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale)
-    }
-    #else
-    private static func makeBookmark(for url: URL) throws -> Data {
-        try url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
-    }
-
-    private static func resolveBookmark(_ bookmark: Data, isStale: inout Bool) throws -> URL {
-        try URL(resolvingBookmarkData: bookmark, options: [], relativeTo: nil, bookmarkDataIsStale: &isStale)
-    }
-    #endif
 
     // MARK: - Remote layout
 
@@ -235,8 +202,8 @@ public actor FolderSyncStore: RemoteLibraryStore {
 
     private func loadManifest(at folderURL: URL) async throws -> RemoteManifest {
         let url = manifestURL(under: folderURL)
-        guard try await coordinatedFileExists(url) else { return RemoteManifest() }
-        try await ensureMaterialized(url)
+        guard try coordinatedFileExists(url) else { return RemoteManifest() }
+        try await materialize(url)
         let data = try coordinatedRead(url)
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
@@ -249,81 +216,5 @@ public actor FolderSyncStore: RemoteLibraryStore {
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let data = try encoder.encode(manifest)
         try coordinatedWrite(data, to: manifestURL(under: folderURL))
-    }
-
-    // MARK: - iCloud materialisation
-
-    /// Downloads (if needed) and waits for a ubiquitous item to stop being an
-    /// `.icloud` placeholder stub before any read touches it. A no-op for a
-    /// plain local file (`isUbiquitousItem` false) — which is what makes this
-    /// safe to call unconditionally, including from tests against a plain
-    /// temp directory.
-    private func ensureMaterialized(_ url: URL) async throws {
-        let isUbiquitous = try? url.resourceValues(forKeys: [.isUbiquitousItemKey]).isUbiquitousItem
-        guard isUbiquitous == true else { return }
-
-        try? FileManager.default.startDownloadingUbiquitousItem(at: url)
-
-        let deadline = Date().addingTimeInterval(materializationTimeout)
-        while Date() < deadline {
-            let status = try? url.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey])
-                .ubiquitousItemDownloadingStatus
-            if status == .current || status == .downloaded { return }
-            try await Task.sleep(for: .milliseconds(200))
-        }
-        throw FolderSyncError.materializationTimedOut(path: url.path)
-    }
-
-    // MARK: - NSFileCoordinator wrapping
-
-    /// `NSFileCoordinator` is mandatory for iCloud Drive: reading or writing
-    /// a ubiquitous file without it risks tearing a read against an in-flight
-    /// sync, or racing another device's write. Every read/write in this store
-    /// funnels through one of these three helpers so that invariant can't be
-    /// accidentally bypassed by a future edit.
-    private func coordinatedRead(_ url: URL) throws -> Data {
-        var coordinatorError: NSError?
-        var result: Data?
-        var thrown: Error?
-        NSFileCoordinator(filePresenter: nil).coordinate(readingItemAt: url, options: [], error: &coordinatorError) { readURL in
-            do {
-                result = try Data(contentsOf: readURL)
-            } catch {
-                thrown = error
-            }
-        }
-        if let coordinatorError { throw coordinatorError }
-        if let thrown { throw thrown }
-        guard let result else {
-            throw FolderSyncError.bookmarkResolutionFailed(underlying: "coordinated read never ran")
-        }
-        return result
-    }
-
-    private func coordinatedWrite(_ data: Data, to url: URL) throws {
-        var coordinatorError: NSError?
-        var thrown: Error?
-        NSFileCoordinator(filePresenter: nil).coordinate(writingItemAt: url, options: [], error: &coordinatorError) { writeURL in
-            do {
-                try FileManager.default.createDirectory(
-                    at: writeURL.deletingLastPathComponent(), withIntermediateDirectories: true
-                )
-                try data.write(to: writeURL, options: .atomic)
-            } catch {
-                thrown = error
-            }
-        }
-        if let coordinatorError { throw coordinatorError }
-        if let thrown { throw thrown }
-    }
-
-    private func coordinatedFileExists(_ url: URL) async throws -> Bool {
-        var coordinatorError: NSError?
-        var exists = false
-        NSFileCoordinator(filePresenter: nil).coordinate(readingItemAt: url, options: [], error: &coordinatorError) { readURL in
-            exists = FileManager.default.fileExists(atPath: readURL.path)
-        }
-        if let coordinatorError { throw coordinatorError }
-        return exists
     }
 }

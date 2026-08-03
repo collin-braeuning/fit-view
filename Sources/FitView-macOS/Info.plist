@@ -44,5 +44,30 @@
 	<string>$(POLAR_CLIENT_ID)</string>
 	<key>PolarClientSecret</key>
 	<string>$(POLAR_CLIENT_SECRET)</string>
+	<!-- Declares the .fit extension as this app's own type, so the OS tags
+	     any .fit file system-wide as com.fitview.fit-file once FitView is
+	     installed. The share extension's NSExtensionActivationRule keys off
+	     this identifier to scope the share sheet entry to .fit files. -->
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.fitview.fit-file</string>
+			<key>UTTypeDescription</key>
+			<string>FIT Activity File</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>fit</string>
+					<string>FIT</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>

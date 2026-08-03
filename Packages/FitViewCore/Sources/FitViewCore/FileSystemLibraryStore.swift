@@ -71,6 +71,25 @@ public actor FileSystemLibraryStore: LibraryStore {
         }
 
         let fields = activityDescriptorFields(for: activity.candidate)
+
+        var manifest = try loadManifest()
+
+        // Same bytes *and* the same descriptor slot: this is a re-import of
+        // an activity already in the library, not a new one. Match against
+        // the raw stored items — `resolvingAlias` rewrites `device`/
+        // `deviceKey` at read time, and comparing resolved values would make
+        // the match depend on the current alias table rather than what was
+        // actually imported. Bytes alone would collapse two different
+        // activities that happen to share content; the descriptor alone
+        // would collapse two different files that legitimately group into
+        // the same session slot — only both together identify a duplicate.
+        if let existing = manifest.items.first(where: {
+            $0.blobId == blobId && $0.date == fields.date && $0.deviceKey == fields.deviceKey
+                && $0.activityKey == fields.activityKey
+        }) {
+            return resolvingAlias(existing, in: manifest)
+        }
+
         let item = LibraryItem(
             id: UUID().uuidString,
             blobId: blobId,
@@ -82,11 +101,11 @@ public actor FileSystemLibraryStore: LibraryStore {
             sport: activity.candidate.sport,
             startTime: activity.candidate.startTime,
             source: activity.source,
+            sourceId: activity.candidate.sourceId,
             originalName: activity.candidate.suggestedName,
             importedAt: Date()
         )
 
-        var manifest = try loadManifest()
         manifest.items.append(item)
         try saveManifest(manifest)
         return resolvingAlias(item, in: manifest)
@@ -188,17 +207,26 @@ public actor FileSystemLibraryStore: LibraryStore {
 }
 
 public extension FileSystemLibraryStore {
-    /// `Application Support/FitView/Library` in the platform's per-user
+    /// `Application Support/FitView/<name>` in the platform's per-user
     /// Application Support directory — the conventional home for data that
     /// isn't user-visible documents but must survive a relaunch. Not
     /// sandbox-specific: `FileManager`'s `.applicationSupportDirectory`
     /// resolves to the right place under an App Sandbox container too, if
     /// one is ever added.
-    static func defaultRootURL(fileManager: FileManager = .default) throws -> URL {
+    ///
+    /// - Parameter name: which library. The app keeps one root per data
+    ///   source — `"Library"` (the default, and the original path, so the
+    ///   bundled-sample library needs no migration) and `"FolderLibrary"` for
+    ///   the watched folder. Separate roots rather than one mixed library so
+    ///   switching sources is instant and reversible, and so sample data can
+    ///   never contaminate a batch of real activities (or vice versa); each
+    ///   also keeps its own device aliases, which is what you'd want anyway
+    ///   since the two describe different device populations.
+    static func defaultRootURL(named name: String = "Library", fileManager: FileManager = .default) throws -> URL {
         let base = try fileManager.url(
             for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true
         )
         return base.appendingPathComponent("FitView", isDirectory: true)
-            .appendingPathComponent("Library", isDirectory: true)
+            .appendingPathComponent(name, isDirectory: true)
     }
 }

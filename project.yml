@@ -37,12 +37,24 @@ targets:
       - path: Sources/FitView-iOS
     dependencies:
       - package: FitViewCore
+      - target: FitViewShareExtension-iOS
+        embed: true
     settings:
       base:
         PRODUCT_NAME: FitView
         PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app
         INFOPLIST_FILE: Sources/FitView-iOS/Info.plist
         TARGETED_DEVICE_FAMILY: "1,2"
+        DEVELOPMENT_TEAM: 4GP83563V4
+    # App Sandbox + the shared App Group are new here — needed so the share
+    # extension (always sandboxed) can read the folder bookmark this app
+    # persists in Settings. See FolderBookmark/AppGroup in FitViewCore.
+    entitlements:
+      path: Sources/FitView-iOS/FitView.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.fitview.app
   FitView-macOS:
     type: application
     platform: macOS
@@ -52,9 +64,67 @@ targets:
       - path: Sources/FitView-macOS
     dependencies:
       - package: FitViewCore
+      - target: FitViewShareExtension-macOS
+        embed: true
     settings:
       base:
         PRODUCT_NAME: FitView
         PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app.mac
         INFOPLIST_FILE: Sources/FitView-macOS/Info.plist
         ENABLE_HARDENED_RUNTIME: YES
+    # App Sandbox + the shared App Group are new here — needed so the share
+    # extension (always sandboxed) can read the folder bookmark this app
+    # persists in Settings. files.user-selected.read-write is what lets a
+    # sandboxed process (either this app or the extension) resolve and start
+    # access on a security-scoped bookmark at all on macOS.
+    entitlements:
+      path: Sources/FitView-macOS/FitView.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.fitview.app
+        com.apple.security.files.user-selected.read-write: true
+  FitViewShareExtension-iOS:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Sources/ShareExtension/Shared
+      - path: Sources/ShareExtension/iOS
+    dependencies:
+      - package: FitViewCore
+    settings:
+      base:
+        PRODUCT_NAME: FitViewShare
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app.share
+        INFOPLIST_FILE: Sources/ShareExtension/iOS/Info.plist
+        TARGETED_DEVICE_FAMILY: "1,2"
+        DEVELOPMENT_TEAM: 4GP83563V4
+    entitlements:
+      path: Sources/ShareExtension/iOS/ShareExtension.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.fitview.app
+  FitViewShareExtension-macOS:
+    type: app-extension
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - path: Sources/ShareExtension/Shared
+      - path: Sources/ShareExtension/macOS
+    dependencies:
+      - package: FitViewCore
+    settings:
+      base:
+        PRODUCT_NAME: FitViewShare
+        PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app.mac.share
+        INFOPLIST_FILE: Sources/ShareExtension/macOS/Info.plist
+        ENABLE_HARDENED_RUNTIME: YES
+    entitlements:
+      path: Sources/ShareExtension/macOS/ShareExtension.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.fitview.app
+        com.apple.security.files.user-selected.read-write: true

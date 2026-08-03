@@ -13,8 +13,16 @@ import Foundation
 /// reads back through the store instead, which is what makes the library
 /// durable across a relaunch (`overview.md` §10.6's "nothing persists" gap).
 enum BatchBuilder {
-    static func load(store: some LibraryStore) async throws -> LoadedBatch {
-        try await seedBundledSamplesIfNeeded(store: store)
+    /// - Parameter seedBundledSamples: whether an empty store should be filled
+    ///   from the bundled sample corpus first. True for the sample-data source,
+    ///   false for the watched-folder library — a folder the user hasn't
+    ///   pointed at anything yet (or an offline one whose files haven't
+    ///   downloaded) must read as empty, not quietly fill up with demo data
+    ///   the user would then have to distinguish from their own activities.
+    static func load(store: some LibraryStore, seedBundledSamples: Bool = true) async throws -> LoadedBatch {
+        if seedBundledSamples {
+            try await seedBundledSamplesIfNeeded(store: store)
+        }
 
         let items = try await store.allItems()
         // One bulk fetch instead of one `data(for:)` hop per item — each hop

@@ -31,8 +31,26 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
     public var activityKey: String
     public var sport: String?
     public var startTime: Date?
-    /// The `ActivitySource.id` this came from ("bundled", "files", "polar", "coros").
+    /// The `ActivitySource.id` this came from ("bundled", "files", "polar", "coros", "folder").
     public var source: String
+    /// The `ImportCandidate.sourceId` this was imported from — a path relative
+    /// to the watched folder, a Polar exercise id, and so on. Only stable
+    /// *within* its `source`, so the two must always be read as a pair.
+    ///
+    /// This is what makes re-scanning a source idempotent: a scanner lists
+    /// every candidate it can see and skips the ones whose `(source,
+    /// sourceId)` pair is already in the library. `add(_:)` appends
+    /// unconditionally with a fresh `id`, so without this a second scan of an
+    /// unchanged folder would duplicate every item in it. Content hashing
+    /// would answer the same question, but only by reading every file — which
+    /// for an iCloud folder means materialising the whole thing just to learn
+    /// there's nothing to do.
+    ///
+    /// Optional because items written before this field existed have no value
+    /// for it; synthesized `Codable` decodes those as `nil`, so old
+    /// `manifest.json` files — local ones *and* remote sync mirrors written by
+    /// another device — keep decoding unchanged.
+    public var sourceId: String?
     /// `ImportCandidate.suggestedName` — kept for display/debugging.
     /// Grouping uses `date`/`device`/`activity` directly and never
     /// round-trips through this string (that round-trip is exactly the
@@ -51,6 +69,7 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
         sport: String? = nil,
         startTime: Date? = nil,
         source: String,
+        sourceId: String? = nil,
         originalName: String,
         importedAt: Date
     ) {
@@ -64,6 +83,7 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
         self.sport = sport
         self.startTime = startTime
         self.source = source
+        self.sourceId = sourceId
         self.originalName = originalName
         self.importedAt = importedAt
     }

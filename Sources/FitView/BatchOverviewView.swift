@@ -21,29 +21,18 @@ struct BatchOverviewView: View {
     var layoutOverride: OverviewLayout?
     @Binding var path: [SessionRoute]
 
-    @State private var batch: LoadedBatch?
-    @State private var model: BatchOverviewModel?
-    @State private var loadError: String?
+    /// The batch, the store, and the chosen data source all live in
+    /// `AppModel` — they have to outlive this view and be reachable from the
+    /// macOS Settings scene, which is a sibling of `WindowGroup` rather than a
+    /// descendant of it.
+    @Environment(AppModel.self) private var model
+
     @State private var selectedSessionId: String?
     @State private var isPresentingImportSheet = false
     @State private var isPresentingDeviceAliasSheet = false
-    @State private var isPresentingSyncSheet = false
-    /// Owns the folder-sync configuration (bookmark, remote folder) for the
-    /// view's lifetime — a single instance so choosing a folder in one
-    /// `SyncView` presentation is still remembered the next time it's opened
-    /// without a relaunch.
-    @State private var syncStore = FolderSyncStore()
-    /// Owns the currently in-flight import, if any — a single instance for
-    /// the view's lifetime so a new import (or dismissing the sheet) can
-    /// cancel whatever's already running, per `overview.md` §11's
-    /// atomic-batch rule.
-    @State private var importCoordinator = ImportCoordinator()
-    /// The single on-disk store every batch load and import writes through —
-    /// created once in `.task` and held for the view's lifetime so the import
-    /// sheet and the device-alias sheet share the exact same instance the
-    /// initial load used, rather than each opening its own handle onto the
-    /// same manifest.
-    @State private var store: (any LibraryStore)?
+    #if os(iOS)
+    @State private var isPresentingSettingsSheet = false
+    #endif
     #if os(macOS)
     @State private var isDropTargeted = false
     #endif
@@ -67,54 +56,46 @@ struct BatchOverviewView: View {
 
     var body: some View {
         Group {
-            if let model {
-                content(for: model)
-            } else if let loadError {
+            if let overview = model.overview {
+                content(for: overview)
+            } else if let loadError = model.loadError {
                 ContentUnavailableView(
-                    "Couldn't load sample data",
+                    "Couldn't load activities",
                     systemImage: "exclamationmark.triangle",
                     description: Text(loadError)
                 )
             } else {
-                ProgressView("Loading sample activities…")
+                ProgressView("Loading activities…")
             }
         }
         .navigationDestination(for: SessionRoute.self) { route in
-            if let batch {
+            if let batch = model.batch {
                 SessionDetailView(batch: batch, sessionId: route.sessionId)
             } else {
                 ContentUnavailableView("Session unavailable", systemImage: "questionmark.folder")
             }
         }
-        .task {
-            do {
-                let store = try FileSystemLibraryStore(rootURL: FileSystemLibraryStore.defaultRootURL())
-                self.store = store
-                let loaded = try await Task.detached(priority: .userInitiated) {
-                    try await BatchBuilder.load(store: store)
-                }.value
-                batch = loaded
-                model = BatchOverviewModel(agreement: loaded.agreement)
-            } catch {
-                loadError = String(describing: error)
-            }
-        }
         .toolbar {
+            #if os(iOS)
+            // iOS only: on macOS the `Settings` scene in `FitViewApp` already
+            // puts this behind ⌘, and the app menu, which is where Mac users
+            // look for it — a second entry point in the toolbar would be
+            // redundant and non-idiomatic.
             ToolbarItem {
                 Button {
-                    isPresentingSyncSheet = true
+                    isPresentingSettingsSheet = true
                 } label: {
-                    Label("Sync", systemImage: "arrow.triangle.2.circlepath.icloud")
+                    Label("Settings", systemImage: "gearshape")
                 }
-                .disabled(store == nil)
             }
+            #endif
             ToolbarItem {
                 Button {
                     isPresentingDeviceAliasSheet = true
                 } label: {
-                    Label("Devices", systemImage: "gearshape")
+                    Label("Devices", systemImage: "tag")
                 }
-                .disabled(store == nil || model == nil)
+                .disabled(model.store == nil || model.overview == nil)
             }
             ToolbarItem {
                 Button {
@@ -122,30 +103,28 @@ struct BatchOverviewView: View {
                 } label: {
                     Label("Import", systemImage: "square.and.arrow.down")
                 }
-                .disabled(store == nil)
+                .disabled(model.store == nil)
             }
         }
         .sheet(isPresented: $isPresentingImportSheet) {
-            if let store {
-                ImportSheet(coordinator: importCoordinator, store: store) {
-                    Task { await reloadBatch(store: store) }
+            if let store = model.store {
+                ImportSheet(coordinator: model.importCoordinator, store: store) {
+                    Task { await model.reload() }
                 }
             }
         }
         .sheet(isPresented: $isPresentingDeviceAliasSheet) {
-            if let store, let batch {
+            if let store = model.store, let batch = model.batch {
                 DeviceAliasSheet(store: store, devices: batch.grouping.devices) {
-                    Task { await reloadBatch(store: store) }
+                    Task { await model.reload() }
                 }
             }
         }
-        .sheet(isPresented: $isPresentingSyncSheet) {
-            if let store {
-                SyncView(syncStore: syncStore, libraryStore: store) {
-                    Task { await reloadBatch(store: store) }
-                }
-            }
+        #if os(iOS)
+        .sheet(isPresented: $isPresentingSettingsSheet) {
+            SettingsSheet()
         }
+        #endif
         #if os(macOS)
         .onDrop(of: [.fileURL], isTargeted: $isDropTargeted) { providers in
             handleDrop(providers: providers)
@@ -161,30 +140,11 @@ struct BatchOverviewView: View {
         #endif
     }
 
-    /// Rebuilds the batch from `store` outright — the atomic-batch rule from
-    /// `overview.md` §11: a new load replaces, it never merges with what was
-    /// there before. Reloading from the store (rather than assembling
-    /// whatever files an import happened to produce in memory) is what keeps
-    /// the on-screen batch and the on-disk library from ever diverging: the
-    /// store is the only path a batch is ever built from.
-    private func reloadBatch(store: some LibraryStore) async {
-        do {
-            let loaded = try await Task.detached(priority: .userInitiated) {
-                try await BatchBuilder.load(store: store)
-            }.value
-            batch = loaded
-            model = BatchOverviewModel(agreement: loaded.agreement)
-            loadError = nil
-        } catch {
-            loadError = String(describing: error)
-        }
-    }
-
     #if os(macOS)
     /// macOS drag-and-drop onto the overview — the same import path as
     /// picking "Files" from the toolbar sheet, just skipping the picker UI.
     private func handleDrop(providers: [NSItemProvider]) -> Bool {
-        guard !providers.isEmpty, let store else { return false }
+        guard !providers.isEmpty, let store = model.store else { return false }
         Task {
             var urls: [URL] = []
             for provider in providers {
@@ -202,23 +162,28 @@ struct BatchOverviewView: View {
             let candidates = (try? await source.listAvailable()) ?? []
             guard !candidates.isEmpty else { return }
 
-            if await importCoordinator.startImport(from: source, candidates: candidates, store: store) != nil {
-                await reloadBatch(store: store)
+            if await model.importCoordinator.startImport(
+                from: source, candidates: candidates, store: store
+            ) != nil {
+                await model.reload()
             }
         }
         return true
     }
     #endif
 
+    // The presentation model is passed in rather than read off `model` inside
+    // these builders, so the outer `AppModel` isn't shadowed by a local named
+    // `model` — they're different objects and confusing them would be easy.
     @ViewBuilder
-    private func content(for model: BatchOverviewModel) -> some View {
+    private func content(for overview: BatchOverviewModel) -> some View {
         Group {
             switch layout {
-            case .table: tableContent(for: model)
-            case .cards: BatchOverviewCardList(model: model)
+            case .table: tableContent(for: overview)
+            case .cards: BatchOverviewCardList(model: overview)
             }
         }
-        .navigationTitle(model.title)
+        .navigationTitle(overview.title)
     }
 
     @ViewBuilder
@@ -362,14 +327,28 @@ struct BatchOverviewView: View {
     }
 }
 
-#Preview("Table") {
-    NavigationStack {
-        BatchOverviewView(layoutOverride: .table)
+/// Holds the `AppModel` in `@State` so it survives re-renders and gets exactly
+/// one `activate()`. A bare `.environment(AppModel())` in the `#Preview` body
+/// would mint a fresh model on every evaluation and lose the loaded batch.
+/// (`@Previewable`, which would make this unnecessary, needs iOS 18/macOS 15 —
+/// this target is 17/14.)
+private struct BatchOverviewPreviewHost: View {
+    let layout: OverviewLayout
+    @State private var model = AppModel()
+
+    var body: some View {
+        NavigationStack {
+            BatchOverviewView(layoutOverride: layout)
+        }
+        .environment(model)
+        .task { await model.activate() }
     }
 }
 
+#Preview("Table") {
+    BatchOverviewPreviewHost(layout: .table)
+}
+
 #Preview("Cards") {
-    NavigationStack {
-        BatchOverviewView(layoutOverride: .cards)
-    }
+    BatchOverviewPreviewHost(layout: .cards)
 }
