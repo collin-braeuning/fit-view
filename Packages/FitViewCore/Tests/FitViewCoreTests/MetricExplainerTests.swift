@@ -30,6 +30,17 @@ struct MetricExplainerTests {
         }
     }
 
+    @Test("the two plot explainers have no good/fair/poor scale")
+    func plotExplainersAreUnscored() {
+        // The generic bandsOrNote invariant above would also pass if someone
+        // added bands *and* dropped the note, so assert the design intent — a
+        // plot isn't scored — directly rather than relying on that invariant alone.
+        for kind in [MetricKind.blandAltmanPlot, .concordancePlot] {
+            #expect(kind.explainer.bands.isEmpty)
+            #expect(kind.explainer.unscoredNote != nil)
+        }
+    }
+
     // Bias and Mean |Diff| both quote differenceLevel's ≤3 good / ≤7 fair /
     // else poor thresholds in their band copy; CCC quotes cccLevel's ≥0.95 /
     // ≥0.90 thresholds. These values are asserted directly against
