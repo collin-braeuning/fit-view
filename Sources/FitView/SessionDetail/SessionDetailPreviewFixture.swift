@@ -60,6 +60,38 @@ enum SessionDetailPreviewFixture {
         // (c) missing device: only the primary has a file at all.
         let missingPrimary = (0..<150).map { record($0, heartRate: 140) }
 
+        // A realistic profile (ramp up, steady, cool-down) so the agreement
+        // plots aren't shown against a degenerate cloud — unlike the "Normal"
+        // session above, whose constant -1 bpm difference collapses the
+        // Bland-Altman plot to a single row and the CCC plot to a line.
+        func rampProfile(atSecond t: Int) -> Int {
+            switch t {
+            case 0..<200:
+                return 100 + Int((70.0 * Double(t) / 200.0).rounded())
+            case 200..<300:
+                return 170
+            default:
+                let elapsed = t - 300
+                let remaining = 600 - 300
+                return 170 - Int((70.0 * Double(elapsed) / Double(remaining)).rounded())
+            }
+        }
+
+        // A small xorshift generator with a fixed seed — deterministic, so
+        // this preview renders identically every run (never Double.random).
+        var jitterState: UInt64 = 88172645463325252
+        func nextJitter() -> Int {
+            jitterState ^= jitterState << 13
+            jitterState ^= jitterState >> 7
+            jitterState ^= jitterState << 17
+            return Int(jitterState % 5) - 2 // -2...2
+        }
+
+        let scatterPrimary = (0..<600).map { record($0, heartRate: rampProfile(atSecond: $0)) }
+        let scatterSecondary = (0..<600).map { t -> FitRecord in
+            record(t, heartRate: max(40, rampProfile(atSecond: t) - 2 + nextJitter()))
+        }
+
         let activitiesByFileName: [String: FitActivity] = [
             "2026-08-01_pace4_run": activity(records: normalPrimary),
             "2026-08-01_polarSense_run": activity(records: normalSecondary),
@@ -68,6 +100,8 @@ enum SessionDetailPreviewFixture {
             "2026-08-03_pace4_run": activity(records: fewPrimary),
             "2026-08-03_polarSense_run": activity(records: fewSecondary),
             "2026-08-04_pace4_run": activity(records: missingPrimary),
+            "2026-08-05_pace4_run": activity(records: scatterPrimary),
+            "2026-08-05_polarSense_run": activity(records: scatterSecondary),
         ]
 
         let filesByName = Dictionary(uniqueKeysWithValues: activitiesByFileName.map { fileName, activity in

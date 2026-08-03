@@ -28,6 +28,15 @@ struct SessionDetailView: View {
         #endif
     }
 
+    /// Secondary to the HR chart above, so it shouldn't out-size it.
+    private var scatterMinHeight: CGFloat {
+        #if os(iOS)
+        horizontalSizeClass == .regular ? 260 : 200
+        #else
+        260
+        #endif
+    }
+
     var body: some View {
         Group {
             if let model {
@@ -63,6 +72,11 @@ struct SessionDetailView: View {
                         .foregroundStyle(.secondary)
                 }
                 statsGrid(for: model)
+                AgreementPlotsSection(
+                    blandAltman: model.blandAltmanPlot,
+                    concordance: model.concordancePlot,
+                    minHeight: scatterMinHeight
+                )
                 coverageSection(for: model)
                 deviceFactsSection(for: model)
             }
@@ -308,5 +322,11 @@ struct SessionDetailView: View {
 #Preview("Missing device") {
     NavigationStack {
         SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-04|run")
+    }
+}
+
+#Preview("Scatter") {
+    NavigationStack {
+        SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-05|run")
     }
 }
