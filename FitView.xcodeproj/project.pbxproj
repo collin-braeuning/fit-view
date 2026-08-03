@@ -35,6 +35,7 @@
 		3EE4FC8396C43516EBF7617A /* AgreementLevel+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */; };
 		3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C428207FFDEE0AA997974 /* FormatDate.swift */; };
 		405F11FD2F7E57F0B64AB11B /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
+		4113F34F3495515C53DDCCB1 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744711A6152DC8D944BBAC03 /* AppModel.swift */; };
 		445FCC4EFFC038C68491C08E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB4DF09A2D0F71B42B61E36C /* Assets.xcassets */; };
 		45129BCB92C9A3C55FE43268 /* 2026-07-28_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */; };
 		49FD8667441194A81685CA37 /* BatchAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */; };
@@ -44,36 +45,41 @@
 		54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
 		559CE02066E90B65987D20DB /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
 		585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
+		5BBE147AD15661E578157068 /* FullScreenHeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */; };
 		68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
 		6B70A1571DE203879E45249D /* PolarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */; };
 		6E08F44166CB7A853C1A050B /* 2026-07-23_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */; };
 		6E6CA6D0339946158DEB2489 /* 2026-07-26-pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */; };
 		70AD62F62EF0A54F8F045244 /* BundledSampleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3886B442F95B35D4EB410680 /* BundledSampleSource.swift */; };
 		751D5200DADA3B4ECEBA84F1 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
+		764F8BE8121F9006DA92C284 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744711A6152DC8D944BBAC03 /* AppModel.swift */; };
 		7FBF08D8B7D1B4BA410F7FA2 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
 		83152F8889A20271010FAB64 /* 2026-07-23_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */; };
 		836D7136437E6E68D2403AFE /* PolarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */; };
 		85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
 		8842D31520F5F04832AB6572 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
 		8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C428207FFDEE0AA997974 /* FormatDate.swift */; };
+		90FA6E52F152682B2DEE52E9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F0AC88A64D83AABDE82B43 /* SettingsView.swift */; };
 		9249383166C563E968195CCB /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
 		9761BCAF646A10407625B9A4 /* 2026-07-25_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */; };
 		9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
 		A11E7DB613738CD62AE0234E /* PolarAccessLinkSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */; };
 		A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
 		AB1BFCD43781FFAA8D8E6EB4 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
-		B32ACFA0585BD0BD8E771E4F /* SyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759216EFE7DBD1ECBA1D5735 /* SyncView.swift */; };
 		B491BA30C03CD4668AF3F860 /* BundledSampleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3886B442F95B35D4EB410680 /* BundledSampleSource.swift */; };
-		B73A2531C78DA53C048F2B23 /* SyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759216EFE7DBD1ECBA1D5735 /* SyncView.swift */; };
+		B72642973C4E339719616C40 /* DataSourceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */; };
 		B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBB05856B8F40A606A0377B /* SessionDetailView.swift */; };
 		BC218D82609504468CC5AB15 /* SessionDetailPreviewFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */; };
+		C01325CDEE8B6A8582EFBDBF /* DataSourceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */; };
 		C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		C47CF6A546C34288B2AB2B32 /* BatchAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */; };
 		C658980557AFB6F64E0411FB /* 2026-07-27_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */; };
 		C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */; };
+		C8E66D6AF8F4696B2E1B4CC2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F0AC88A64D83AABDE82B43 /* SettingsView.swift */; };
 		CBC0D77790836A7EBBC73365 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 02BED5B526334DACF65C5370 /* FitViewCore */; };
 		CF3524DAF2910A17C4470C6E /* 2026-07-30_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */; };
 		CFDE1697CF46BF114FBACE2F /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
+		D21F8A98CBB5D6839B609C0B /* FullScreenHeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */; };
 		D43ECC1FC15D40A3152F7F3C /* 2026-07-27_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */; };
 		D5B2A1E978F25A298A3A6FDD /* ImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EEFD40AC516981A1C8CC0C /* ImportSheet.swift */; };
 		E373120611EA55B09D26D0CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
@@ -98,6 +104,7 @@
 /* Begin PBXFileReference section */
 		0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadedBatch.swift; sourceTree = "<group>"; };
 		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
+		06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenHeartRateChartView.swift; sourceTree = "<group>"; };
 		07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModel.swift; sourceTree = "<group>"; };
 		1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewCardList.swift; sourceTree = "<group>"; };
 		1A5BCD71CF4B86B7D492685B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -107,6 +114,7 @@
 		3886B442F95B35D4EB410680 /* BundledSampleSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledSampleSource.swift; sourceTree = "<group>"; };
 		398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-23_pace4_run.fit"; sourceTree = "<group>"; };
 		3CBB05856B8F40A606A0377B /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		46F0AC88A64D83AABDE82B43 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4F2BB1F8F0D3B0BC65CCB3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-23_polarSense_run.FIT"; sourceTree = "<group>"; };
 		54B398142104968E231BDF7E /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
@@ -115,8 +123,8 @@
 		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
 		720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchBuilder.swift; sourceTree = "<group>"; };
 		73B51F5A38FDA84472FE20F9 /* FileImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportSource.swift; sourceTree = "<group>"; };
+		744711A6152DC8D944BBAC03 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailPreviewFixture.swift; sourceTree = "<group>"; };
-		759216EFE7DBD1ECBA1D5735 /* SyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
 		779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-25_polarSense_run.FIT"; sourceTree = "<group>"; };
 		7C48CA5A3DE5B7E1173BADED /* CorosSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorosSource.swift; sourceTree = "<group>"; };
 		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
@@ -129,6 +137,7 @@
 		A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConfiguration.swift; sourceTree = "<group>"; };
 		AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModel.swift; sourceTree = "<group>"; };
 		BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-27_polarSense_run.FIT"; sourceTree = "<group>"; };
+		BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceMode.swift; sourceTree = "<group>"; };
 		CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarAccessLinkSource.swift; sourceTree = "<group>"; };
 		CC65984041C307E9C026CCB5 /* FitView-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitView-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4C428207FFDEE0AA997974 /* FormatDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatDate.swift; sourceTree = "<group>"; };
@@ -206,17 +215,18 @@
 			path = Packages;
 			sourceTree = "<group>";
 		};
-		5530A9290955D16906A70432 /* Sync */ = {
+		5450F1C2D211F7028F72F290 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				759216EFE7DBD1ECBA1D5735 /* SyncView.swift */,
+				46F0AC88A64D83AABDE82B43 /* SettingsView.swift */,
 			);
-			path = Sync;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		684655C390F463E448BE5D40 /* SessionDetail */ = {
 			isa = PBXGroup;
 			children = (
+				06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */,
 				88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */,
 				07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */,
 				746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */,
@@ -283,12 +293,14 @@
 			isa = PBXGroup;
 			children = (
 				D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */,
+				744711A6152DC8D944BBAC03 /* AppModel.swift */,
 				CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */,
 				720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */,
 				1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */,
 				AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */,
 				F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */,
 				2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */,
+				BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */,
 				EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */,
 				ED2468CD13769E17A4380CC4 /* FitViewApp.swift */,
 				CD4C428207FFDEE0AA997974 /* FormatDate.swift */,
@@ -297,7 +309,7 @@
 				6B6562388640695EF7EF67C0 /* Import */,
 				3A21FB5F2EF9AC7E1CF02D3C /* Resources */,
 				684655C390F463E448BE5D40 /* SessionDetail */,
-				5530A9290955D16906A70432 /* Sync */,
+				5450F1C2D211F7028F72F290 /* Settings */,
 			);
 			name = FitView;
 			path = Sources/FitView;
@@ -374,6 +386,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					AC7ED7F447DC2734CBFA509F = {
+						DevelopmentTeam = 4GP83563V4;
+					};
 				};
 			};
 			buildConfigurationList = 707D5E854DD1E1EA09606157 /* Build configuration list for PBXProject "FitView" */;
@@ -456,6 +471,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3EE4FC8396C43516EBF7617A /* AgreementLevel+Color.swift in Sources */,
+				764F8BE8121F9006DA92C284 /* AppModel.swift in Sources */,
 				C47CF6A546C34288B2AB2B32 /* BatchAssembler.swift in Sources */,
 				751D5200DADA3B4ECEBA84F1 /* BatchBuilder.swift in Sources */,
 				68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */,
@@ -464,10 +480,12 @@
 				70AD62F62EF0A54F8F045244 /* BundledSampleSource.swift in Sources */,
 				E373120611EA55B09D26D0CC /* ContentView.swift in Sources */,
 				1B46BE2E80E4F96F91860EC5 /* CorosSource.swift in Sources */,
+				B72642973C4E339719616C40 /* DataSourceMode.swift in Sources */,
 				2CFDED03C1F3B48A5BC39455 /* DeviceAliasSheet.swift in Sources */,
 				296D84F5D89039E64F0E2778 /* FileImportSource.swift in Sources */,
 				585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */,
 				3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */,
+				5BBE147AD15661E578157068 /* FullScreenHeartRateChartView.swift in Sources */,
 				C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */,
 				D5B2A1E978F25A298A3A6FDD /* ImportSheet.swift in Sources */,
 				1940804DC0D62B0FEF3F4C34 /* LoadedBatch.swift in Sources */,
@@ -478,7 +496,7 @@
 				1C9B3FCB9E977F1F448B04EC /* SessionDetailModel.swift in Sources */,
 				0F94CD109B3B7CE55CF4308D /* SessionDetailPreviewFixture.swift in Sources */,
 				137A9895FF49A1E5907F70C2 /* SessionDetailView.swift in Sources */,
-				B73A2531C78DA53C048F2B23 /* SyncView.swift in Sources */,
+				C8E66D6AF8F4696B2E1B4CC2 /* SettingsView.swift in Sources */,
 				FD6ED1B74D8F570F59531856 /* TokenStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -488,6 +506,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				072F3611544817D7C56543A6 /* AgreementLevel+Color.swift in Sources */,
+				4113F34F3495515C53DDCCB1 /* AppModel.swift in Sources */,
 				49FD8667441194A81685CA37 /* BatchAssembler.swift in Sources */,
 				7FBF08D8B7D1B4BA410F7FA2 /* BatchBuilder.swift in Sources */,
 				1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */,
@@ -496,10 +515,12 @@
 				B491BA30C03CD4668AF3F860 /* BundledSampleSource.swift in Sources */,
 				13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */,
 				ED9D1936891C99D733E7F3E2 /* CorosSource.swift in Sources */,
+				C01325CDEE8B6A8582EFBDBF /* DataSourceMode.swift in Sources */,
 				4B5E0522DB6E69CFBDD34ED9 /* DeviceAliasSheet.swift in Sources */,
 				13956237C4ADF5BC0D8AFEC8 /* FileImportSource.swift in Sources */,
 				85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */,
 				8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */,
+				D21F8A98CBB5D6839B609C0B /* FullScreenHeartRateChartView.swift in Sources */,
 				24CE8E96A5169EE1C05EE225 /* HeartRateComparisonChart.swift in Sources */,
 				EBCA0FCE10634AA18BC023A2 /* ImportSheet.swift in Sources */,
 				E956B9EC76A38C05A66BEA57 /* LoadedBatch.swift in Sources */,
@@ -510,7 +531,7 @@
 				F22B5026FAAEA78CE5D88517 /* SessionDetailModel.swift in Sources */,
 				BC218D82609504468CC5AB15 /* SessionDetailPreviewFixture.swift in Sources */,
 				B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */,
-				B32ACFA0585BD0BD8E771E4F /* SyncView.swift in Sources */,
+				90FA6E52F152682B2DEE52E9 /* SettingsView.swift in Sources */,
 				E6873DF465A51F235279B07D /* TokenStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -523,6 +544,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = "Sources/FitView-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -688,6 +710,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = "Sources/FitView-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
