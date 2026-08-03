@@ -19,11 +19,21 @@ import UniformTypeIdentifiers
 struct SettingsContent: View {
     @Environment(AppModel.self) private var model
     @State private var isPresentingFolderPicker = false
+    @State private var isPresentingDeviceAliasSheet = false
 
     var body: some View {
         @Bindable var model = model
 
         Form {
+            Section {
+                Button("Devices…") {
+                    isPresentingDeviceAliasSheet = true
+                }
+                .disabled(model.store == nil || model.overview == nil)
+            } footer: {
+                Text("Rename a device to merge it with another, or to fix a name reported by Polar Flow.")
+            }
+
             Section {
                 Picker("Data Source", selection: $model.dataSource) {
                     ForEach(DataSourceMode.allCases) { mode in
@@ -179,6 +189,13 @@ struct SettingsContent: View {
                 // saying nothing after the user picked a folder would be
                 // indistinguishable from a bug.
                 model.reportFolderError(error)
+            }
+        }
+        .sheet(isPresented: $isPresentingDeviceAliasSheet) {
+            if let store = model.store, let batch = model.batch {
+                DeviceAliasSheet(store: store, devices: batch.grouping.devices) {
+                    Task { await model.reload() }
+                }
             }
         }
     }
