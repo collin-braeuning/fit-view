@@ -22,7 +22,10 @@ struct ContentView: View {
         // `activate()` just scanned.
         .onChange(of: scenePhase) { _, phase in
             guard phase == .active else { return }
-            Task { await model.rescanFolder() }
+            Task {
+                await model.rescanFolder()
+                await model.syncPolar()
+            }
         }
     }
 }

@@ -53,6 +53,11 @@ struct PolarAPIClient: Sendable {
         body.queryItems = [
             URLQueryItem(name: "grant_type", value: "authorization_code"),
             URLQueryItem(name: "code", value: code),
+            // RFC 6749 §4.1.3: required here because `redirect_uri` was also
+            // sent in the authorization request (`authorizationURL(state:)`)
+            // — omitting it makes Polar's token endpoint reject the exchange
+            // with `invalid_request`.
+            URLQueryItem(name: "redirect_uri", value: Self.redirectURI),
         ]
         request.httpBody = body.query?.data(using: .utf8)
 
@@ -87,7 +92,20 @@ struct PolarAPIClient: Sendable {
 
         let (data, response) = try await urlSession.data(for: request)
         try Self.requireSuccess(response, data: data)
-        return try JSONDecoder().decode(PolarExerciseListResponse.self, from: data)
+        do {
+            return try JSONDecoder().decode(PolarExerciseListResponse.self, from: data)
+        } catch {
+            // The wire shape here has already been wrong once live (a
+            // `{"data": [...]}` envelope that turned out to be a bare array)
+            // — surfacing the raw body alongside the decode error, rather
+            // than just `DecodingError`'s own description, is what lets a
+            // *second* live surprise be diagnosed from the Settings error
+            // text (now copyable) instead of guessed at.
+            let body = String(data: data, encoding: .utf8) ?? "<\(data.count) bytes, not UTF-8>"
+            throw ActivitySourceError.underlying(
+                "Couldn't parse Polar's exercise list: \(error). Raw response: \(body)"
+            )
+        }
     }
 
     /// `GET /v3/exercises/{id}/fit` — raw `.fit` bytes, decoded afterward by

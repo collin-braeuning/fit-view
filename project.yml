@@ -84,6 +84,7 @@ targets:
         com.apple.security.application-groups:
           - group.com.fitview.app
         com.apple.security.files.user-selected.read-write: true
+        com.apple.security.network.client: true
   FitViewShareExtension-iOS:
     type: app-extension
     platform: iOS

@@ -39,13 +39,22 @@ public func defaultActivityFileName(
 /// truest source available, when it decodes at all. Falls back to
 /// `defaultActivityFileName(forIncomingFileName:)` for a file that doesn't
 /// decode (not a `.fit` file, or corrupted in transit).
+///
+/// - Parameter resolveDeviceLabel: applied to the FIT-decoded device name
+///   before it's baked into the filename — the hook a caller with access to
+///   `DeviceNicknameStore` (`RemoteActivitySync`, the share extension) uses
+///   to write "polarSense" instead of whatever raw string the file's own
+///   `device_info`/`file_id` happens to carry. Defaulted to identity so this
+///   function stays a pure, store-agnostic one for callers (and tests) that
+///   don't care about nicknames.
 public func defaultActivityFileName(
     forSharedData data: Data,
     incomingFileName: String?,
-    today: Date = Date()
+    today: Date = Date(),
+    resolveDeviceLabel: (String) -> String = { $0 }
 ) -> String {
     if let metadata = extractSharedActivityMetadata(from: data) {
-        let device = metadata.device ?? "device"
+        let device = metadata.device.map(resolveDeviceLabel) ?? "device"
         return "\(metadata.date)_\(device)_\(metadata.activity)"
     }
     return defaultActivityFileName(forIncomingFileName: incomingFileName, today: today)

@@ -13,13 +13,16 @@ import AppKit
 /// `listAvailable`/`fetch` both read it, concurrently, from the
 /// `ImportCoordinator`'s task group.
 ///
-/// This connector cannot be exercised end-to-end in this environment — the
-/// user hasn't registered a Polar client yet, so there is no real
-/// `client_id`/`client_secret` to authorize with (see `PolarConfiguration`).
-/// It degrades to `.notConfigured` rather than attempting a doomed network
-/// call, and its pure pieces (JSON decoding, UTC-safe candidate naming) are
-/// unit-tested in `FitViewCoreTests/PolarAccessLinkModelsTests.swift` against
-/// handwritten fixtures instead.
+/// Without a registered Polar client (`client_id`/`client_secret` — see
+/// `PolarConfiguration`), this degrades to `.notConfigured` rather than
+/// attempting a doomed network call, and its pure pieces (JSON decoding,
+/// UTC-safe candidate naming) are unit-tested in
+/// `FitViewCoreTests/PolarAccessLinkModelsTests.swift` against handwritten
+/// fixtures instead. With a real client, the HTTP layer itself has no
+/// automated coverage (no Polar sandbox exists), so it can only be verified
+/// live — which is how `PolarAPIClient`'s token-exchange `redirect_uri` and
+/// `PolarExerciseListResponse`'s bare-array wire shape were found to differ
+/// from the original guess.
 actor PolarAccessLinkSource: ActivitySource {
     nonisolated let id = "polar"
     nonisolated let displayName = "Polar Flow"
@@ -56,8 +59,7 @@ actor PolarAccessLinkSource: ActivitySource {
         // Polar access tokens don't expire, so a cached session is reused
         // outright rather than checked for staleness — there is no refresh
         // flow to run.
-        if let cached = try? await tokenStore.load() {
-            session = cached
+        if await restoreSession() {
             return
         }
 
@@ -70,6 +72,28 @@ actor PolarAccessLinkSource: ActivitySource {
         let newSession = PolarSession(accessToken: token.accessToken, xUserId: token.xUserId)
         try await tokenStore.save(newSession)
         session = newSession
+    }
+
+    /// Loads a cached session from the keychain into `session`, if one
+    /// exists. **Never** presents UI — this is the entry point for an
+    /// unattended background sync, where popping an OAuth sheet would be
+    /// unacceptable. Returns whether a session was found; a `false` result
+    /// means the caller must fall back to `authorize()` from a user gesture.
+    @discardableResult
+    func restoreSession() async -> Bool {
+        guard let cached = try? await tokenStore.load() else { return false }
+        session = cached
+        return true
+    }
+
+    /// Forgets the cached session, both in the keychain and in memory — the
+    /// "Disconnect" action. Already-imported activities are untouched; only
+    /// the credential goes away. Clears the in-memory session even if the
+    /// keychain delete fails, so the UI doesn't show "connected" for a
+    /// session it's about to lose track of either way.
+    func disconnect() async throws {
+        defer { session = nil }
+        try await tokenStore.clear()
     }
 
     func listAvailable() async throws -> [ImportCandidate] {

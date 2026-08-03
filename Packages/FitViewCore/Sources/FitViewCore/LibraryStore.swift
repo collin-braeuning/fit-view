@@ -112,6 +112,12 @@ public enum LibraryStoreError: Error, Sendable, Equatable {
     /// show, matching the "a broken join should be visible" principle the
     /// rest of this package follows.
     case corruptManifest(underlying: String)
+    /// `updateDeviceAlias` was asked to set an alias that would make a
+    /// device's rename chain loop back on itself (e.g. renaming "polarSense"
+    /// to "Reference HR" while something already resolves "Reference HR"
+    /// back to "polarSense"). Rejected outright rather than silently
+    /// corrupting resolution into an infinite loop.
+    case aliasCycleDetected(deviceKey: String, label: String)
 }
 
 /// Where an activity's bytes and metadata live once imported, independent of

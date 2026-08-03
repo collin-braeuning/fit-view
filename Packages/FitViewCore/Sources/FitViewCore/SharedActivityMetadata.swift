@@ -40,13 +40,18 @@ public func extractSharedActivityMetadata(from data: Data) -> SharedActivityMeta
 }
 
 /// `device_info`'s `product_name` first — a literal string many non-Garmin
-/// devices write (e.g. "COROS PACE 3") — falling back to `file_id`'s
-/// `manufacturer` (an enum FitFileParser can name, e.g. "garmin") if that's
-/// missing. `product` on either message is Garmin-specific
-/// (`garmin_product`, a numeric code) and resolves to nothing on other
-/// manufacturers' files, so it isn't used here.
+/// devices write (e.g. "COROS PACE 3") — then `file_id`'s `product_name`
+/// (confirmed against real Polar Verity Sense exports: `device_info` on
+/// those files carries no `product_name` at all, but `file_id` does),
+/// falling back to `file_id`'s `manufacturer` (an enum FitFileParser can
+/// name, e.g. "garmin") only if neither has one. `product` on either message
+/// is Garmin-specific (`garmin_product`, a numeric code) and resolves to
+/// nothing on other manufacturers' files, so it isn't used here.
 private func deviceName(in fit: FitFile) -> String? {
     if let productName = firstField("product_name", inMessageType: "device_info", of: fit) {
+        return productName
+    }
+    if let productName = firstField("product_name", inMessageType: "file_id", of: fit) {
         return productName
     }
     // `file_id.manufacturer` is a profile enum name like "polar_electro" —

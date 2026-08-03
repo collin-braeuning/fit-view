@@ -29,7 +29,6 @@ struct BatchOverviewView: View {
 
     @State private var selectedSessionId: String?
     @State private var isPresentingImportSheet = false
-    @State private var isPresentingDeviceAliasSheet = false
     #if os(iOS)
     @State private var isPresentingSettingsSheet = false
     #endif
@@ -91,14 +90,6 @@ struct BatchOverviewView: View {
             #endif
             ToolbarItem {
                 Button {
-                    isPresentingDeviceAliasSheet = true
-                } label: {
-                    Label("Devices", systemImage: "tag")
-                }
-                .disabled(model.store == nil || model.overview == nil)
-            }
-            ToolbarItem {
-                Button {
                     isPresentingImportSheet = true
                 } label: {
                     Label("Import", systemImage: "square.and.arrow.down")
@@ -109,13 +100,6 @@ struct BatchOverviewView: View {
         .sheet(isPresented: $isPresentingImportSheet) {
             if let store = model.store {
                 ImportSheet(coordinator: model.importCoordinator, store: store) {
-                    Task { await model.reload() }
-                }
-            }
-        }
-        .sheet(isPresented: $isPresentingDeviceAliasSheet) {
-            if let store = model.store, let batch = model.batch {
-                DeviceAliasSheet(store: store, devices: batch.grouping.devices) {
                     Task { await model.reload() }
                 }
             }

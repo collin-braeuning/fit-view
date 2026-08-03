@@ -35,16 +35,16 @@ struct SharedActivityMetadataTests {
         #expect(metadata.device == "COROS PACE 4")
     }
 
-    @Test("reads the real recorded date and activity out of a polarSense sample, falling back to manufacturer for device")
+    @Test("reads the real recorded date and activity out of a polarSense sample, falling back to file_id for device")
     func polarSenseSample() throws {
         let data = try sampleData("2026-07-24_polarSense_run.FIT")
         let metadata = try #require(extractSharedActivityMetadata(from: data))
         #expect(metadata.date == "2026-07-24")
         #expect(!metadata.activity.isEmpty)
-        // No `device_info.product_name` on this file, so this falls back to
-        // `file_id.manufacturer`'s enum name, humanized — less specific than
-        // "Polar Sense", but still real data from the file, not a guess.
-        #expect(metadata.device == "Polar Electro")
+        // No `device_info.product_name` on this file, but `file_id` does
+        // carry one ("Polar Verity Sense") — confirmed against a live Polar
+        // export with the same shape.
+        #expect(metadata.device == "Polar Verity Sense")
     }
 
     @Test("returns nil for bytes that aren't a FIT file at all")
