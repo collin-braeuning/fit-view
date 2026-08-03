@@ -37,6 +37,15 @@ private func makeIngestor(watching folder: URL) async throws -> FolderIngestor {
     return FolderIngestor(source: source)
 }
 
+/// A fresh, isolated `DeviceNicknameStore` per store — these tests don't
+/// exercise aliasing, so isolation just needs to hold, not anything more.
+private func makeStore(rootURL: URL) throws -> FileSystemLibraryStore {
+    try FileSystemLibraryStore(
+        rootURL: rootURL,
+        nicknames: DeviceNicknameStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+    )
+}
+
 @Suite("FolderIngestor")
 struct FolderIngestorTests {
     @Test("a first scan imports every .fit file in the folder")
@@ -46,7 +55,7 @@ struct FolderIngestorTests {
         try placeFitFile(named: "2026-07-23_polarSense_run.FIT", in: folder, from: "2026-07-23_polarSense_run.FIT")
 
         let ingestor = try await makeIngestor(watching: folder)
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         let report = try await ingestor.ingest(into: store)
         #expect(report.discovered == 2)
@@ -67,7 +76,7 @@ struct FolderIngestorTests {
         try placeFitFile(named: "2026-07-23_pace4_run.fit", in: folder, from: "2026-07-23_pace4_run.fit")
 
         let ingestor = try await makeIngestor(watching: folder)
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         let first = try await ingestor.ingest(into: store)
         #expect(first.imported == 1)
@@ -89,7 +98,7 @@ struct FolderIngestorTests {
         try placeFitFile(named: "2026-07-23_pace4_run.fit", in: folder, from: "2026-07-23_pace4_run.fit")
 
         let ingestor = try await makeIngestor(watching: folder)
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         let first = try await ingestor.ingest(into: store)
         #expect(first.imported == 1)
@@ -112,7 +121,7 @@ struct FolderIngestorTests {
     @Test("an empty folder is a successful no-op, not an error")
     func emptyFolderIsANoOp() async throws {
         let ingestor = try await makeIngestor(watching: makeTempDirectory())
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         let report = try await ingestor.ingest(into: store)
         #expect(report == FolderIngestReport())
@@ -123,7 +132,7 @@ struct FolderIngestorTests {
     func unconfiguredIngestThrows() async throws {
         let defaults = UserDefaults(suiteName: "FolderIngestorTests.\(UUID().uuidString)")!
         let ingestor = FolderIngestor(source: WatchedFolderSource(defaults: defaults))
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         await #expect(throws: ActivitySourceError.self) {
             _ = try await ingestor.ingest(into: store)
@@ -137,7 +146,7 @@ struct FolderIngestorTests {
         try Data([0x00, 0x01, 0x02, 0x03]).write(to: folder.appendingPathComponent("2026-07-24_pace4_run.fit"))
 
         let ingestor = try await makeIngestor(watching: folder)
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         let report = try await ingestor.ingest(into: store)
         #expect(report.discovered == 2)
@@ -156,7 +165,7 @@ struct FolderIngestorTests {
         try Data([0x00, 0x01]).write(to: corruptURL)
 
         let ingestor = try await makeIngestor(watching: folder)
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         #expect(try await ingestor.ingest(into: store).failures.count == 1)
 
@@ -180,7 +189,7 @@ struct FolderIngestorTests {
         try placeFitFile(named: "copy/2026-07-23_pace4_run.fit", in: folder, from: "2026-07-23_pace4_run.fit")
 
         let ingestor = try await makeIngestor(watching: folder)
-        let store = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let store = try makeStore(rootURL: makeTempDirectory())
 
         let report = try await ingestor.ingest(into: store)
         #expect(report.discovered == 2, "both paths are still listed as candidates")

@@ -26,7 +26,6 @@ struct ImportSheet: View {
     @State private var phase: Phase = .pickingSource
     @State private var bundledSource = BundledSampleSource()
     @State private var fileSource = FileImportSource()
-    @State private var polarSource = PolarAccessLinkSource()
     @State private var corosSource = CorosSource()
     @State private var isPresentingFilePicker = false
 
@@ -46,7 +45,7 @@ struct ImportSheet: View {
     }
 
     private var sources: [any ActivitySource] {
-        [bundledSource, fileSource, polarSource, corosSource]
+        [bundledSource, fileSource, corosSource]
     }
 
     var body: some View {
@@ -103,16 +102,8 @@ struct ImportSheet: View {
             Button {
                 select(source)
             } label: {
-                VStack(alignment: .leading) {
-                    Text(source.displayName)
-                    if source.id == "polar", !polarSource.isConfigured {
-                        Text("Not configured — see Secrets.xcconfig.template")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
+                Text(source.displayName)
             }
-            .disabled(source.id == "polar" && !polarSource.isConfigured)
         }
     }
 

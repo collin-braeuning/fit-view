@@ -17,6 +17,20 @@ private func makeBookmark(pointingAt folder: URL) throws -> FolderBookmark {
     return bookmark
 }
 
+/// Real `.fit` bytes with a decodable device — a hand-written byte string
+/// would never reach `resolveDeviceLabel` at all, since that closure is only
+/// ever applied to a device name `extractSharedActivityMetadata` actually
+/// decoded.
+private func realFitData(named name: String = "2026-07-23_polarSense_run.FIT") throws -> Data {
+    let repoRoot = URL(fileURLWithPath: #filePath)
+        .deletingLastPathComponent() // FitViewCoreTests
+        .deletingLastPathComponent() // Tests
+        .deletingLastPathComponent() // FitViewCore
+        .deletingLastPathComponent() // Packages
+        .deletingLastPathComponent() // repo root
+    return try Data(contentsOf: repoRoot.appendingPathComponent("Sources/FitView/Resources/SampleData/\(name)"))
+}
+
 @Suite("defaultActivityFileName")
 struct DefaultActivityFileNameTests {
     @Test("reuses the date, device and activity of an already-conventional name")
@@ -68,6 +82,30 @@ struct DefaultActivityFileNameForSharedDataTests {
             today: today
         )
         #expect(name == "2026-07-25_device_activity")
+    }
+
+    @Test("resolveDeviceLabel substitutes a nickname for the FIT-decoded device name")
+    func resolveDeviceLabelSubstitutesTheDeviceName() throws {
+        let data = try realFitData()
+        let name = defaultActivityFileName(
+            forSharedData: data,
+            incomingFileName: nil,
+            resolveDeviceLabel: { rawName in rawName == "Polar Verity Sense" ? "polarSense" : rawName }
+        )
+        #expect(name.contains("polarSense"))
+        #expect(!name.contains("Polar Verity Sense"))
+    }
+
+    @Test("resolveDeviceLabel defaults to identity, so every existing call site keeps its exact old behavior")
+    func resolveDeviceLabelDefaultsToIdentity() throws {
+        let data = try realFitData()
+        let withDefault = defaultActivityFileName(forSharedData: data, incomingFileName: nil)
+        let withExplicitIdentity = defaultActivityFileName(
+            forSharedData: data,
+            incomingFileName: nil,
+            resolveDeviceLabel: { $0 }
+        )
+        #expect(withDefault == withExplicitIdentity)
     }
 }
 

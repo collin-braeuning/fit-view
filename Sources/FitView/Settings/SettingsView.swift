@@ -81,6 +81,7 @@ struct SettingsContent: View {
                     Text(folderError)
                         .font(.caption)
                         .foregroundStyle(.red)
+                        .textSelection(.enabled)
                 }
             } header: {
                 Text("Activity Folder")
@@ -89,6 +90,83 @@ struct SettingsContent: View {
                     + "2026-07-26_pace4_run.fit. New files are picked up when the app launches and "
                     + "each time you return to it. Files are copied into the app's library, so "
                     + "removing one from the folder won't remove it here.")
+            }
+
+            Section {
+                if !model.polarSource.isConfigured {
+                    Text("Not configured — add a client id/secret to Secrets.xcconfig "
+                        + "(see Secrets.xcconfig.template).")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                } else if !model.isPolarConnected {
+                    Button("Connect Polar Flow…") {
+                        Task { await model.connectPolar() }
+                    }
+                    .disabled(!model.isFolderConfigured)
+                } else {
+                    Button("Sync Now") {
+                        Task { await model.syncPolar(force: true) }
+                    }
+                    .disabled(model.isSyncingPolar)
+
+                    Button("Disconnect", role: .destructive) {
+                        Task { await model.disconnectPolar() }
+                    }
+
+                    Button("Forget Downloaded Activities", role: .destructive) {
+                        model.resetPolarSyncState()
+                    }
+                }
+
+                if model.isSyncingPolar {
+                    HStack {
+                        ProgressView().controlSize(.small)
+                        Text("Syncing…")
+                    }
+                }
+
+                if let report = model.lastPolarSync {
+                    polarSyncSummary(report)
+                }
+
+                if let polarError = model.polarError {
+                    Text(polarError)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                        .textSelection(.enabled)
+                }
+            } header: {
+                Text("Polar Flow")
+            } footer: {
+                if model.polarSource.isConfigured, !model.isFolderConfigured {
+                    Text("Choose an activity folder above first — synced activities are written into it, "
+                        + "same as a file shared in by hand.")
+                } else {
+                    Text("Polar only shares activities recorded after you connect, and only from the "
+                        + "last 30 days. Older activities have to be imported by hand.")
+                }
+            }
+
+            Section {
+                if model.debugLog.isEmpty {
+                    Text("No log entries yet.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(model.debugLog.joined(separator: "\n"))
+                        .font(.system(.caption, design: .monospaced))
+                        .textSelection(.enabled)
+                }
+
+                Button("Clear Log", role: .destructive) {
+                    model.clearDebugLog()
+                }
+                .disabled(model.debugLog.isEmpty)
+            } header: {
+                Text("Debug Log")
+            } footer: {
+                Text("A running trace of what Connect/Sync/Disconnect actually did — useful for "
+                    + "diagnosing a sync that appears to do nothing. Not saved between launches.")
             }
         }
         .formStyle(.grouped)
@@ -121,6 +199,26 @@ struct SettingsContent: View {
                     .foregroundStyle(.secondary)
                 ForEach(report.failures.prefix(5), id: \.candidate.sourceId) { failure in
                     Text("• \(failure.candidate.sourceId)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func polarSyncSummary(_ report: RemoteSyncReport) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("\(report.discovered) activit\(report.discovered == 1 ? "y" : "ies") on Polar Flow, "
+                + "\(report.downloaded) newly downloaded.")
+                .font(.callout)
+            if !report.failures.isEmpty {
+                Text("Couldn't download \(report.failures.count) "
+                    + "activit\(report.failures.count == 1 ? "y" : "ies"):")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                ForEach(report.failures.prefix(5), id: \.candidate.sourceId) { failure in
+                    Text("• \(failure.candidate.suggestedName)")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }

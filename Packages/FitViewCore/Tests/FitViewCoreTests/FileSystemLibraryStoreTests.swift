@@ -24,11 +24,22 @@ private func makeTempRoot() throws -> URL {
     return root
 }
 
+/// A store over a fresh, isolated `DeviceNicknameStore` — every test gets its
+/// own nickname table (a fresh `UserDefaults` suite) unless it explicitly
+/// wants to share one, same reasoning `RemoteActivitySyncTests`' helpers
+/// already follow for `RemoteSyncIdStore`.
+private func makeStore(rootURL: URL) throws -> FileSystemLibraryStore {
+    try FileSystemLibraryStore(
+        rootURL: rootURL,
+        nicknames: DeviceNicknameStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+    )
+}
+
 @Suite("FileSystemLibraryStore")
 struct FileSystemLibraryStoreTests {
     @Test("add/list/remove a round trip")
     func addListRemoveRoundTrip() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
 
         let added = try await store.add(ImportedActivity(
             candidate: makeCandidate(), data: Data("fake fit bytes".utf8), source: "files"
@@ -54,7 +65,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("fetching a removed (or never-added) item's data reports itemNotFound, not a crash")
     func dataForMissingItemThrows() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         await #expect(throws: LibraryStoreError.itemNotFound(itemId: "nonexistent")) {
             _ = try await store.data(for: "nonexistent")
         }
@@ -62,7 +73,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("bulk data(for:) returns every item's bytes keyed by id, same as fetching each one individually")
     func bulkDataFetchMatchesPerItemFetch() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let first = try await store.add(ImportedActivity(
             candidate: makeCandidate(suggestedName: "2026-07-23_pace4_run"), data: Data("first".utf8), source: "files"
         ))
@@ -78,7 +89,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("bulk data(for:) reports itemNotFound if any requested id is stale, same as the single-item form")
     func bulkDataFetchThrowsOnAnyMissingId() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let added = try await store.add(ImportedActivity(
             candidate: makeCandidate(), data: Data("fake fit bytes".utf8), source: "files"
         ))
@@ -91,7 +102,7 @@ struct FileSystemLibraryStoreTests {
     @Test("identical bytes imported twice collapse onto one blob")
     func duplicateBytesCollapseOntoOneBlob() async throws {
         let root = try makeTempRoot()
-        let store = try FileSystemLibraryStore(rootURL: root)
+        let store = try makeStore(rootURL: root)
         let bytes = Data("identical content".utf8)
 
         let first = try await store.add(ImportedActivity(
@@ -119,7 +130,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("adding the identical activity twice is a no-op: one item, and the id is stable")
     func addingIdenticalActivityTwiceIsANoOp() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let activity = ImportedActivity(
             candidate: makeCandidate(suggestedName: "2026-07-23_pace4_run"), data: Data("same bytes".utf8), source: "files"
         )
@@ -138,7 +149,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("the same descriptor with different bytes still produces two items — the content half of the rule")
     func sameDescriptorDifferentBytesProducesTwoItems() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let candidate = makeCandidate(suggestedName: "2026-07-23_pace4_run")
 
         let first = try await store.add(ImportedActivity(candidate: candidate, data: Data("bytes one".utf8), source: "files"))
@@ -159,11 +170,11 @@ struct FileSystemLibraryStoreTests {
         let root = try makeTempRoot()
         let added: LibraryItem
         do {
-            let store = try FileSystemLibraryStore(rootURL: root)
+            let store = try makeStore(rootURL: root)
             added = try await store.add(ImportedActivity(candidate: makeCandidate(), data: Data([1, 2, 3]), source: "bundled"))
         }
 
-        let reopened = try FileSystemLibraryStore(rootURL: root)
+        let reopened = try makeStore(rootURL: root)
         let items = try await reopened.allItems()
         #expect(items.count == 1)
         #expect(items.first?.id == added.id)
@@ -179,7 +190,7 @@ struct FileSystemLibraryStoreTests {
     @Test("a corrupt manifest.json is reported, not silently treated as an empty library")
     func corruptManifestIsReported() async throws {
         let root = try makeTempRoot()
-        let store = try FileSystemLibraryStore(rootURL: root)
+        let store = try makeStore(rootURL: root)
         _ = try await store.add(ImportedActivity(candidate: makeCandidate(), data: Data([1]), source: "files"))
 
         try Data("{ not valid json".utf8).write(to: root.appendingPathComponent("manifest.json"))
@@ -191,7 +202,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("a device alias reconciles a raw device key onto a new label and grouping key")
     func deviceAliasReconcilesIdentity() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let added = try await store.add(ImportedActivity(
             candidate: makeCandidate(
                 suggestedName: "irrelevant",
@@ -214,9 +225,61 @@ struct FileSystemLibraryStoreTests {
         #expect(refetched == Data([9]), "aliasing changes identity, never the stored bytes")
     }
 
+    @Test("renaming an already-aliased device (a second hop) carries every device already merged into it along")
+    func multiHopRenameCarriesPreviouslyMergedDevicesAlong() async throws {
+        let store = try makeStore(rootURL: makeTempRoot())
+        _ = try await store.add(ImportedActivity(
+            candidate: makeCandidate(
+                suggestedName: "irrelevant",
+                startTime: Date(timeIntervalSince1970: 1_785_110_812),
+                deviceLabel: "Polar Vantage V2",
+                sport: "running"
+            ),
+            data: Data([9]),
+            source: "polar"
+        ))
+        try await store.updateDeviceAlias(deviceKey: "polarvantagev2", label: "polarSense")
+
+        // The "already-aliased device" rename this is the fix for: renaming
+        // the *target* of an existing alias, not the original raw key.
+        try await store.updateDeviceAlias(deviceKey: "polarsense", label: "Reference HR")
+
+        let items = try await store.allItems()
+        #expect(items.first?.device == "Reference HR", "the second hop must carry the first-hop device along, not strand it at the intermediate label")
+        #expect(items.first?.deviceKey == "referencehr")
+    }
+
+    @Test("a device alias created against one deviceKey spelling still resolves an item whose deviceKey diverged on whitespace")
+    func aliasReconcilesDivergentDeviceKeySpellings() async throws {
+        // `parseActivityFileName` (used for file-backed candidates — every
+        // folder-imported file, including Polar's auto-synced ones) keys
+        // off `device.lowercased()` with no space-stripping, while
+        // `activityDescriptorFields`'s API-sourced branch strips spaces
+        // first. The same physical device can therefore end up stored under
+        // two different raw `deviceKey`s depending on which import path
+        // produced it — resolution must reconcile them via `item.device`
+        // regardless.
+        let store = try makeStore(rootURL: makeTempRoot())
+        let added = try await store.add(ImportedActivity(
+            candidate: makeCandidate(suggestedName: "2026-08-03_Polar Verity Sense_generic"),
+            data: Data([1]),
+            source: "folder"
+        ))
+        #expect(added.device == "Polar Verity Sense")
+        #expect(added.deviceKey == "polar verity sense", "parseActivityFileName never strips spaces")
+
+        // Aliased using the space-stripped spelling an API-sourced item
+        // would have produced instead.
+        try await store.updateDeviceAlias(deviceKey: "polarveritysense", label: "polarSense")
+
+        let items = try await store.allItems()
+        #expect(items.first?.device == "polarSense")
+        #expect(items.first?.deviceKey == "polarsense")
+    }
+
     @Test("an API-sourced candidate with real startTime is dated/keyed from that metadata, not a synthesized name")
     func apiSourcedCandidateUsesRealMetadata() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         // 2026-07-27T00:06:52Z, matching PolarAccessLinkModelsTests's offset example.
         let startTime = Date(timeIntervalSince1970: 1_785_110_812)
 
@@ -239,7 +302,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("a file-backed candidate with no startTime falls back to parsing suggestedName")
     func fileBackedCandidateParsesSuggestedName() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let added = try await store.add(ImportedActivity(
             candidate: makeCandidate(suggestedName: "2026-07-26-pace4_run"), data: Data([1]), source: "bundled"
         ))
@@ -251,7 +314,7 @@ struct FileSystemLibraryStoreTests {
 
     @Test("add records the candidate's sourceId, so a re-scan can recognise what it already imported")
     func addRecordsSourceId() async throws {
-        let store = try FileSystemLibraryStore(rootURL: makeTempRoot())
+        let store = try makeStore(rootURL: makeTempRoot())
         let added = try await store.add(ImportedActivity(
             candidate: ImportCandidate(
                 sourceId: "nested/2026-07-23_pace4_run.fit", suggestedName: "2026-07-23_pace4_run"
@@ -293,7 +356,7 @@ struct FileSystemLibraryStoreTests {
         """
         try Data(legacyManifest.utf8).write(to: root.appendingPathComponent("manifest.json"))
 
-        let store = try FileSystemLibraryStore(rootURL: root)
+        let store = try makeStore(rootURL: root)
         let items = try await store.allItems()
         #expect(items.count == 1)
         #expect(items.first?.sourceId == nil)

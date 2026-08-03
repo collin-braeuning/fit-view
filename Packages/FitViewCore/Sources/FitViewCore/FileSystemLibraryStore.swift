@@ -25,18 +25,32 @@ import Foundation
 public actor FileSystemLibraryStore: LibraryStore {
     private let manifestURL: URL
     private let blobsURL: URL
+    private let nicknames: DeviceNicknameStore
 
-    /// - Parameter rootURL: the library's root directory. Created (along
-    ///   with `blobs/` inside it) if it doesn't already exist.
-    public init(rootURL: URL) throws {
+    /// - Parameters:
+    ///   - rootURL: the library's root directory. Created (along with
+    ///     `blobs/` inside it) if it doesn't already exist.
+    ///   - nicknames: the shared device-nickname table (see
+    ///     `DeviceNicknameStore`), required rather than defaulted so every
+    ///     call site — production and test alike — states explicitly
+    ///     whether it means to share one table across stores or keep an
+    ///     isolated one. A convenience default onto `AppGroup.defaults`
+    ///     would silently make every test-constructed store in `swift test`
+    ///     (which has no App Group entitlement, so `AppGroup.defaults` falls
+    ///     back to `.standard`) share one process-wide table — breaking the
+    ///     "two independent stores that start diverged and later merge"
+    ///     premise `FolderSyncStoreTests` depends on.
+    public init(rootURL: URL, nicknames: DeviceNicknameStore) throws {
         manifestURL = rootURL.appendingPathComponent("manifest.json")
         blobsURL = rootURL.appendingPathComponent("blobs", isDirectory: true)
+        self.nicknames = nicknames
         try FileManager.default.createDirectory(at: blobsURL, withIntermediateDirectories: true)
     }
 
     public func allItems() async throws -> [LibraryItem] {
         let manifest = try loadManifest()
-        return manifest.items.map { resolvingAlias($0, in: manifest) }
+        let table = nicknames.all()
+        return manifest.items.map { resolvingAlias($0, using: table) }
     }
 
     public func data(for itemId: String) async throws -> Data {
@@ -73,6 +87,7 @@ public actor FileSystemLibraryStore: LibraryStore {
         let fields = activityDescriptorFields(for: activity.candidate)
 
         var manifest = try loadManifest()
+        let table = nicknames.all()
 
         // Same bytes *and* the same descriptor slot: this is a re-import of
         // an activity already in the library, not a new one. Match against
@@ -87,7 +102,7 @@ public actor FileSystemLibraryStore: LibraryStore {
             $0.blobId == blobId && $0.date == fields.date && $0.deviceKey == fields.deviceKey
                 && $0.activityKey == fields.activityKey
         }) {
-            return resolvingAlias(existing, in: manifest)
+            return resolvingAlias(existing, using: table)
         }
 
         let item = LibraryItem(
@@ -108,7 +123,7 @@ public actor FileSystemLibraryStore: LibraryStore {
 
         manifest.items.append(item)
         try saveManifest(manifest)
-        return resolvingAlias(item, in: manifest)
+        return resolvingAlias(item, using: table)
     }
 
     public func remove(itemId: String) async throws {
@@ -118,13 +133,13 @@ public actor FileSystemLibraryStore: LibraryStore {
     }
 
     public func updateDeviceAlias(deviceKey: String, label: String) async throws {
-        var manifest = try loadManifest()
-        manifest.deviceAliases[deviceKey] = label
-        try saveManifest(manifest)
+        guard nicknames.setNickname(label, forRawDeviceName: deviceKey) else {
+            throw LibraryStoreError.aliasCycleDetected(deviceKey: deviceKey, label: label)
+        }
     }
 
     public func deviceAliases() async throws -> [String: String] {
-        try loadManifest().deviceAliases
+        nicknames.all().mapValues(\.label)
     }
 
     public func addRawItem(_ item: LibraryItem, data: Data) async throws {
@@ -153,8 +168,6 @@ public actor FileSystemLibraryStore: LibraryStore {
     /// callers only ever see `LibraryItem`, already alias-resolved.
     private struct Manifest: Codable {
         var items: [LibraryItem] = []
-        /// Raw (pre-alias) `deviceKey` -> user-chosen display label.
-        var deviceAliases: [String: String] = [:]
     }
 
     private func loadManifest() throws -> Manifest {
@@ -190,14 +203,29 @@ public actor FileSystemLibraryStore: LibraryStore {
         blobsURL.appendingPathComponent("\(blobId).fit")
     }
 
-    /// Resolves a persisted item's device identity against the current alias
-    /// table — applied at read time, not baked into storage, so editing an
-    /// alias later doesn't require rewriting every item it affects.
-    private func resolvingAlias(_ item: LibraryItem, in manifest: Manifest) -> LibraryItem {
-        guard let label = manifest.deviceAliases[item.deviceKey] else { return item }
+    /// Resolves a persisted item's device identity against the shared
+    /// nickname table — applied at read time, not baked into storage, so
+    /// renaming a device later doesn't require rewriting every item it
+    /// affects. Keyed off `item.device` (original casing) through
+    /// `DeviceNicknameStore.key(for:)` rather than `item.deviceKey` directly
+    /// — `deviceKey` is computed by two different algorithms elsewhere
+    /// (`parseActivityFileName`'s plain lowercase versus
+    /// `activityDescriptorFields`'s space-stripped-then-lowercased slug for
+    /// API-sourced candidates) that disagree on whitespace, so keying off
+    /// the raw display name through one canonical normalizer reconciles
+    /// both instead of only ever matching one of them.
+    private func resolvingAlias(_ item: LibraryItem, using table: [String: DeviceNickname]) -> LibraryItem {
+        let label = DeviceNicknameStore.resolvedLabel(for: item.device, in: table)
+        guard label != item.device else { return item }
         var resolved = item
         resolved.device = label
-        resolved.deviceKey = label.lowercased()
+        // `DeviceNicknameStore.key(for:)`, not a bare `.lowercased()` — the
+        // whole reason this resolves off `item.device` in the first place
+        // is to reconcile the two existing `deviceKey` algorithms that
+        // disagree on whitespace, so the alias's own resulting key must go
+        // through the same normalizer or it would just introduce a third
+        // spelling.
+        resolved.deviceKey = DeviceNicknameStore.key(for: label)
         return resolved
     }
 

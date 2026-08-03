@@ -13,6 +13,18 @@ private func makeTempDirectory() -> URL {
     return url
 }
 
+/// A fresh, independent `DeviceNicknameStore` per call — load-bearing here,
+/// not just isolation hygiene: these tests specifically exercise two
+/// `LibraryStore`s whose alias tables start diverged and later merge via
+/// `FolderSyncStore.push`/`pull`, which only means anything if each store
+/// truly owns its own table rather than sharing one.
+private func makeStore(rootURL: URL) throws -> FileSystemLibraryStore {
+    try FileSystemLibraryStore(
+        rootURL: rootURL,
+        nicknames: DeviceNicknameStore(defaults: UserDefaults(suiteName: UUID().uuidString)!)
+    )
+}
+
 private func makeCandidate(
     suggestedName: String = "2026-07-23_pace4_run",
     startTime: Date? = nil,
@@ -51,7 +63,7 @@ struct FolderSyncStoreTests {
     @Test("push/pull before a folder is set reports notConfigured")
     func operationsBeforeConfigurationThrow() async throws {
         let sync = await makeSyncStore()
-        let local = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let local = try makeStore(rootURL: makeTempDirectory())
         await #expect(throws: FolderSyncError.notConfigured) {
             _ = try await sync.push(local)
         }
@@ -65,7 +77,7 @@ struct FolderSyncStoreTests {
         let sync = await makeSyncStore()
         try await sync.setFolder(makeTempDirectory())
 
-        let local = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let local = try makeStore(rootURL: makeTempDirectory())
         let added = try await local.add(ImportedActivity(
             candidate: makeCandidate(), data: Data("hello fit bytes".utf8), source: "files"
         ))
@@ -74,7 +86,7 @@ struct FolderSyncStoreTests {
         #expect(pushReport.itemsCopied == 1)
         #expect(pushReport.blobsCopied == 1)
 
-        let otherLocal = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let otherLocal = try makeStore(rootURL: makeTempDirectory())
         let pullReport = try await sync.pull(into: otherLocal)
         #expect(pullReport.itemsCopied == 1)
         #expect(pullReport.blobsCopied == 1)
@@ -95,7 +107,7 @@ struct FolderSyncStoreTests {
         let remoteFolder = makeTempDirectory()
         try await sync.setFolder(remoteFolder)
 
-        let local = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let local = try makeStore(rootURL: makeTempDirectory())
         _ = try await local.add(ImportedActivity(candidate: makeCandidate(), data: Data([1, 2, 3]), source: "files"))
 
         let first = try await sync.push(local)
@@ -118,7 +130,7 @@ struct FolderSyncStoreTests {
         let remoteFolder = makeTempDirectory()
         try await sync.setFolder(remoteFolder)
 
-        let local = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let local = try makeStore(rootURL: makeTempDirectory())
         let sharedBytes = Data("identical".utf8)
         _ = try await local.add(ImportedActivity(
             candidate: makeCandidate(suggestedName: "2026-07-23_pace4_run"), data: sharedBytes, source: "files"
@@ -142,11 +154,11 @@ struct FolderSyncStoreTests {
         let sync = await makeSyncStore()
         try await sync.setFolder(makeTempDirectory())
 
-        let pusher = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let pusher = try makeStore(rootURL: makeTempDirectory())
         _ = try await pusher.add(ImportedActivity(candidate: makeCandidate(), data: Data([9, 9]), source: "files"))
         try await sync.push(pusher)
 
-        let puller = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let puller = try makeStore(rootURL: makeTempDirectory())
         let first = try await sync.pull(into: puller)
         #expect(first.itemsCopied == 1)
 
@@ -162,12 +174,12 @@ struct FolderSyncStoreTests {
         let sync = await makeSyncStore()
         try await sync.setFolder(makeTempDirectory())
 
-        let pusher = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let pusher = try makeStore(rootURL: makeTempDirectory())
         try await pusher.updateDeviceAlias(deviceKey: "polarvantagev2", label: "polarSense")
         try await pusher.updateDeviceAlias(deviceKey: "remote-only-key", label: "Remote Only")
         try await sync.push(pusher)
 
-        let puller = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let puller = try makeStore(rootURL: makeTempDirectory())
         try await puller.updateDeviceAlias(deviceKey: "polarvantagev2", label: "a local guess, should be overwritten")
         try await puller.updateDeviceAlias(deviceKey: "local-only-key", label: "Local Only")
 
@@ -186,11 +198,11 @@ struct FolderSyncStoreTests {
         let remoteFolder = makeTempDirectory()
         try await sync.setFolder(remoteFolder)
 
-        let seeder = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let seeder = try makeStore(rootURL: makeTempDirectory())
         try await seeder.updateDeviceAlias(deviceKey: "polarvantagev2", label: "a stale remote value")
         try await sync.push(seeder)
 
-        let pusher = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let pusher = try makeStore(rootURL: makeTempDirectory())
         try await pusher.updateDeviceAlias(deviceKey: "polarvantagev2", label: "polarSense")
         let report = try await sync.push(pusher)
         #expect(report.aliasesMerged == 1)
@@ -207,7 +219,7 @@ struct FolderSyncStoreTests {
     func pullFromEmptyFolderIsANoOp() async throws {
         let sync = await makeSyncStore()
         try await sync.setFolder(makeTempDirectory())
-        let local = try FileSystemLibraryStore(rootURL: makeTempDirectory())
+        let local = try makeStore(rootURL: makeTempDirectory())
 
         let report = try await sync.pull(into: local)
         #expect(report == SyncReport())

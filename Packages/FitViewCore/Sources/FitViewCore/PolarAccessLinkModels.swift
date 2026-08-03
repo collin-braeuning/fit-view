@@ -38,7 +38,12 @@ public struct PolarTokenResponse: Sendable, Equatable, Codable {
 public struct PolarExercise: Sendable, Equatable, Codable {
     public var id: String
     /// ISO-8601 local wall-clock time — see `startTimeUtcOffsetMinutes`.
-    public var startTime: String
+    /// Optional because at least one real exercise has been observed missing
+    /// this field entirely, live — confirmed against a real account, since
+    /// there's no sandbox to check this against ahead of time (see this
+    /// file's top-level doc comment). Treated exactly like an unparseable
+    /// timestamp: `polarImportCandidate` falls back to `unknown-date`.
+    public var startTime: String?
     /// Minutes east of UTC at the recording location. Polar's `start-time`
     /// carries no timezone suffix of its own; this is the only way to
     /// recover the true instant.
@@ -56,7 +61,7 @@ public struct PolarExercise: Sendable, Equatable, Codable {
 
     public init(
         id: String,
-        startTime: String,
+        startTime: String? = nil,
         startTimeUtcOffsetMinutes: Int? = nil,
         sport: String? = nil,
         device: String? = nil
@@ -70,11 +75,24 @@ public struct PolarExercise: Sendable, Equatable, Codable {
 }
 
 /// `GET /v3/exercises`'s top-level envelope.
+///
+/// The response body itself is a bare JSON array, not the `{"data": [...]}`
+/// wrapper the naming here implies — confirmed against a live account, since
+/// there's no sandbox to check this against ahead of time (see this file's
+/// top-level doc comment on why the wire shape can only be verified live).
+/// `data` is kept as the property name regardless, since every call site
+/// reads `response.data` and a bare-array response decodes into it the same
+/// way.
 public struct PolarExerciseListResponse: Sendable, Equatable, Codable {
     public var data: [PolarExercise]
 
     public init(data: [PolarExercise]) {
         self.data = data
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        data = try container.decode([PolarExercise].self)
     }
 }
 
@@ -124,10 +142,9 @@ func utcDateStamp(_ date: Date) -> String {
 /// grouping code is needed yet. Phase 2 replaces this with grouping directly
 /// over descriptors.
 public func polarImportCandidate(from exercise: PolarExercise) -> ImportCandidate {
-    let startTime = polarStartTime(
-        localTimeString: exercise.startTime,
-        utcOffsetMinutes: exercise.startTimeUtcOffsetMinutes
-    )
+    let startTime = exercise.startTime.flatMap {
+        polarStartTime(localTimeString: $0, utcOffsetMinutes: exercise.startTimeUtcOffsetMinutes)
+    }
     let dateStamp = startTime.map(utcDateStamp) ?? "unknown-date"
     // Device names ("Polar Vantage V2") and sports ("RUNNING") come back with
     // spaces/casing that would corrupt the underscore-delimited name (the

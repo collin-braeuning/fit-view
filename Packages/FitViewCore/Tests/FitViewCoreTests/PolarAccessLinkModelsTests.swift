@@ -15,23 +15,23 @@ private let tokenResponseJSON = """
 }
 """
 
+// Polar's real `GET /v3/exercises` response is a bare array, not a
+// `{"data": [...]}` envelope — confirmed against a live account.
 private let exerciseListJSON = """
-{
-  "data": [
-    {
-      "id": "12345",
-      "start-time": "2026-07-26T17:06:52",
-      "start-time-utc-offset": -420,
-      "sport": "RUNNING",
-      "device": "Polar Vantage V2"
-    },
-    {
-      "id": "67890",
-      "start-time": "2026-07-27T08:15:00",
-      "sport": "OTHER"
-    }
-  ]
-}
+[
+  {
+    "id": "12345",
+    "start-time": "2026-07-26T17:06:52",
+    "start-time-utc-offset": -420,
+    "sport": "RUNNING",
+    "device": "Polar Vantage V2"
+  },
+  {
+    "id": "67890",
+    "start-time": "2026-07-27T08:15:00",
+    "sport": "OTHER"
+  }
+]
 """
 
 @Suite("Polar AccessLink decoding")
@@ -124,5 +124,29 @@ struct PolarAccessLinkModelsTests {
         // Still parseable, even if not meaningfully groupable — never crashes
         // the batch grouping step.
         #expect(parseActivityFileName(candidate.suggestedName) == nil, "an invalid date is correctly rejected, not silently accepted")
+    }
+
+    @Test("an exercise with the start-time key missing entirely decodes, not just one with an unparseable value")
+    func decodesAnExerciseMissingStartTimeEntirely() throws {
+        // Confirmed against a live account: at least one real exercise omits
+        // `start-time` outright, rather than sending an unparseable value —
+        // a decoding failure here previously surfaced as a hard sync error
+        // instead of the same graceful "unknown-date" fallback other
+        // missing/invalid metadata already gets.
+        let json = """
+        [
+          {
+            "id": "99999",
+            "sport": "OTHER"
+          }
+        ]
+        """
+        let response = try JSONDecoder().decode(PolarExerciseListResponse.self, from: Data(json.utf8))
+        let exercise = try #require(response.data.first)
+        #expect(exercise.startTime == nil)
+
+        let candidate = polarImportCandidate(from: exercise)
+        #expect(candidate.startTime == nil)
+        #expect(candidate.suggestedName == "unknown-date_polar_other")
     }
 }

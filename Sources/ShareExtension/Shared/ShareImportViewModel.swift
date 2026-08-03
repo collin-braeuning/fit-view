@@ -33,18 +33,25 @@ final class ShareImportViewModel {
 
     private let extensionContext: NSExtensionContext?
     private let bookmark: FolderBookmark
+    private let nicknames: DeviceNicknameStore
     private var data: Data?
 
     /// `bookmark` defaults to the exact key `WatchedFolderSource` uses, so
     /// this always points at the same folder Settings shows — the extension
     /// and the host app agree on "the folder" only because both read the
-    /// same App-Group-shared `UserDefaults` under the same key.
+    /// same App-Group-shared `UserDefaults` under the same key. `nicknames`
+    /// reads the same shared device-nickname table for the same reason: a
+    /// device the user already renamed in the main app should get its
+    /// nickname baked into a shared-in file's name too, not just a
+    /// Polar-synced one.
     init(
         extensionContext: NSExtensionContext?,
-        bookmark: FolderBookmark = FolderBookmark(defaults: AppGroup.defaults, key: "FitView.WatchedFolder.bookmark")
+        bookmark: FolderBookmark = FolderBookmark(defaults: AppGroup.defaults, key: "FitView.WatchedFolder.bookmark"),
+        nicknames: DeviceNicknameStore = DeviceNicknameStore(defaults: AppGroup.defaults)
     ) {
         self.extensionContext = extensionContext
         self.bookmark = bookmark
+        self.nicknames = nicknames
     }
 
     func start() async {
@@ -64,7 +71,11 @@ final class ShareImportViewModel {
             // (`extractSharedActivityMetadata`) over the source app's
             // filename — the file's own content is the truest source
             // available, when it decodes at all.
-            fileName = defaultActivityFileName(forSharedData: data, incomingFileName: suggestedName)
+            fileName = defaultActivityFileName(
+                forSharedData: data,
+                incomingFileName: suggestedName,
+                resolveDeviceLabel: nicknames.resolvedLabel(for:)
+            )
             phase = .ready
         } catch {
             phase = .unreadable("Couldn't read the shared file.")
