@@ -310,27 +310,34 @@ final class AppModel {
             lastScanFinishedAt = Date()
         }
 
-        do {
-            let report = try await ingestor.ingest(into: store)
-            folderError = nil
-            // A routine rescan that found nothing new leaves the last
-            // meaningful report on screen instead of blanking it to zeroes.
-            if force || report.didChangeLibrary || !report.failures.isEmpty {
-                lastIngest = report
-            }
-            if reloadIfChanged, report.didChangeLibrary {
-                await reload()
-            }
-        } catch {
-            folderError = describeFolderError(error)
-        }
-
-        if rescanQueued {
+        // A loop, not recursion: `isScanning` stays true across every pass,
+        // so a request that arrives *during* a pass (setting `rescanQueued`)
+        // is picked up by the next pass instead of recursing into a fresh
+        // `scanFolder` call that would immediately bounce off the `guard
+        // !isScanning` above and re-queue itself without ever re-ingesting —
+        // exactly the bug that let the card list stay stale until a full
+        // relaunch, which the queuing here was supposed to prevent.
+        var isForced = force
+        repeat {
             rescanQueued = false
-            // `force: true` — a request that arrived mid-scan must not then
-            // be swallowed by the debounce too.
-            await scanFolder(store: store, force: true, reloadIfChanged: reloadIfChanged)
-        }
+            do {
+                let report = try await ingestor.ingest(into: store)
+                folderError = nil
+                // A routine rescan that found nothing new leaves the last
+                // meaningful report on screen instead of blanking it to zeroes.
+                if isForced || report.didChangeLibrary || !report.failures.isEmpty {
+                    lastIngest = report
+                }
+                if reloadIfChanged, report.didChangeLibrary {
+                    await reload()
+                }
+            } catch {
+                folderError = describeFolderError(error)
+            }
+            // A request queued mid-scan must not then be swallowed by the
+            // debounce on the next pass either.
+            isForced = true
+        } while rescanQueued
     }
 
     private func describeFolderError(_ error: Error) -> String {
