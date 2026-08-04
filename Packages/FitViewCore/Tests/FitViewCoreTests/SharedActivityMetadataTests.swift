@@ -33,6 +33,8 @@ struct SharedActivityMetadataTests {
         // `device_info.product_name` — this device writes the friendly
         // string directly.
         #expect(metadata.device == "COROS PACE 4")
+        #expect(metadata.date == utcDateStamp(metadata.startTime), "date is just startTime bucketed to a UTC day")
+        #expect(metadata.endTime > metadata.startTime)
     }
 
     @Test("reads the real recorded date and activity out of a polarSense sample, falling back to file_id for device")
@@ -45,6 +47,8 @@ struct SharedActivityMetadataTests {
         // carry one ("Polar Verity Sense") — confirmed against a live Polar
         // export with the same shape.
         #expect(metadata.device == "Polar Verity Sense")
+        #expect(metadata.date == utcDateStamp(metadata.startTime), "date is just startTime bucketed to a UTC day")
+        #expect(metadata.endTime > metadata.startTime)
     }
 
     @Test("returns nil for bytes that aren't a FIT file at all")

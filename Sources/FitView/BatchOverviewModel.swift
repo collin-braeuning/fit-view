@@ -152,12 +152,7 @@ struct SkippedRow: Identifiable {
     init(skipped: SkippedSession) {
         sessionId = skipped.sessionId
         formattedDate = formatSessionDate(skipped.date)
-        // `sessionId` is "\(date)|\(activityKey)" (see ActivitySessions.swift) —
-        // `SkippedSession` itself carries no display-cased activity name, so
-        // this recovers the (lower-cased) key rather than inventing a field
-        // on the core model.
-        let parts = skipped.sessionId.split(separator: "|", maxSplits: 1)
-        activity = parts.count > 1 ? String(parts[1]) : ""
+        activity = skipped.activity
         reasonText = switch skipped.reason {
         case .noOverlap: "no overlapping seconds between the two devices"
         case .tooFewPoints: "too few matched seconds to compute agreement"

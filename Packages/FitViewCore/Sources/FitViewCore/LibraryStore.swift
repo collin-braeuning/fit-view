@@ -31,6 +31,10 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
     public var activityKey: String
     public var sport: String?
     public var startTime: Date?
+    /// Mirrors `startTime` — see `ActivityDescriptor.endTime`. Optional for
+    /// the same reasons: items written before this field existed, or a
+    /// candidate whose bytes never decoded, have no value for it.
+    public var endTime: Date?
     /// The `ActivitySource.id` this came from ("bundled", "files", "polar", "coros", "folder").
     public var source: String
     /// The `ImportCandidate.sourceId` this was imported from — a path relative
@@ -68,6 +72,7 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
         activityKey: String,
         sport: String? = nil,
         startTime: Date? = nil,
+        endTime: Date? = nil,
         source: String,
         sourceId: String? = nil,
         originalName: String,
@@ -82,6 +87,7 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
         self.activityKey = activityKey
         self.sport = sport
         self.startTime = startTime
+        self.endTime = endTime
         self.source = source
         self.sourceId = sourceId
         self.originalName = originalName
@@ -94,7 +100,8 @@ public struct LibraryItem: Sendable, Equatable, Codable, Identifiable {
     /// though it isn't a filename at all here.
     public var descriptor: ActivityDescriptor {
         ActivityDescriptor(
-            id: id, date: date, device: device, deviceKey: deviceKey, activity: activity, activityKey: activityKey
+            id: id, date: date, device: device, deviceKey: deviceKey, activity: activity, activityKey: activityKey,
+            startTime: startTime, endTime: endTime
         )
     }
 }
@@ -193,35 +200,46 @@ public protocol LibraryStore: Sendable {
 }
 
 /// Builds the descriptor fields a `LibraryItem` needs from an
-/// `ImportCandidate` — preferring the source's own metadata over
-/// `suggestedName` wherever it's available, which is the whole point of
-/// `ActivityDescriptor`: an API-sourced candidate (Polar) carries a real
-/// `startTime`/`deviceLabel`/`sport` and shouldn't have to round-trip through
-/// a synthesized filename-shaped string to be grouped correctly. A
-/// file-backed candidate (bundled sample, document picker) has no
-/// `startTime`, so it falls back to parsing `suggestedName` — which is, not
-/// coincidentally, an actual filename in that case.
+/// `ImportCandidate` and its raw bytes — preferring the file's own decoded
+/// content over everything else, which is the whole point of
+/// `ActivityDescriptor`: trusting a filename (or a synthesized
+/// filename-shaped string) is what let a Polar-synced file and a hand-named
+/// one silently diverge in the first place. Falls back to the candidate's own
+/// metadata (`startTime`/`deviceLabel`/`sport` — an API-sourced candidate
+/// that hasn't been fetched yet) and finally to parsing `suggestedName` only
+/// when the bytes don't decode at all (a corrupt file, or a candidate with no
+/// real FIT content behind it, e.g. in a test).
 func activityDescriptorFields(
-    for candidate: ImportCandidate
-) -> (date: String, device: String, deviceKey: String, activity: String, activityKey: String) {
-    if let startTime = candidate.startTime {
-        let date = utcDateStamp(startTime)
-        let device = candidate.deviceLabel ?? "unknown"
+    for candidate: ImportCandidate, data: Data
+) -> (
+    date: String, device: String, deviceKey: String, activity: String, activityKey: String,
+    startTime: Date?, endTime: Date?
+) {
+    if let metadata = extractSharedActivityMetadata(from: data) {
+        let device = metadata.device ?? candidate.deviceLabel ?? "unknown"
         // Matches `polarImportCandidate`'s slugging: a device label like
         // "Polar Vantage V2" must collapse spaces before lowercasing, or its
         // deviceKey ("polar vantage v2") could never match a filename-derived
         // one (which never contains spaces to begin with).
         let deviceKey = device.replacingOccurrences(of: " ", with: "").lowercased()
+        let activity = metadata.activity.lowercased()
+        return (metadata.date, device, deviceKey, activity, activity, metadata.startTime, metadata.endTime)
+    }
+
+    if let startTime = candidate.startTime {
+        let date = utcDateStamp(startTime)
+        let device = candidate.deviceLabel ?? "unknown"
+        let deviceKey = device.replacingOccurrences(of: " ", with: "").lowercased()
         let activity = (candidate.sport ?? "activity").lowercased()
-        return (date, device, deviceKey, activity, activity)
+        return (date, device, deviceKey, activity, activity, startTime, nil)
     }
 
     if let parsed = parseActivityFileName(candidate.suggestedName) {
-        return (parsed.date, parsed.device, parsed.deviceKey, parsed.activity, parsed.activityKey)
+        return (parsed.date, parsed.device, parsed.deviceKey, parsed.activity, parsed.activityKey, nil, nil)
     }
 
     // Neither real metadata nor a parseable name — shouldn't happen for a
     // well-formed candidate from a known `ActivitySource`, but a broken join
     // must be visible, not crash the whole import over one bad candidate.
-    return ("unknown-date", "unknown", "unknown", "activity", "activity")
+    return ("unknown-date", "unknown", "unknown", "activity", "activity", nil, nil)
 }
