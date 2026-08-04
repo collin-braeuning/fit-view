@@ -312,6 +312,42 @@ struct FileSystemLibraryStoreTests {
         #expect(added.activity == "run")
     }
 
+    /// Locates a bundled sample `.fit` file on disk — see
+    /// `SharedActivityMetadataTests.sampleData`, duplicated here rather than
+    /// shared because it's a five-line private helper and the two files
+    /// aren't otherwise coupled.
+    private func sampleData(_ fileName: String) throws -> Data {
+        let thisFile = URL(fileURLWithPath: #filePath)
+        let repoRoot = thisFile
+            .deletingLastPathComponent() // FitViewCoreTests
+            .deletingLastPathComponent() // Tests
+            .deletingLastPathComponent() // FitViewCore
+            .deletingLastPathComponent() // Packages
+            .deletingLastPathComponent() // repo root
+        let sampleURL = repoRoot
+            .appendingPathComponent("Sources/FitView/Resources/SampleData")
+            .appendingPathComponent(fileName)
+        return try Data(contentsOf: sampleURL)
+    }
+
+    @Test("real FIT bytes are trusted over a misleading suggestedName — decoded content wins")
+    func decodedContentOverridesAWrongFilename() async throws {
+        let store = try makeStore(rootURL: makeTempRoot())
+        let data = try sampleData("2026-07-24_pace4_run.fit")
+
+        let added = try await store.add(ImportedActivity(
+            candidate: makeCandidate(suggestedName: "2020-01-01_notarealdevice_notarealsport"),
+            data: data,
+            source: "folder"
+        ))
+
+        #expect(added.date == "2026-07-24", "the filename's 2020-01-01 must lose to the decoded date")
+        #expect(added.device == "COROS PACE 4", "the filename's device token must lose to device_info/file_id")
+        #expect(added.activity != "notarealsport")
+        #expect(added.startTime != nil)
+        #expect(added.endTime != nil)
+    }
+
     @Test("add records the candidate's sourceId, so a re-scan can recognise what it already imported")
     func addRecordsSourceId() async throws {
         let store = try makeStore(rootURL: makeTempRoot())

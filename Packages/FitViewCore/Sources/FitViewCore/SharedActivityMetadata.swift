@@ -14,6 +14,19 @@ public struct SharedActivityMetadata: Sendable, Equatable {
     /// The FIT `sport` field, decoded as-is (e.g. "running") — not remapped
     /// to match any particular filename convention.
     public var activity: String
+    /// The activity's real recorded start instant — `date` is just this,
+    /// bucketed to a UTC calendar day. Session matching uses this directly
+    /// (see `groupActivities`'s time-window clustering) rather than the
+    /// bucketed date, since two devices' recordings can straddle a UTC day
+    /// boundary even when they're the same real-world session.
+    public var startTime: Date
+    /// The activity's real recorded end instant — lets session matching test
+    /// whether two devices' recordings actually overlap in time, not just
+    /// whether they started close together (see `groupActivities`'s
+    /// time-window clustering: a device started well outside
+    /// `sessionMatchWindow` of the other can still share real overlapping
+    /// seconds with it if its own recording ran long enough).
+    public var endTime: Date
 }
 
 /// Reads `SharedActivityMetadata` from raw `.fit` bytes, or `nil` if they
@@ -35,7 +48,9 @@ public func extractSharedActivityMetadata(from data: Data) -> SharedActivityMeta
     return SharedActivityMetadata(
         date: utcDateStamp(activity.startTime),
         device: deviceName(in: fit),
-        activity: activity.sport
+        activity: activity.sport,
+        startTime: activity.startTime,
+        endTime: activity.endTime
     )
 }
 

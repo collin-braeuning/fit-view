@@ -84,7 +84,7 @@ public actor FileSystemLibraryStore: LibraryStore {
             try activity.data.write(to: url, options: .atomic)
         }
 
-        let fields = activityDescriptorFields(for: activity.candidate)
+        let fields = activityDescriptorFields(for: activity.candidate, data: activity.data)
 
         var manifest = try loadManifest()
         let table = nicknames.all()
@@ -114,7 +114,8 @@ public actor FileSystemLibraryStore: LibraryStore {
             activity: fields.activity,
             activityKey: fields.activityKey,
             sport: activity.candidate.sport,
-            startTime: activity.candidate.startTime,
+            startTime: fields.startTime,
+            endTime: fields.endTime,
             source: activity.source,
             sourceId: activity.candidate.sourceId,
             originalName: activity.candidate.suggestedName,

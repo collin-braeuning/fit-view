@@ -84,6 +84,7 @@ public struct SkippedSession: Sendable, Equatable {
 
     public var sessionId: String
     public var date: String
+    public var activity: String
     public var reason: Reason
 }
 
@@ -198,11 +199,17 @@ public func buildBatchAgreement(_ input: BatchAgreementInput) -> BatchAgreement 
 
         let matchedSeconds = aligned.seconds.count
         if matchedSeconds == 0 {
-            skipped.append(SkippedSession(sessionId: entry.session.id, date: entry.session.date, reason: .noOverlap))
+            skipped.append(SkippedSession(
+                sessionId: entry.session.id, date: entry.session.date, activity: entry.session.activity,
+                reason: .noOverlap
+            ))
             continue
         }
         if matchedSeconds < minMatchedSeconds {
-            skipped.append(SkippedSession(sessionId: entry.session.id, date: entry.session.date, reason: .tooFewPoints))
+            skipped.append(SkippedSession(
+                sessionId: entry.session.id, date: entry.session.date, activity: entry.session.activity,
+                reason: .tooFewPoints
+            ))
             continue
         }
 
