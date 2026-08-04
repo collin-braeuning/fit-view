@@ -38,7 +38,9 @@ struct BlandAltmanChart: View {
 
     /// Labelled with names only, never the numbers — the Bias and 95% LoA
     /// tiles above already show these figures; repeating them inside a
-    /// phone-width plot is clutter for zero information.
+    /// phone-width plot is clutter for zero information. Left-aligned: the
+    /// y-axis sits on the leading edge, so anchoring labels to the trailing
+    /// edge crowded them against it — leading space is more open.
     @ChartContentBuilder
     private var referenceLines: some ChartContent {
         RuleMark(y: .value("Bias", data.bias))
@@ -46,7 +48,7 @@ struct BlandAltmanChart: View {
             .foregroundStyle(Color.primary.opacity(0.7))
             .annotation(
                 position: .top,
-                alignment: .trailing,
+                alignment: .leading,
                 spacing: 2,
                 overflowResolution: AnnotationOverflowResolution(x: .fit(to: .chart), y: .fit(to: .plot))
             ) {
@@ -57,7 +59,7 @@ struct BlandAltmanChart: View {
             .foregroundStyle(Color.secondary)
             .annotation(
                 position: .top,
-                alignment: .trailing,
+                alignment: .leading,
                 spacing: 2,
                 overflowResolution: AnnotationOverflowResolution(x: .fit(to: .chart), y: .fit(to: .plot))
             ) {
@@ -68,7 +70,7 @@ struct BlandAltmanChart: View {
             .foregroundStyle(Color.secondary)
             .annotation(
                 position: .top,
-                alignment: .trailing,
+                alignment: .leading,
                 spacing: 2,
                 overflowResolution: AnnotationOverflowResolution(x: .fit(to: .chart), y: .fit(to: .plot))
             ) {

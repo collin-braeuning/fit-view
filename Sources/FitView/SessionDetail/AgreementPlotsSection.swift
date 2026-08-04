@@ -26,29 +26,35 @@ struct AgreementPlotsSection: View {
     }
 
     private var content: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 8) {
             Text("Agreement Plots")
                 .font(.headline)
-            if let blandAltman {
-                plotBlock(
-                    title: "Bland-Altman Agreement",
-                    subtitle: "Mean vs difference",
-                    explainer: MetricKind.blandAltmanPlot.explainer,
-                    caption: blandAltman.densityCaption,
-                    isPresentingFullScreen: $isPresentingBlandAltman
-                ) {
-                    BlandAltmanChart(data: blandAltman, minHeight: minHeight)
+            VStack(alignment: .leading, spacing: 64) {
+                if let blandAltman {
+                    plotBlock(
+                        title: "Bland-Altman Agreement",
+                        subtitle: "Mean vs difference",
+                        explainer: MetricKind.blandAltmanPlot.explainer,
+                        caption: blandAltman.densityCaption,
+                        isPresentingFullScreen: $isPresentingBlandAltman
+                    ) {
+                        // Taller than the shared minHeight: unlike the concordance
+                        // plot, whose square aspect ratio already caps its height
+                        // to its width, this chart's height is otherwise governed
+                        // by minHeight alone.
+                        BlandAltmanChart(data: blandAltman, minHeight: minHeight + 80)
+                    }
                 }
-            }
-            if let concordance {
-                plotBlock(
-                    title: "Lin's Concordance Correlation Coefficient",
-                    subtitle: "Reading against reading",
-                    explainer: MetricKind.concordancePlot.explainer,
-                    caption: concordance.densityCaption,
-                    isPresentingFullScreen: $isPresentingConcordance
-                ) {
-                    ConcordanceChart(data: concordance, minHeight: minHeight)
+                if let concordance {
+                    plotBlock(
+                        title: "Lin's Concordance Correlation Coefficient",
+                        subtitle: "Reading against reading",
+                        explainer: MetricKind.concordancePlot.explainer,
+                        caption: concordance.densityCaption,
+                        isPresentingFullScreen: $isPresentingConcordance
+                    ) {
+                        ConcordanceChart(data: concordance, minHeight: minHeight)
+                    }
                 }
             }
         }

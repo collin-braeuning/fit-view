@@ -78,9 +78,9 @@ private func blandAltmanYDomain(_ stats: BlandAltmanStats) -> ClosedRange<Double
 }
 
 /// `deviceLabels` is [primary, secondary] order; `SessionAgreement`'s x/y
-/// pairing follows the same order, so the axis titles below must state that
-/// sign convention explicitly — an unlabelled signed-difference axis is
-/// unreadable.
+/// pairing follows the same order — "first minus second" — but the y-axis
+/// title stays short ("Difference (bpm)") to leave room for the chart itself;
+/// the sign convention is spelled out in the plot's explainer instead.
 private func blandAltmanPlotData(_ stats: BlandAltmanStats, deviceLabels: [String]) -> BlandAltmanPlotData? {
     guard deviceLabels.count == 2 else { return nil }
     let cloud = blandAltmanDensity(stats)
@@ -92,7 +92,7 @@ private func blandAltmanPlotData(_ stats: BlandAltmanStats, deviceLabels: [Strin
         xDomain: blandAltmanXDomain(cloud),
         yDomain: blandAltmanYDomain(stats),
         xAxisTitle: "Mean of both devices (bpm)",
-        yAxisTitle: "Difference (\(deviceLabels[0]) − \(deviceLabels[1]), bpm)",
+        yAxisTitle: "Difference (bpm)",
         densityCaption: densityCaption(cloud)
     )
 }
