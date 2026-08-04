@@ -24,14 +24,7 @@ struct StatTile: View {
             }
             .buttonStyle(.plain)
             .help(explainer.summary)
-            .popover(isPresented: $isShowingExplainer, arrowEdge: .top) {
-                MetricExplainerView(explainer: explainer)
-                    .frame(idealWidth: 320)
-                    #if os(iOS)
-                    .presentationCompactAdaptation(.sheet)
-                    .presentationDetents([.medium, .large])
-                    #endif
-            }
+            .metricExplainerPopover(explainer, isPresented: $isShowingExplainer)
             .accessibilityElement(children: .ignore)
             .accessibilityLabel(level.map { "\(label) \(value), \($0.spokenWord) agreement" } ?? "\(label) \(value)")
             .accessibilityHint("Explains what \(label) means")

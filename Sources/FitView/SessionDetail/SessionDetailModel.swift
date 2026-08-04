@@ -25,8 +25,92 @@ struct DeviceFacts {
     var maxHeartRate: Int
 }
 
+struct BlandAltmanPlotData {
+    var cloud: DensityCloud
+    var bias: Double
+    var upperLimit: Double
+    var lowerLimit: Double
+    var xDomain: ClosedRange<Double>
+    /// Symmetric about zero.
+    var yDomain: ClosedRange<Double>
+    var xAxisTitle: String
+    var yAxisTitle: String
+    var densityCaption: String
+}
+
+struct ConcordancePlotData {
+    var cloud: DensityCloud
+    /// Identical range used for both axes, so the plot area can be square.
+    var domain: ClosedRange<Double>
+    var xAxisTitle: String
+    var yAxisTitle: String
+    var densityCaption: String
+}
+
 private func decimal(_ value: Double, places: Int) -> String {
     String(format: "%.\(places)f", value)
+}
+
+private func densityCaption(_ cloud: DensityCloud) -> String {
+    "\(cloud.points.count.formatted()) of \(cloud.totalCount.formatted()) pairs · darker means more overlapping readings"
+}
+
+/// x domain padded by a fixed floor plus a fraction of the observed span, so a
+/// point sitting exactly on the edge of the cloud isn't clipped by the axis.
+private func blandAltmanXDomain(_ cloud: DensityCloud) -> ClosedRange<Double> {
+    let xs = cloud.points.map(\.x)
+    guard let xMin = xs.min(), let xMax = xs.max() else { return 0...1 }
+    let pad = max(2, (xMax - xMin) * 0.04)
+    return (xMin - pad)...(xMax + pad)
+}
+
+/// Symmetric about zero and explicitly widened to include both limit-of-agreement
+/// lines: with a non-normal difference distribution, bias ± 1.96·sd can sit
+/// outside the observed range, and a clipped limit line is worse than no line.
+private func blandAltmanYDomain(_ stats: BlandAltmanStats) -> ClosedRange<Double> {
+    let diffs = stats.points.map(\.diff)
+    let minDiff = diffs.min() ?? 0
+    let maxDiff = diffs.max() ?? 0
+    let magnitude = max(abs(minDiff), abs(maxDiff), abs(stats.upperLimit), abs(stats.lowerLimit))
+    guard magnitude > 0 else { return -1...1 }
+    let bound = magnitude * 1.1 + 1
+    return -bound...bound
+}
+
+/// `deviceLabels` is [primary, secondary] order; `SessionAgreement`'s x/y
+/// pairing follows the same order — "first minus second" — but the y-axis
+/// title stays short ("Difference (bpm)") to leave room for the chart itself;
+/// the sign convention is spelled out in the plot's explainer instead.
+private func blandAltmanPlotData(_ stats: BlandAltmanStats, deviceLabels: [String]) -> BlandAltmanPlotData? {
+    guard deviceLabels.count == 2 else { return nil }
+    let cloud = blandAltmanDensity(stats)
+    return BlandAltmanPlotData(
+        cloud: cloud,
+        bias: stats.meanDiff,
+        upperLimit: stats.upperLimit,
+        lowerLimit: stats.lowerLimit,
+        xDomain: blandAltmanXDomain(cloud),
+        yDomain: blandAltmanYDomain(stats),
+        xAxisTitle: "Mean of both devices (bpm)",
+        yAxisTitle: "Difference (bpm)",
+        densityCaption: densityCaption(cloud)
+    )
+}
+
+private func concordancePlotData(_ stats: ConcordanceStats, deviceLabels: [String]) -> ConcordancePlotData? {
+    guard deviceLabels.count == 2 else { return nil }
+    let cloud = concordanceDensity(stats)
+    let pad = max(1, (stats.max - stats.min) * 0.05)
+    let domain: ClosedRange<Double> = stats.max > stats.min
+        ? (stats.min - pad)...(stats.max + pad)
+        : (stats.min - 1)...(stats.max + 1)
+    return ConcordancePlotData(
+        cloud: cloud,
+        domain: domain,
+        xAxisTitle: "\(deviceLabels[0]) (bpm)",
+        yAxisTitle: "\(deviceLabels[1]) (bpm)",
+        densityCaption: densityCaption(cloud)
+    )
 }
 
 private let deviceFactTimeFormat = Date.FormatStyle().hour().minute().second()
@@ -69,6 +153,12 @@ struct SessionDetailModel {
     /// "substantial · 90–173 bpm" — CCC's McBride word plus the HR range it
     /// was measured over, kept together per overview.md §7.
     var cccDetailText: String?
+    /// Nil when `agreement` is nil, or when `sessionAgreement.blandAltman` is nil.
+    var blandAltmanPlot: BlandAltmanPlotData?
+    /// Nil when `agreement` is nil, or when `sessionAgreement.concordance` is nil
+    /// — `calculateConcordanceStats` returns nil when both series are the same
+    /// constant, so "Bland-Altman but no CCC" is a real state.
+    var concordancePlot: ConcordancePlotData?
 
     /// Non-nil only for a skipped session — explains why the stats grid is
     /// replaced with a banner instead of numbers.
@@ -204,6 +294,7 @@ struct SessionDetailModel {
                     level: differenceLevel(abs(blandAltman.meanDiff))
                 )
                 loaText = "[\(decimal(blandAltman.lowerLimit, places: 1)), \(decimal(blandAltman.upperLimit, places: 1))]"
+                blandAltmanPlot = blandAltmanPlotData(blandAltman, deviceLabels: deviceLabels)
             }
 
             meanAbsDiff = Metric(
@@ -216,6 +307,7 @@ struct SessionDetailModel {
                 let level = cccLevel(concordance.ccc)
                 ccc = Metric(text: decimal(concordance.ccc, places: 3), level: level)
                 cccDetailText = "\(cccLabel(concordance.ccc)) · \(hrRangeText ?? "")"
+                concordancePlot = concordancePlotData(concordance, deviceLabels: deviceLabels)
             }
         } else {
             // A broken join should be visible, not quietly hidden: distinguish

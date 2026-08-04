@@ -54,10 +54,12 @@ public struct MetricExplainer: Sendable, Equatable {
 
 private let blandAltmanURL = URL(string: "https://en.wikipedia.org/wiki/Bland%E2%80%93Altman_plot")!
 private let meanAbsoluteErrorURL = URL(string: "https://en.wikipedia.org/wiki/Mean_absolute_error")!
+private let concordanceURL = URL(string: "https://en.wikipedia.org/wiki/Concordance_correlation_coefficient")!
 
-/// One entry per stat tile on the activity detail screen.
+/// One entry per explainable element on the activity detail screen.
 public enum MetricKind: String, CaseIterable, Sendable {
     case matchedSeconds, bias, limitsOfAgreement, meanAbsoluteDifference, maxAbsoluteDifference, concordance
+    case blandAltmanPlot, concordancePlot
 
     public var explainer: MetricExplainer {
         switch self {
@@ -154,6 +156,35 @@ public enum MetricKind: String, CaseIterable, Sendable {
                     MetricExplainer.Band(level: .warn, range: "≥0.90", word: "fair"),
                     MetricExplainer.Band(level: .bad, range: "<0.90", word: "poor"),
                 ]
+            )
+        case .blandAltmanPlot:
+            MetricExplainer(
+                title: "Bland-Altman Agreement",
+                subtitle: "Mean vs difference",
+                summary: "Every matched pair plotted as its average against the signed gap between the two devices.",
+                detail: """
+                Each point's x is the average of the two readings at that second; its y is the first \
+                device's reading minus the second's. A flat, narrow band centred on zero is agreement. \
+                A cloud that tilts as you move right means the disagreement itself depends on heart \
+                rate — proportional bias, which the single Bias number above cannot show. The solid \
+                line marks bias; the dashed lines mark the 95% limits of agreement.
+                """,
+                unscoredNote: "No score — read the shape: a flat, narrow band centred on zero is agreement.",
+                learnMoreURL: blandAltmanURL
+            )
+        case .concordancePlot:
+            MetricExplainer(
+                title: "Lin's Concordance",
+                subtitle: "Reading against reading",
+                summary: "Every matched pair plotted as one device's reading against the other's.",
+                detail: """
+                Points on the dashed diagonal are identical readings from both devices. A cloud that \
+                runs parallel to but offset from that line is constant bias — one device consistently \
+                reading higher or lower. A cloud that fans out away from the line means the devices \
+                diverge more at particular heart rates than others.
+                """,
+                unscoredNote: "No score of its own — the CCC tile above summarises this picture as one number.",
+                learnMoreURL: concordanceURL
             )
         }
     }

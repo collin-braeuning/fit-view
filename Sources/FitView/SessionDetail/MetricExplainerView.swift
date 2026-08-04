@@ -52,6 +52,21 @@ struct MetricExplainerView: View {
     }
 }
 
+/// The popover/sheet chrome around `MetricExplainerView`, factored out so the
+/// stat tile and the plot section's info button can't drift apart.
+extension View {
+    func metricExplainerPopover(_ explainer: MetricExplainer, isPresented: Binding<Bool>) -> some View {
+        popover(isPresented: isPresented, arrowEdge: .top) {
+            MetricExplainerView(explainer: explainer)
+                .frame(idealWidth: 320)
+                #if os(iOS)
+                .presentationCompactAdaptation(.sheet)
+                .presentationDetents([.medium, .large])
+                #endif
+        }
+    }
+}
+
 #Preview("CCC") {
     MetricExplainerView(explainer: MetricKind.concordance.explainer)
 }

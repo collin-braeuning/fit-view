@@ -25,6 +25,9 @@
 		1C9B3FCB9E977F1F448B04EC /* SessionDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */; };
 		1D932088F0238A111AC83708 /* 2026-07-24_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */; };
 		1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
+		20F279A4B2501111EF5A0236 /* ConcordanceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9CB9A30C8878C12706368C /* ConcordanceChart.swift */; };
+		2269E96CD89FD2238A30CC05 /* BlandAltmanChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */; };
+		2419951B6DBFE75D2753CA2F /* AgreementPlotsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750986A9A81E42EFFD4C6881 /* AgreementPlotsSection.swift */; };
 		24CE8E96A5169EE1C05EE225 /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		273B60E9DCF26C3722494434 /* 2026-07-24_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */; };
 		296D84F5D89039E64F0E2778 /* FileImportSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73B51F5A38FDA84472FE20F9 /* FileImportSource.swift */; };
@@ -34,6 +37,7 @@
 		3563CCD67ACB2B055D40223B /* 2026-07-25_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */; };
 		36AE9B8A5AA9116E3503C165 /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
 		3807329AA3EC621075742BE7 /* 2026-07-28_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */; };
+		3E62303B5B98A868789A154F /* ExplainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E49A2AE5AB4EB0C934D36AE /* ExplainerButton.swift */; };
 		3E821CFF140F073D8DF0C4E9 /* 2026-07-27_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */; };
 		3EE4FC8396C43516EBF7617A /* AgreementLevel+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */; };
 		3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C428207FFDEE0AA997974 /* FormatDate.swift */; };
@@ -50,6 +54,7 @@
 		559CE02066E90B65987D20DB /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
 		585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
 		5BBE147AD15661E578157068 /* FullScreenHeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */; };
+		6730E6F735AF5D1E3AF24C1A /* BlandAltmanChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */; };
 		68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
 		6B70A1571DE203879E45249D /* PolarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */; };
 		6E08F44166CB7A853C1A050B /* 2026-07-23_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */; };
@@ -64,6 +69,8 @@
 		836D7136437E6E68D2403AFE /* PolarConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */; };
 		85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
 		8842D31520F5F04832AB6572 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
+		890119FC5897EF9F080D7C9B /* FullScreenPlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BE7C44AFE40287ADFB5958 /* FullScreenPlotView.swift */; };
+		8B029EA6A120F656D2FFB8AE /* FullScreenPlotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BE7C44AFE40287ADFB5958 /* FullScreenPlotView.swift */; };
 		8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD4C428207FFDEE0AA997974 /* FormatDate.swift */; };
 		8C78358582DE01AD0A2B530B /* MetricExplainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F5CABEB21B6EDBB3EAD5C98 /* MetricExplainerView.swift */; };
 		90FA6E52F152682B2DEE52E9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F0AC88A64D83AABDE82B43 /* SettingsView.swift */; };
@@ -73,6 +80,7 @@
 		9D480D73639EDCCE60A52ADD /* ShareImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */; };
 		9DB756380643642C717F29BB /* FitViewShareExtension-iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
+		9F8D466B9B0AD9196446AE9C /* ExplainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E49A2AE5AB4EB0C934D36AE /* ExplainerButton.swift */; };
 		A11E7DB613738CD62AE0234E /* PolarAccessLinkSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */; };
 		A7FBF562058587256CA50650 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
 		AB1BFCD43781FFAA8D8E6EB4 /* 2026-07-31_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */; };
@@ -80,6 +88,7 @@
 		B72642973C4E339719616C40 /* DataSourceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */; };
 		B9E08C504D9CBCC1EE4E26F7 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CBB05856B8F40A606A0377B /* SessionDetailView.swift */; };
 		BC218D82609504468CC5AB15 /* SessionDetailPreviewFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */; };
+		BD18EA2C6A70E6774E873426 /* AgreementPlotsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750986A9A81E42EFFD4C6881 /* AgreementPlotsSection.swift */; };
 		C01325CDEE8B6A8582EFBDBF /* DataSourceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */; };
 		C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		C47CF6A546C34288B2AB2B32 /* BatchAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */; };
@@ -94,6 +103,7 @@
 		D21F8A98CBB5D6839B609C0B /* FullScreenHeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */; };
 		D43ECC1FC15D40A3152F7F3C /* 2026-07-27_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */; };
 		D5B2A1E978F25A298A3A6FDD /* ImportSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EEFD40AC516981A1C8CC0C /* ImportSheet.swift */; };
+		E05D7021A34FC7C09953A6AE /* ConcordanceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9CB9A30C8878C12706368C /* ConcordanceChart.swift */; };
 		E373120611EA55B09D26D0CC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */; };
 		E4BF62537462DB10181D83DD /* SessionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F01D3A90F5A8F9132C718742 /* SessionCard.swift */; };
 		E4F44096071B6593FB8A7E42 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4F74B73EF88181791D1724CF /* FitViewCore */; };
@@ -162,11 +172,15 @@
 		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
 		06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenHeartRateChartView.swift; sourceTree = "<group>"; };
 		07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModel.swift; sourceTree = "<group>"; };
+		0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlandAltmanChart.swift; sourceTree = "<group>"; };
 		0D88540FFC88A8BE00B67CC8 /* FitView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitView.entitlements; sourceTree = "<group>"; };
+		0F9CB9A30C8878C12706368C /* ConcordanceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcordanceChart.swift; sourceTree = "<group>"; };
+		11BE7C44AFE40287ADFB5958 /* FullScreenPlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenPlotView.swift; sourceTree = "<group>"; };
 		1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewCardList.swift; sourceTree = "<group>"; };
 		1A5BCD71CF4B86B7D492685B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1C159DD253A36EBC7D725AEC /* ShareEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareEditView.swift; sourceTree = "<group>"; };
 		2C7DB8D82BBBE63397EFD9A0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2E49A2AE5AB4EB0C934D36AE /* ExplainerButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplainerButton.swift; sourceTree = "<group>"; };
 		2EFBAF76469F54663220648C /* FitViewCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FitViewCore; path = Packages/FitViewCore; sourceTree = SOURCE_ROOT; };
 		3736C57073C2AF495A7D214B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3886B442F95B35D4EB410680 /* BundledSampleSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledSampleSource.swift; sourceTree = "<group>"; };
@@ -189,6 +203,7 @@
 		73B51F5A38FDA84472FE20F9 /* FileImportSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileImportSource.swift; sourceTree = "<group>"; };
 		744711A6152DC8D944BBAC03 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailPreviewFixture.swift; sourceTree = "<group>"; };
+		750986A9A81E42EFFD4C6881 /* AgreementPlotsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgreementPlotsSection.swift; sourceTree = "<group>"; };
 		779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-25_polarSense_run.FIT"; sourceTree = "<group>"; };
 		7C48CA5A3DE5B7E1173BADED /* CorosSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorosSource.swift; sourceTree = "<group>"; };
 		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
@@ -325,7 +340,12 @@
 		684655C390F463E448BE5D40 /* SessionDetail */ = {
 			isa = PBXGroup;
 			children = (
+				750986A9A81E42EFFD4C6881 /* AgreementPlotsSection.swift */,
+				0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */,
+				0F9CB9A30C8878C12706368C /* ConcordanceChart.swift */,
+				2E49A2AE5AB4EB0C934D36AE /* ExplainerButton.swift */,
 				06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */,
+				11BE7C44AFE40287ADFB5958 /* FullScreenPlotView.swift */,
 				88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */,
 				4F5CABEB21B6EDBB3EAD5C98 /* MetricExplainerView.swift */,
 				07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */,
@@ -645,21 +665,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				3EE4FC8396C43516EBF7617A /* AgreementLevel+Color.swift in Sources */,
+				BD18EA2C6A70E6774E873426 /* AgreementPlotsSection.swift in Sources */,
 				764F8BE8121F9006DA92C284 /* AppModel.swift in Sources */,
 				C47CF6A546C34288B2AB2B32 /* BatchAssembler.swift in Sources */,
 				751D5200DADA3B4ECEBA84F1 /* BatchBuilder.swift in Sources */,
 				68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */,
 				9249383166C563E968195CCB /* BatchOverviewModel.swift in Sources */,
 				FCB698B3D32662E9BE4879E1 /* BatchOverviewView.swift in Sources */,
+				2269E96CD89FD2238A30CC05 /* BlandAltmanChart.swift in Sources */,
 				70AD62F62EF0A54F8F045244 /* BundledSampleSource.swift in Sources */,
+				20F279A4B2501111EF5A0236 /* ConcordanceChart.swift in Sources */,
 				E373120611EA55B09D26D0CC /* ContentView.swift in Sources */,
 				1B46BE2E80E4F96F91860EC5 /* CorosSource.swift in Sources */,
 				B72642973C4E339719616C40 /* DataSourceMode.swift in Sources */,
 				2CFDED03C1F3B48A5BC39455 /* DeviceAliasSheet.swift in Sources */,
+				3E62303B5B98A868789A154F /* ExplainerButton.swift in Sources */,
 				296D84F5D89039E64F0E2778 /* FileImportSource.swift in Sources */,
 				585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */,
 				3F49BDB9B60191D1AF63DB45 /* FormatDate.swift in Sources */,
 				5BBE147AD15661E578157068 /* FullScreenHeartRateChartView.swift in Sources */,
+				890119FC5897EF9F080D7C9B /* FullScreenPlotView.swift in Sources */,
 				C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */,
 				D5B2A1E978F25A298A3A6FDD /* ImportSheet.swift in Sources */,
 				1940804DC0D62B0FEF3F4C34 /* LoadedBatch.swift in Sources */,
@@ -702,21 +727,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				072F3611544817D7C56543A6 /* AgreementLevel+Color.swift in Sources */,
+				2419951B6DBFE75D2753CA2F /* AgreementPlotsSection.swift in Sources */,
 				4113F34F3495515C53DDCCB1 /* AppModel.swift in Sources */,
 				49FD8667441194A81685CA37 /* BatchAssembler.swift in Sources */,
 				7FBF08D8B7D1B4BA410F7FA2 /* BatchBuilder.swift in Sources */,
 				1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */,
 				54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */,
 				C6D3F17A8E011AEC1F8B5379 /* BatchOverviewView.swift in Sources */,
+				6730E6F735AF5D1E3AF24C1A /* BlandAltmanChart.swift in Sources */,
 				B491BA30C03CD4668AF3F860 /* BundledSampleSource.swift in Sources */,
+				E05D7021A34FC7C09953A6AE /* ConcordanceChart.swift in Sources */,
 				13C80720C1C8782BB6D9C66B /* ContentView.swift in Sources */,
 				ED9D1936891C99D733E7F3E2 /* CorosSource.swift in Sources */,
 				C01325CDEE8B6A8582EFBDBF /* DataSourceMode.swift in Sources */,
 				4B5E0522DB6E69CFBDD34ED9 /* DeviceAliasSheet.swift in Sources */,
+				9F8D466B9B0AD9196446AE9C /* ExplainerButton.swift in Sources */,
 				13956237C4ADF5BC0D8AFEC8 /* FileImportSource.swift in Sources */,
 				85FCB01158F1C8E341F647F4 /* FitViewApp.swift in Sources */,
 				8BDF78E3D4E86399641ACB4C /* FormatDate.swift in Sources */,
 				D21F8A98CBB5D6839B609C0B /* FullScreenHeartRateChartView.swift in Sources */,
+				8B029EA6A120F656D2FFB8AE /* FullScreenPlotView.swift in Sources */,
 				24CE8E96A5169EE1C05EE225 /* HeartRateComparisonChart.swift in Sources */,
 				EBCA0FCE10634AA18BC023A2 /* ImportSheet.swift in Sources */,
 				E956B9EC76A38C05A66BEA57 /* LoadedBatch.swift in Sources */,
