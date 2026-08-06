@@ -330,3 +330,9 @@ struct SessionDetailView: View {
         SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-05|run")
     }
 }
+
+#Preview("Constant value (no CCC)") {
+    NavigationStack {
+        SessionDetailView(batch: SessionDetailPreviewFixture.makeBatch(), sessionId: "2026-08-06|run")
+    }
+}

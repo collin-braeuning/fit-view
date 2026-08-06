@@ -60,6 +60,14 @@ enum SessionDetailPreviewFixture {
         // (c) missing device: only the primary has a file at all.
         let missingPrimary = (0..<150).map { record($0, heartRate: 140) }
 
+        // (d) concordance un-computable: both devices read the identical
+        // constant value throughout, so calculateConcordanceStats' denominator
+        // (varX + varY + (meanX-meanY)^2) is zero — CCC and its plot come back
+        // nil while Bland-Altman (bias 0, LoA [0, 0]) does not, since it has no
+        // equivalent nil case for paired, non-empty input.
+        let constantPrimary = (0..<100).map { record($0, heartRate: 140) }
+        let constantSecondary = (0..<100).map { record($0, heartRate: 140) }
+
         // A realistic profile (ramp up, steady, cool-down) so the agreement
         // plots aren't shown against a degenerate cloud — unlike the "Normal"
         // session above, whose constant -1 bpm difference collapses the
@@ -102,6 +110,8 @@ enum SessionDetailPreviewFixture {
             "2026-08-04_pace4_run": activity(records: missingPrimary),
             "2026-08-05_pace4_run": activity(records: scatterPrimary),
             "2026-08-05_polarSense_run": activity(records: scatterSecondary),
+            "2026-08-06_pace4_run": activity(records: constantPrimary),
+            "2026-08-06_polarSense_run": activity(records: constantSecondary),
         ]
 
         let filesByName = Dictionary(uniqueKeysWithValues: activitiesByFileName.map { fileName, activity in
