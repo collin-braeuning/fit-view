@@ -23,6 +23,7 @@
 		1940804DC0D62B0FEF3F4C34 /* LoadedBatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */; };
 		1B46BE2E80E4F96F91860EC5 /* CorosSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C48CA5A3DE5B7E1173BADED /* CorosSource.swift */; };
 		1C9B3FCB9E977F1F448B04EC /* SessionDetailModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */; };
+		1CCE9ED2849DA45FF315D8EC /* BatchOverviewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */; };
 		1D932088F0238A111AC83708 /* 2026-07-24_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */; };
 		1E82A75502DB49DF74F667B9 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
 		20F279A4B2501111EF5A0236 /* ConcordanceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9CB9A30C8878C12706368C /* ConcordanceChart.swift */; };
@@ -53,6 +54,7 @@
 		54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
 		559CE02066E90B65987D20DB /* 2026-07-31_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */; };
 		585064A31DA61E4C33BC37AB /* FitViewApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2468CD13769E17A4380CC4 /* FitViewApp.swift */; };
+		5856A16B015D4936174C3E71 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = CFB3D07AEC5BA0FE49AC9D60 /* FitViewCore */; };
 		5BBE147AD15661E578157068 /* FullScreenHeartRateChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */; };
 		6730E6F735AF5D1E3AF24C1A /* BlandAltmanChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */; };
 		68A6087A7AC90542E34BE5B4 /* BatchOverviewCardList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */; };
@@ -77,6 +79,7 @@
 		9249383166C563E968195CCB /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
 		9761BCAF646A10407625B9A4 /* 2026-07-25_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */; };
 		97E86A2BA796E72967987FBB /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D9CF7CA8098BBE6CBF566A /* ShareViewController.swift */; };
+		9BD5E38635F11D4B18D78FED /* AgreementFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E021871CD8BBE8029C71C /* AgreementFixtures.swift */; };
 		9D480D73639EDCCE60A52ADD /* ShareImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */; };
 		9DB756380643642C717F29BB /* FitViewShareExtension-iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
@@ -126,6 +129,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2B5227CDE8DE521E328C0BC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3D49D2D8A0602D53DD2B1A4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EDAD7ED43F5769299B50F163;
+			remoteInfo = "FitView-macOS";
+		};
 		9B4BBD4EA1075E053ECAE107 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F3D49D2D8A0602D53DD2B1A4 /* Project object */;
@@ -187,7 +197,9 @@
 		398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-23_pace4_run.fit"; sourceTree = "<group>"; };
 		3CBB05856B8F40A606A0377B /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareImportViewModel.swift; sourceTree = "<group>"; };
+		44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModelTests.swift; sourceTree = "<group>"; };
 		46F0AC88A64D83AABDE82B43 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		48333B51754FF425528666D2 /* FitViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F2BB1F8F0D3B0BC65CCB3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4F5CABEB21B6EDBB3EAD5C98 /* MetricExplainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricExplainerView.swift; sourceTree = "<group>"; };
 		54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-23_polarSense_run.FIT"; sourceTree = "<group>"; };
@@ -225,6 +237,7 @@
 		CD4C428207FFDEE0AA997974 /* FormatDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatDate.swift; sourceTree = "<group>"; };
 		CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchAssembler.swift; sourceTree = "<group>"; };
 		D1A575BE2CC196DA43BD6D6E /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		D78E021871CD8BBE8029C71C /* AgreementFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgreementFixtures.swift; sourceTree = "<group>"; };
 		D839FE4884EC0F8F0B7800EB /* AgreementLevel+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AgreementLevel+Color.swift"; sourceTree = "<group>"; };
 		E1C8063E07F5506B1752D2A8 /* FitView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitView.entitlements; sourceTree = "<group>"; };
 		E3C03519E7F1FC369F1841A6 /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
@@ -242,6 +255,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		042FF046012BB71E2E60FE26 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5856A16B015D4936174C3E71 /* FitViewCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		13125332620C0FDA2F548171 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -277,6 +298,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0C422635D3845C398D08EED8 /* FitViewTests */ = {
+			isa = PBXGroup;
+			children = (
+				44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */,
+				F67C87D0C2D47B1CC1AE668C /* Fixtures */,
+			);
+			name = FitViewTests;
+			path = Tests/FitViewTests;
+			sourceTree = "<group>";
+		};
 		1E5B64102DCCED272BA709E7 /* Polar */ = {
 			isa = PBXGroup;
 			children = (
@@ -295,6 +326,7 @@
 				C4A06C2342336D6B6021149E /* FitView */,
 				E293E2E0D859B34B94B888E6 /* FitView-iOS */,
 				996BC695B72E4F729E9C6869 /* FitView-macOS */,
+				0C422635D3845C398D08EED8 /* FitViewTests */,
 				F555DC876649314F8CB220ED /* iOS */,
 				F30AF3289FD4FCF5A854ABC5 /* macOS */,
 				3F3234EF9BCBE45149D0BC90 /* Packages */,
@@ -444,6 +476,7 @@
 				CC65984041C307E9C026CCB5 /* FitView-macOS.app */,
 				6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */,
 				A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */,
+				48333B51754FF425528666D2 /* FitViewTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -479,6 +512,14 @@
 			);
 			name = iOS;
 			path = Sources/ShareExtension/iOS;
+			sourceTree = "<group>";
+		};
+		F67C87D0C2D47B1CC1AE668C /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				D78E021871CD8BBE8029C71C /* AgreementFixtures.swift */,
+			);
+			path = Fixtures;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -524,6 +565,26 @@
 			productName = "FitView-iOS";
 			productReference = 57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */;
 			productType = "com.apple.product-type.application";
+		};
+		B3A5746AC17419436D81806D /* FitViewTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 45B804D78FEA2A5A184EA89B /* Build configuration list for PBXNativeTarget "FitViewTests" */;
+			buildPhases = (
+				52E25170095555D96E0C0A9A /* Sources */,
+				042FF046012BB71E2E60FE26 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F17D9A7D5C932AC1EC316B91 /* PBXTargetDependency */,
+			);
+			name = FitViewTests;
+			packageProductDependencies = (
+				CFB3D07AEC5BA0FE49AC9D60 /* FitViewCore */,
+			);
+			productName = FitViewTests;
+			productReference = 48333B51754FF425528666D2 /* FitViewTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		B456014F1837BF6670586880 /* FitViewShareExtension-macOS */ = {
 			isa = PBXNativeTarget;
@@ -602,6 +663,7 @@
 			targets = (
 				AC7ED7F447DC2734CBFA509F /* FitView-iOS */,
 				EDAD7ED43F5769299B50F163 /* FitView-macOS */,
+				B3A5746AC17419436D81806D /* FitViewTests */,
 				6B471912DE0FDF3E72BB33AF /* FitViewShareExtension-iOS */,
 				B456014F1837BF6670586880 /* FitViewShareExtension-macOS */,
 			);
@@ -712,6 +774,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		52E25170095555D96E0C0A9A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9BD5E38635F11D4B18D78FED /* AgreementFixtures.swift in Sources */,
+				1CCE9ED2849DA45FF315D8EC /* BatchOverviewModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		85879631B0CFA61D15BA97E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -776,6 +847,11 @@
 			isa = PBXTargetDependency;
 			target = 6B471912DE0FDF3E72BB33AF /* FitViewShareExtension-iOS */;
 			targetProxy = F47AE2D938D8086C2B8D6AF1 /* PBXContainerItemProxy */;
+		};
+		F17D9A7D5C932AC1EC316B91 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EDAD7ED43F5769299B50F163 /* FitView-macOS */;
+			targetProxy = 2B5227CDE8DE521E328C0BC6 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1044,6 +1120,42 @@
 			};
 			name = Debug;
 		};
+		E369FDF6013E948AF33DAEAA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.FitViewTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FitView.app/Contents/MacOS/FitView";
+			};
+			name = Debug;
+		};
+		E3E7ACA416C59C1ECA52D655 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.FitViewTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FitView.app/Contents/MacOS/FitView";
+			};
+			name = Release;
+		};
 		E4589310915C6963A2AF2403 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1066,6 +1178,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		45B804D78FEA2A5A184EA89B /* Build configuration list for PBXNativeTarget "FitViewTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E369FDF6013E948AF33DAEAA /* Debug */,
+				E3E7ACA416C59C1ECA52D655 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		707D5E854DD1E1EA09606157 /* Build configuration list for PBXProject "FitView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1134,6 +1255,10 @@
 			productName = FitViewCore;
 		};
 		C53564CABEE0EF227C839435 /* FitViewCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FitViewCore;
+		};
+		CFB3D07AEC5BA0FE49AC9D60 /* FitViewCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FitViewCore;
 		};
