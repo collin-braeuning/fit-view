@@ -14,3 +14,27 @@ jobs:
       - name: Run FitViewCore tests
         working-directory: Packages/FitViewCore
         run: swift test
+
+  # BatchOverviewModel and the rest of Sources/FitView's SwiftUI-free helpers —
+  # per constitution Principle VI (CI-Verified Testing), this target must run
+  # here, not just exist locally. FitView.xcodeproj isn't checked in (it's
+  # generated from project.yml), so it's regenerated as a build step.
+  # CODE_SIGNING_ALLOWED/REQUIRED=NO sidesteps the app targets' provisioning
+  # requirements, which this unit-test-only run doesn't need.
+  fitview-tests:
+    name: FitViewTests (BatchOverviewModel)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Run FitViewTests
+        run: |
+          xcodebuild test \
+            -scheme FitView-macOS \
+            -only-testing:FitViewTests \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
