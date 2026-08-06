@@ -1,5 +1,20 @@
 <!--
 Sync Impact Report
+- Version change: 1.0.0 → 1.1.0
+- Modified principles: n/a
+- Added sections:
+  - VI. CI-Verified Testing (new principle)
+- Removed sections: none
+- Templates checked for alignment:
+  - .specify/templates/plan-template.md — Constitution Check gate now has six
+    principles to evaluate against; no template edit needed, gate table is
+    filled per-feature at plan time
+  - .specify/templates/spec-template.md — no changes needed
+  - .specify/templates/tasks-template.md — no changes needed
+  - .specify/templates/checklist-template.md — no changes needed
+- Follow-up TODOs: none
+
+Prior report (1.0.0, retained for history):
 - Version change: [TEMPLATE] → 1.0.0 (initial ratification)
 - Modified principles: n/a (first fill of template placeholders)
 - Added sections:
@@ -12,12 +27,6 @@ Sync Impact Report
   - Development Workflow
   - Governance
 - Removed sections: none
-- Templates checked for alignment:
-  - .specify/templates/plan-template.md — generic gates, no project-specific
-    references to update; consistent with new principles
-  - .specify/templates/spec-template.md — no changes needed
-  - .specify/templates/tasks-template.md — no changes needed
-  - .specify/templates/checklist-template.md — no changes needed
 - Follow-up TODOs: none
 -->
 
@@ -80,6 +89,25 @@ Rationale: user-stated requirement. `overview.md` §4 identifies the FIT parse l
 app's sole trust boundary against malformed or unexpected input, which makes it the
 highest-value place to leave a diagnostic trail.
 
+### VI. CI-Verified Testing
+GitHub Actions CI (currently `.github/workflows/tests.yml`) is the authoritative record of
+whether unit tests pass — a local `swift test`/`xcodebuild test` run is a development
+convenience, not a substitute for a green CI run, and MUST NOT be cited as verification in
+place of one. Every unit test target MUST run in CI on pull requests, not just exist in a
+package or project file. When a new test suite is created (a new test target, or the first
+test file added to one), it MUST be double-checked before being considered done: confirm it is
+actually wired into a CI workflow job (not merely present locally), and confirm it meaningfully
+fails when the code it covers is broken — a suite that passes vacuously (e.g., against a stub,
+or without exercising the failure path it claims to cover) does not satisfy this principle.
+
+Rationale: user-stated requirement. A test that only ever runs on one contributor's machine, or
+a suite added but never checked to see whether it actually catches anything, gives false
+confidence indistinguishable from no test at all — worse, because it looks like coverage. This
+principle also closes a concrete, already-identified gap: `Sources/FitView` currently has no
+test target wired into `tests.yml` (only `Packages/FitViewCore` runs there today), so any new
+test target added for it (e.g., per `specs/001-activity-list/research.md` §1) must extend the
+CI workflow, not just exist locally, before its tests count as passing.
+
 ## Platform & Architecture Constraints
 
 FitView targets macOS, iPhone, and iPadOS from a single SwiftUI codebase. Platform
@@ -129,4 +157,4 @@ update Last Amended.
 generally, MUST be checked against these principles. Unjustified complexity or a principle
 violation MUST be called out explicitly rather than silently absorbed into the plan.
 
-**Version**: 1.0.0 | **Ratified**: 2026-08-05 | **Last Amended**: 2026-08-05
+**Version**: 1.1.0 | **Ratified**: 2026-08-05 | **Last Amended**: 2026-08-05
