@@ -15,6 +15,10 @@ struct SessionDetailModelTests {
         let batch = SessionDetailPreviewFixture.makeBatch()
         let model = SessionDetailModel(batch: batch, sessionId: "2026-08-01|run")!
 
+        // FR-001: titled with activity type, showing date and the two compared devices.
+        #expect(model.formattedDate == formatSessionDate("2026-08-01"))
+        #expect(model.session.activity == "run")
+
         #expect(model.agreement != nil)
         #expect(model.matchedSecondsText == "200")
 
@@ -35,7 +39,22 @@ struct SessionDetailModelTests {
         #expect(model.concordancePlot != nil)
 
         #expect(model.deviceLabels == ["pace4", "polarSense"])
+
+        // FR-006: per-device source facts (file name, sport, record/lap counts, avg/max HR),
+        // checked against the fixture's known `130 + i%10` / `131 + i%10` over 200 records.
         #expect(model.deviceFacts.count == 2)
+        let primaryFacts = model.deviceFacts[0]
+        #expect(primaryFacts.fileName == "2026-08-01_pace4_run")
+        #expect(primaryFacts.sport == "running")
+        #expect(primaryFacts.recordCount == 200)
+        #expect(primaryFacts.lapCount == 1)
+        #expect(primaryFacts.avgHeartRate == 134)
+        #expect(primaryFacts.maxHeartRate == 139)
+        let secondaryFacts = model.deviceFacts[1]
+        #expect(secondaryFacts.fileName == "2026-08-01_polarSense_run")
+        #expect(secondaryFacts.avgHeartRate == 135)
+        #expect(secondaryFacts.maxHeartRate == 140)
+
         #expect(!model.chartPoints.isEmpty)
         #expect(Set(model.chartPoints.map(\.device)) == Set(model.deviceLabels))
 

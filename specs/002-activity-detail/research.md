@@ -21,10 +21,14 @@ and the same class of gap `001-activity-list/research.md` §1 found and fixed fo
 `lapBoundaries`) and `FitActivity` metadata (for `deviceFacts`) — a `LoadedBatch` is required,
 not just a `BatchAgreement`. Building one by hand for tests would duplicate
 `SessionDetailPreviewFixture`, which already runs the real grouping/agreement pipeline over
-made-up records and already has a dedicated session for every one of this spec's edge cases
-(`2026-08-01` normal, `2026-08-02` no-overlap, `2026-08-03` too-few-points, `2026-08-04` missing
-device, `2026-08-05` scatter/ramp profile) — reusing it is both less code and closer to the real
-pipeline than a fresh fixture would be. `#if DEBUG` does not block reuse: XCTest/`FitViewTests`
+made-up records and — at the time this research was written — had a dedicated session for 4 of
+this spec's 5 test-relevant scenarios (`2026-08-01` normal, `2026-08-02` no-overlap, `2026-08-03`
+too-few-points, `2026-08-04` missing device, plus `2026-08-05` scatter/ramp profile for visual
+variety in previews). It did not yet cover Edge Case 1 (concordance un-computable because both
+devices read an identical constant value) — that gap was found during task generation and closed
+by adding a 6th session in Phase 2 (tasks.md T002). Reusing and extending this fixture is still
+both less code and closer to the real pipeline than a fresh fixture would be. `#if DEBUG` does not
+block reuse: XCTest/`FitViewTests`
 builds in Debug configuration (same as SwiftUI previews), so the fixture is visible to
 `@testable import FitView` there without any availability change.
 

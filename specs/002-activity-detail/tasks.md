@@ -116,9 +116,13 @@ vacuous.
       `maxAbsDiffText == "1 bpm"`; `ccc` non-nil (values vary, so concordance is computable even
       though the *difference* is constant — this is what distinguishes this session from T007's);
       `blandAltmanPlot` non-nil; `concordancePlot` non-nil; `chartPoints` non-empty and contains
-      both `deviceLabels`; `deviceFacts.count == 2`; `lapBoundaries.isEmpty` and
-      `lapSourceLabel == nil` (every fixture session's `activity()` helper produces exactly one
-      lap per device, so no device ever has >1 lap to source dividers from).
+      both `deviceLabels`; `lapBoundaries.isEmpty` and `lapSourceLabel == nil` (every fixture
+      session's `activity()` helper produces exactly one lap per device, so no device ever has >1
+      lap to source dividers from); `formattedDate` and `session.activity` (FR-001 — title/date);
+      and, per-device, `deviceFacts.count == 2` plus each device's `fileName`, `sport`,
+      `recordCount`, `lapCount`, `avgHeartRate`, `maxHeartRate` against the fixture's known
+      `130 + i%10` / `131 + i%10` construction (FR-006 — previously only `deviceFacts.count` was
+      asserted; added per `/speckit-analyze` finding C1/C2).
 - [X] T004 [US1] In the same file, test the missing-device-file skip (the fixture session with
       only a `pace4` file, no `polarSense` file for that date): `agreement == nil`;
       `skipBannerText` matches `"No {secondary device label} file for this date."` (FR-007);
@@ -223,8 +227,15 @@ check on the unaffected domain-logic suite.
       three skip-reason banners and the constant-value session — the user's real imported library
       (12 sessions, Jul 23–Aug 4 2026) has no skipped or constant-value sessions to click into;
       that behavior is covered instead by T003–T007's passing automated tests against the exact
-      same `SessionDetailModel` code path, not a live screenshot. iOS/iPadOS narrow-width and the
-      delete entry point's confirmation/error flow were not exercised in this pass.
+      same `SessionDetailModel` code path, not a live screenshot. iOS/iPadOS narrow-width was not
+      exercised in this pass. **FR-012 (delete entry point) scope note** (per `/speckit-analyze`
+      finding C3): this task's "delete entry point visible" item was not verified in this pass —
+      confirming the "..." toolbar menu offers "Delete Activity" is deliberately left to
+      `005-session-deletion`, which spec.md already names as this screen's sole entry point into
+      deletion (spec.md:105-108) and which owns the full confirmation/error/recoverability
+      contract; that spec has not yet been through `/speckit-plan`, so no `quickstart.md` exists
+      there yet to point to. Until it does, FR-012 here has no independent verification beyond
+      this note — treat as a known gap, not a completed check.
 - [X] T015 [P] Confirm via local `swift test` in `Packages/FitViewCore` (the same command
       `fitviewcore-tests` runs in CI) that the existing domain-logic suite is unaffected by this
       feature's one fixture addition (T002) — expect the same pass count as before T002, plus no
