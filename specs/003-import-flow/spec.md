@@ -39,13 +39,17 @@ device labels.
    `.fit` files, **Then** the app lists what it found (one entry per file) before importing
    anything, and importing requires one further explicit confirmation.
 2. **Given** the app is running on a Mac, **When** the user drags one or more `.fit` files onto
-   the activity list, **Then** the same import happens as picking "Files" — the files are
-   listed as found and added to the library, without opening a file picker.
+   the activity list, **Then** they are imported immediately — without opening a file picker and
+   without the found-items preview or confirmation step scenario 1 describes — and the activity
+   list reflects them once the drop finishes.
 3. **Given** an import batch has been confirmed, **When** it finishes, **Then** the app reports
    how many activities were added, and the activity list reflects them immediately.
 4. **Given** some files in a batch fail to import (e.g., unreadable or corrupt) while others
    succeed, **When** the batch finishes, **Then** the app shows both the successful imports and
    the specific failures — a partial failure is never hidden by only reporting the successes.
+   This applies to every import path that has a summary step (file picker, share extension,
+   folder scan, Polar sync); drag-and-drop has no summary step at all (scenario 2) and so
+   reports neither successes nor failures individually.
 5. **Given** the same recording is imported twice, whether via the same file picked again or a
    different file containing identical activity data, **When** the second import runs,
    **Then** it does not create a second entry in the activity library.
@@ -109,8 +113,14 @@ the app offers to name and save it, and confirm it later appears as an imported 
 3. **Given** no destination folder has been designated yet, **When** the user tries to share a
    file in, **Then** the share sheet tells them a folder needs to be set up first (in Settings)
    rather than accepting the file and losing it or failing without explanation.
-4. **Given** the shared file can't be read as activity data, **When** the app inspects it,
-   **Then** the share sheet reports that plainly instead of accepting a file it cannot use.
+4. **Given** the share sheet receives nothing to attach, or the system fails to hand over the
+   attached file's bytes at all, **When** the app inspects it, **Then** the share sheet reports
+   that plainly instead of accepting a file it cannot use. The share sheet does not otherwise
+   validate that the bytes it does receive are usable activity data — a file that transfers
+   successfully but isn't valid FIT data is still offered a proposed name (falling back to
+   today's date and placeholder device/activity) and can be saved; whether it's actually usable
+   is discovered later, when the watched folder is next scanned and it fails to import there
+   (visible as a folder-scan failure elsewhere in the app, not in the share sheet itself).
 
 ---
 
@@ -158,6 +168,9 @@ and confirm the activity appears in the library without any file having been man
 - The same underlying recording arrives through two different paths (e.g., manually imported,
   then later also delivered by account sync) — it is recognized as the same activity and not
   duplicated.
+- A drag-and-drop batch contains files that fail to import — per FR-002/FR-017, this is not
+  surfaced item-by-item; the user only sees whichever files did successfully import appear in
+  the activity list.
 
 ## Requirements *(mandatory)*
 
@@ -166,9 +179,12 @@ and confirm the activity appears in the library without any file having been man
 - **FR-001**: The app MUST let a user manually select one or more `.fit` files via a system
   file picker and import them into the activity library.
 - **FR-002**: On macOS, the app MUST support importing `.fit` files by dragging them onto the
-  activity list, producing the same result as picking them through the file picker.
+  activity list. Unlike the file picker, a drop imports immediately: it is exempt from FR-003's
+  preview/confirmation step, and from FR-017's per-item failure reporting — a dropped batch
+  either updates the activity list or, if nothing importable was found, changes nothing visible.
 - **FR-003**: Before committing an import, the app MUST show the user what was found and
-  require one explicit confirmation before anything is added to the library.
+  require one explicit confirmation before anything is added to the library — except
+  drag-and-drop imports (FR-002), which are exempt by design.
 - **FR-004**: The app MUST support designating a folder as an ongoing activity source, after
   which new files placed into it are imported automatically without a manual import action per
   file (folder designation itself specified in `004-settings-device-alias`).
@@ -202,7 +218,9 @@ and confirm the activity appears in the library without any file having been man
 - **FR-016**: Starting a new import batch MUST supersede any import already in progress rather
   than merging their results; dismissing the import flow mid-import MUST cancel it.
 - **FR-017**: When some items in an import batch fail while others succeed, the app MUST report
-  both — a failure MUST NOT be hidden by presenting only the successful subset.
+  both — a failure MUST NOT be hidden by presenting only the successful subset. This applies to
+  every import path with a summary step; drag-and-drop (FR-002) has no summary step and is
+  exempt.
 - **FR-018**: An item whose name or metadata can't be parsed into a usable date, device, and
   activity MUST still be reported to the user rather than silently dropped.
 
@@ -227,8 +245,10 @@ and confirm the activity appears in the library without any file having been man
   the user manually re-importing it.
 - **SC-003**: A user can get a single activity from another app into FitView's library in two
   steps or fewer (share, then confirm) without switching to FitView first.
-- **SC-004**: No import path can silently lose or duplicate an activity — every outcome
-  (success, skipped duplicate, or failure) is visible to the user.
+- **SC-004**: No import path can silently duplicate an activity, and no import path with a
+  summary step (file picker, share extension, folder scan, Polar sync) can silently lose one —
+  every outcome (success, skipped duplicate, or failure) is visible to the user on those paths.
+  Drag-and-drop is the one exception, documented in FR-002/FR-017 and the Assumptions.
 - **SC-005**: After connecting a supported third-party account once, new activities from it
   appear in the library with no further manual file handling.
 
@@ -248,5 +268,10 @@ and confirm the activity appears in the library without any file having been man
 - An import batch has no per-item selection step today — a source's results are found and
   imported as one all-or-nothing batch. This is treated as current, intended behavior, not a
   gap to fill.
+- Drag-and-drop's exemption from the preview/confirmation step and from per-item failure
+  reporting (FR-002, FR-003, FR-017) reflects the app's current, shipped behavior. It is
+  documented here as intended for this spec's purposes rather than treated as a gap to close;
+  revisiting it (e.g., routing drops through the same confirm/summary UI as the file picker) is
+  a future decision, not in scope for this spec.
 - Deleting an already-imported activity is out of scope here and is specified in
   `005-session-deletion`.
