@@ -12,17 +12,25 @@ Formalize the existing, shipped import surface — `ImportSheet` (file picker + 
 COROS placeholder), `FileImportSource`/macOS drag-and-drop, `WatchedFolderSource` +
 `FolderIngestor` (auto-import), the Share Extension (`ShareImportViewModel`/`ShareEditView`),
 and `PolarAccessLinkSource` + `RemoteActivitySync` (Polar Flow sync, configured from Settings) —
-as the governing spec, and close the two real gaps found while doing so:
+as the governing spec, and close the three real gaps found while doing so:
 
-1. **Spec-vs-code mismatch (resolved by amending the spec, not the code)**: macOS drag-and-drop
-   (`BatchOverviewView.handleDrop`) imports immediately, bypassing `ImportSheet`'s
+1. **Spec-vs-code mismatch, drag-and-drop (resolved by amending the spec, not the code)**: macOS
+   drag-and-drop (`BatchOverviewView.handleDrop`) imports immediately, bypassing `ImportSheet`'s
    preview/confirmation step and discarding `ImportCoordinator`'s per-item failure list. The
    original spec draft required drag-and-drop to match the file picker exactly (FR-002/FR-003)
    and to report partial failures (FR-017) on every path uniformly — neither is true of the
    shipped code. Per user decision, spec.md now documents this as drag-and-drop's intended,
    current exemption (FR-002, FR-003, FR-017, SC-004, plus a new Edge Case and Assumptions
    entry) rather than treating it as a bug to fix in this feature.
-2. **Test-coverage gap (Principle VI)**: `ImportSheet` (SwiftUI, drives FR-001/FR-003/FR-016)
+2. **Spec-vs-code mismatch, share extension (resolved by amending the spec, not the code)**:
+   `ShareImportViewModel.start()` never validates that shared bytes are actually valid FIT
+   data — a garbage file still reaches `.ready` with a fallback-named proposal and can be saved;
+   the failure only surfaces later via a folder rescan, not in the share sheet itself. The
+   original spec draft's US3 Acceptance Scenario 4 implied the share sheet catches this
+   directly. Per the same user decision (research.md §5), spec.md's Acceptance Scenario 4 now
+   describes the actual two-tier behavior (attachment-transfer failure vs. content validity)
+   instead.
+3. **Test-coverage gap (Principle VI)**: `ImportSheet` (SwiftUI, drives FR-001/FR-003/FR-016)
    and the Share Extension's `ShareImportViewModel` (FR-008/FR-009/FR-010) have zero automated
    coverage today. Everything domain-level they depend on (`ImportCoordinator`,
    `FolderIngestor`, `WatchedFolderSource`, `RemoteActivitySync`, `PolarAccessLinkModels`, and
@@ -119,9 +127,10 @@ the same `ActivitySource` → `ImportCoordinator` → `LibraryStore` pipeline.
 | VI. CI-Verified Testing | ⚠ Pass with a gap to close | `ShareImportViewModel` has zero coverage today only because its source directory isn't compiled into any test target (research.md §1) — not because it needs restructuring. Closed by Phase 2 (tasks.md): add `Sources/ShareExtension/Shared` to `FitViewTests`'s `sources` in `project.yml`, then add `Tests/FitViewTests/ShareImportViewModelTests.swift` to the existing, already-CI-wired target. `ImportSheet` stays untested directly (by design, per Principle II above) but every state transition it drives (`ImportCoordinator.startImport`/`cancelAll`) is already covered by `ImportCoordinatorTests`. |
 
 No unjustified violations. Principle IV's gap is pre-existing and cross-feature scoped. Principle
-VI's gap is closed by this plan (see research.md §1–2), not merely flagged. The spec-vs-code
-mismatch found for drag-and-drop was resolved by amending spec.md (per explicit user decision),
-not by changing shipped code — so it does not appear here as an open gap.
+VI's gap is closed by this plan (see research.md §1), not merely flagged. The two spec-vs-code
+mismatches found (drag-and-drop, research.md §2; share extension unreadable-data handling,
+research.md §5) were both resolved by amending spec.md (per explicit user decision), not by
+changing shipped code — so neither appears here as an open gap.
 
 **Post-Phase-1 re-check**: data-model.md and contracts/import-source-contract.md document
 `ActivitySource`'s existing contract and `ShareImportViewModel`'s existing `Phase`/state shape —

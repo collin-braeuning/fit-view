@@ -119,3 +119,39 @@ FR-006's "on-demand rescan" language is folder-specific).
 **Rationale**: read directly from `AppModel.swift`'s `rescanFolder`/`syncPolar` implementations.
 
 **Alternatives considered**: None — verification task.
+
+## §5. Share extension's "unreadable" phase doesn't validate FIT content
+
+**Unknown** (found while designing `ShareImportViewModelTests` for §1, during `/speckit-tasks`):
+the original spec draft's US3 Acceptance Scenario 4 said the share sheet reports plainly when
+"the shared file can't be read as activity data." Does `ShareImportViewModel.start()` actually
+do that?
+
+**Decision** (per explicit user direction, same resolution as §2): amend spec.md rather than
+code. `ShareImportViewModel.Phase.unreadable` only fires for two cases — no attachment at all
+(`firstAttachment() == nil`), or `loadFile(from:)` itself throwing (the system failed to hand
+over the attachment's bytes). It does **not** fire for "the bytes transferred fine but aren't
+valid FIT data": `defaultActivityFileName(forSharedData:incomingFileName:resolveDeviceLabel:)`
+(`ShareImport.swift`) never throws — for undecodable bytes it falls back to
+`defaultActivityFileName(forIncomingFileName:today:)`'s placeholder shape
+(`"<today>_device_activity"`), and `start()` proceeds straight to `.ready`. `writeSharedActivity`
+performs no FIT validation either — it will happily write arbitrary bytes under a `.fit` name.
+The garbage file is only ever caught later, when `WatchedFolderSource`/`FolderIngestor` next
+scans the folder and `loadFitFile` rejects it — surfaced via `AppModel.lastIngest.failures`
+elsewhere in the app, not in the share sheet itself. spec.md's US3 Acceptance Scenario 4 now
+describes this two-tier behavior (attachment-transfer failure vs. content validity) instead of
+implying the share sheet validates FIT content directly.
+
+**Rationale**: read directly from `ShareImportViewModel.start()`, `ShareImport.swift`'s
+`defaultActivityFileName(forSharedData:)`, and `AppModel.scanFolder`'s `lastIngest`/`folderError`
+handling (research.md §4 already covered the latter's rescan-queuing half).
+
+**Test-writing consequence** (§1's `ShareImportViewModelTests`): a "can't be read" test case
+must exercise the no-attachment/transfer-failure path, not a garbage-FIT-bytes path — garbage
+bytes are expected to reach `.ready`, not `.unreadable`, per the amended spec.
+
+**Alternatives considered**:
+- *Add real FIT-decodability validation to `ShareImportViewModel.start()`.* Rejected for this
+  pass, per user decision — new production behavior beyond this feature's scoped "test-coverage
+  only" change to the Share Extension, and a user-visible behavior change that would need the
+  same manual-verification pause `CLAUDE.md` requires for UI-affecting changes.
