@@ -26,6 +26,12 @@ Deleting the activity shown here is specified separately in `005-session-deletio
 deletion has its own contract (what "delete" actually removes, and whether it's recoverable)
 independent of which screen triggers it.
 
+## Clarifications
+
+### Session 2026-08-06
+
+- Q: Should a session where one device's file is entirely missing for that date be documented as its own distinct edge case in this spec, separate from "no overlapping seconds" and "too few matched seconds"? → A: Yes — add it as a third, distinct skip reason with its own plain-language explanation.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Drill into one activity's full comparison (Priority: P1)
@@ -94,6 +100,9 @@ of that specific metric appears, addressed to the metric shown, without navigati
 
 ### Edge Cases
 
+- An activity has only one device's file present for that date (the other device recorded
+  nothing) — the detail view shows a plain-language explanation naming which device's file is
+  missing, distinct from a no-overlap or too-few-points skip (see FR-007).
 - An activity's concordance coefficient cannot be computed (both devices' readings were a
   constant value) — the concordance statistic tile and its plot are omitted for that activity,
   not shown as an error or a zero.
@@ -126,7 +135,11 @@ of that specific metric appears, addressed to the metric shown, without navigati
   sport, recording time range, record and lap counts, and average/max heart rate.
 - **FR-007**: When an activity has no usable overlapping data between its two devices, the
   detail view MUST replace the statistics grid and agreement plots with a plain-language
-  explanation of why, rather than leaving those areas blank or showing fabricated values.
+  explanation of why, rather than leaving those areas blank or showing fabricated values. This
+  explanation MUST distinguish, by its wording, which of the three distinct skip reasons
+  applies: one device's file is missing entirely for that date, the devices have no overlapping
+  seconds at all, or they overlap but too few seconds were matched to compute agreement
+  statistics.
 - **FR-008**: The heart-rate comparison chart MUST support an on-demand full-screen
   presentation that the user can dismiss back to the detail view.
 - **FR-009**: A statistic tile or agreement plot that has an associated explanation MUST be

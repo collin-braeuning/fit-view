@@ -65,6 +65,7 @@
 		70AD62F62EF0A54F8F045244 /* BundledSampleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3886B442F95B35D4EB410680 /* BundledSampleSource.swift */; };
 		7256BCD37293F05E79CFB8D0 /* FitViewShareExtension-macOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		751D5200DADA3B4ECEBA84F1 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
+		763341BA47176958C5EAE822 /* SessionDetailModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */; };
 		764F8BE8121F9006DA92C284 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744711A6152DC8D944BBAC03 /* AppModel.swift */; };
 		7FBF08D8B7D1B4BA410F7FA2 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
 		83152F8889A20271010FAB64 /* 2026-07-23_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */; };
@@ -244,6 +245,7 @@
 		E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-24_pace4_run.fit"; sourceTree = "<group>"; };
 		E70098EDEF6B3DD1A7E03EE5 /* PolarAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarAPIClient.swift; sourceTree = "<group>"; };
 		EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAliasSheet.swift; sourceTree = "<group>"; };
+		EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModelTests.swift; sourceTree = "<group>"; };
 		ED2468CD13769E17A4380CC4 /* FitViewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitViewApp.swift; sourceTree = "<group>"; };
 		F01D3A90F5A8F9132C718742 /* SessionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCard.swift; sourceTree = "<group>"; };
 		F1EEFD40AC516981A1C8CC0C /* ImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSheet.swift; sourceTree = "<group>"; };
@@ -302,6 +304,7 @@
 			isa = PBXGroup;
 			children = (
 				44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */,
+				EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */,
 				F67C87D0C2D47B1CC1AE668C /* Fixtures */,
 			);
 			name = FitViewTests;
@@ -780,6 +783,7 @@
 			files = (
 				9BD5E38635F11D4B18D78FED /* AgreementFixtures.swift in Sources */,
 				1CCE9ED2849DA45FF315D8EC /* BatchOverviewModelTests.swift in Sources */,
+				763341BA47176958C5EAE822 /* SessionDetailModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
