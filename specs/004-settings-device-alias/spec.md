@@ -16,6 +16,15 @@
 - Q: Can we limit the diagnostic log file to a fixed number of lines, overwriting the oldest, so it does not grow unbounded? → A: Yes — cap it at 1000 entries, automatically discarding the oldest once the cap is reached (ring buffer). No manual "Clear Log" control is needed since growth is bounded automatically.
 - Q: When a connected Polar account's saved session silently expires (e.g., the token is revoked), should the user see an explicit "connection failed / reconnect needed" state, or is quietly reverting to "not connected" acceptable? → A: Surface it explicitly — show a distinct "connection lost, reconnect needed" state rather than silently looking identical to "never connected."
 
+### Session 2026-08-08 (bug fix)
+
+- Q: Settings showed "8 entries recorded" while the exported diagnostic log file held
+  hundreds of lines spanning many prior launches — should the in-Settings count reflect only
+  the current session, or the full persisted log? → A: The full persisted log. The count must
+  be read from the on-disk log at launch (not reset to empty each session), so it always
+  matches what an export would actually contain. Fixed in code by seeding the in-memory log
+  from the persisted file at startup.
+
 **Note on scope**: This specification documents functionality that already exists in the
 codebase (`SettingsView`/`SettingsSheet`, `DeviceAliasSheet`, `DeviceNicknameStore`,
 `TokenStore`). It formalizes the existing, shipped behavior as the governing spec so that
@@ -143,6 +152,9 @@ the failure and its context appear in the exported file.
 2. **Given** the diagnostic log has been accumulating entries for a long time, **When** it
    reaches its fixed size cap, **Then** the oldest entries are automatically discarded to make
    room for new ones, with no manual clearing action required.
+3. **Given** entries were logged during previous app sessions, **When** the user reopens the
+   app and views Settings, **Then** the in-Settings entry count and the exported log both
+   include those previous-session entries, not just ones logged since the current launch.
 
 ### Edge Cases
 
@@ -162,6 +174,9 @@ the failure and its context appear in the exported file.
   silently treated as if the account had never been connected.
 - The diagnostic log file is capped at a fixed number of entries; once full, the oldest entries
   are automatically discarded to make room for new ones, so it cannot grow unbounded.
+- The in-Settings entry count MUST be seeded from the persisted log file at app launch, not
+  reset to "entries logged this session only" — otherwise the displayed count undercounts what
+  an export actually contains, misleading a user about how much history is available.
 
 ## Requirements *(mandatory)*
 
@@ -204,6 +219,9 @@ the failure and its context appear in the exported file.
 - **FR-015**: If a connected third-party account's saved session becomes invalid (e.g., an
   expired or revoked token), Settings MUST show an explicit "connection lost, reconnect needed"
   state rather than silently reverting to appearing as never connected.
+- **FR-016**: The diagnostic log's in-Settings entry count MUST be read from the persisted log
+  file at app launch, not reset to only entries logged during the current session, so the count
+  shown always matches what exporting the log would actually produce.
 
 ### Key Entities
 
@@ -218,7 +236,9 @@ the failure and its context appear in the exported file.
   library's contents.
 - **Diagnostic Log**: A capped record (1000 most recent entries, oldest automatically
   discarded) of import, sync, and connection events, exportable as a file via the system share
-  sheet for troubleshooting; not browsable within the app itself.
+  sheet for troubleshooting; not browsable within the app itself. Persists across app launches
+  — the in-Settings entry count reflects the full persisted history, not just the current
+  session.
 
 ## Success Criteria *(mandatory)*
 

@@ -49,3 +49,9 @@
 - Device-to-device sync code exists in the repository (`FolderSyncStore`/`RemoteLibraryStore`)
   but has no live UI — deliberately excluded per the codebase's own documented decision, not an
   oversight.
+- 2026-08-08: Added FR-016 (and a matching acceptance scenario, edge case, and clarification
+  entry) documenting a bug fix — the in-Settings diagnostic log entry count was reading only
+  the current session's in-memory entries instead of the persisted log file, so it undercounted
+  relative to what "Export Log…" actually produced. Already fixed in code
+  (`AppModel.init` now seeds `debugLog` from `debugLogFileURL`); this update brings the spec in
+  line with that corrected behavior.
