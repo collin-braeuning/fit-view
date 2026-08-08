@@ -43,7 +43,7 @@ any `project.yml`/source-file change.
 **Purpose**: Confirm the baseline this plan modifies is what plan.md/research.md describe,
 before changing it.
 
-- [ ] T001 Run `swift test` in `Packages/FitViewCore` and confirm
+- [X] T001 Run `swift test` in `Packages/FitViewCore` and confirm
   `DeviceNicknameStoreTests` (and the rest of the existing suite) passes unmodified, as the
   pre-change baseline this feature's changes must not disturb (quickstart.md's regression
   check #3).
@@ -113,7 +113,7 @@ gap: connection-lost state)", steps 1–5; automated: quickstart.md's Automated 
 > Write these first; they must fail against the current `Bool`-based state before the
 > implementation tasks below make them pass.
 
-- [ ] T004 [P] [US3] Add `Tests/FitViewTests/PolarConnectionStateTests.swift`
+- [X] T004 [P] [US3] Add `Tests/FitViewTests/PolarConnectionStateTests.swift`
   (`@testable import FitView`, `Testing` framework, matching the style of
   `Tests/FitViewTests/BatchOverviewModelTests.swift`) covering the pure transition
   function added in T007: `.connected` + a simulated `ActivitySourceError.unauthorized` →
@@ -126,23 +126,23 @@ gap: connection-lost state)", steps 1–5; automated: quickstart.md's Automated 
 
 ### Implementation for User Story 3
 
-- [ ] T005 [US3] In `Sources/FitView/Import/Polar/PolarAPIClient.swift`, change the
+- [X] T005 [US3] In `Sources/FitView/Import/Polar/PolarAPIClient.swift`, change the
   private `requireSuccess(_:data:)` (line 133) to special-case HTTP 401: throw
   `ActivitySourceError.unauthorized` instead of the generic
   `.underlying("Polar returned HTTP \(status): ...")` when `httpResponse.statusCode ==
   401`, leaving every other non-2xx status on the existing `.underlying` path unchanged.
   This is the "one choke point all authenticated Polar requests already pass through" that
   research.md §3 identifies.
-- [ ] T006 [P] [US3] Add `enum PolarConnectionState: Equatable { case notConnected,
+- [X] T006 [P] [US3] Add `enum PolarConnectionState: Equatable { case notConnected,
   connected, connectionLost }` to `Sources/FitView/AppModel.swift` (near the existing
   `debugLog`/Polar state properties, ~line 43), per
   `contracts/polar-connection-contract.md`.
-- [ ] T007 [US3] Add a pure static helper next to `PolarConnectionState` (e.g.
+- [X] T007 [US3] Add a pure static helper next to `PolarConnectionState` (e.g.
   `PolarConnectionState.afterFailedRequest(current:error:) -> PolarConnectionState`) that
   returns `.connectionLost` when `current == .connected` and `error` is
   `ActivitySourceError.unauthorized`, and returns `current` unchanged otherwise. This is
   the function T004's tests exercise directly.
-- [ ] T008 [US3] In `Sources/FitView/AppModel.swift`, replace `private(set) var
+- [X] T008 [US3] In `Sources/FitView/AppModel.swift`, replace `private(set) var
   isPolarConnected = false` (line 47) with `private(set) var polarConnectionState:
   PolarConnectionState = .notConnected`, and update every read/write site in the same
   file:
@@ -161,7 +161,7 @@ gap: connection-lost state)", steps 1–5; automated: quickstart.md's Automated 
     PolarConnectionState.afterFailedRequest(current: polarConnectionState, error: error)`
     (T007) so a 401 surfaced through `RemoteActivitySync` flips the state to
     `.connectionLost`.
-- [ ] T009 [US3] In `Sources/FitView/Settings/SettingsView.swift`'s Polar Flow section
+- [X] T009 [US3] In `Sources/FitView/Settings/SettingsView.swift`'s Polar Flow section
   (lines 105–129), replace the `!model.isPolarConnected` / `else` two-way branch with a
   three-way `switch model.polarConnectionState`: `.notConnected` keeps the existing
   "Connect Polar Flow…" button (disabled unless `isFolderConfigured`); `.connected` keeps
@@ -194,7 +194,7 @@ Validation #1 (ring buffer cap).
 > Write this first; it must fail against the not-yet-created `DiagnosticLogRingBuffer`
 > before T012 makes it pass.
 
-- [ ] T010 [P] [US4] Add
+- [X] T010 [P] [US4] Add
   `Packages/FitViewCore/Tests/FitViewCoreTests/DiagnosticLogRingBufferTests.swift`
   (`Testing` framework, matching `DeviceNicknameStoreTests.swift`'s style) covering
   `DiagnosticLogRingBuffer.appending(_:to:cap:)` per
@@ -205,14 +205,14 @@ Validation #1 (ring buffer cap).
 
 ### Implementation for User Story 4
 
-- [ ] T011 [P] [US4] Add
+- [X] T011 [P] [US4] Add
   `Packages/FitViewCore/Sources/FitViewCore/DeviceNicknameStore.swift`-adjacent new file
   `Packages/FitViewCore/Sources/FitViewCore/DiagnosticLogRingBuffer.swift` with:
   `public enum DiagnosticLogRingBuffer { public static func appending(_ newEntry: String,
   to existing: [String], cap: Int) -> [String] }` per
   `contracts/diagnostic-log-contract.md` — pure, no I/O, order-preserving FIFO eviction
   from the front when `existing.count + 1 > cap`.
-- [ ] T012 [US4] In `Sources/FitView/AppModel.swift`:
+- [X] T012 [US4] In `Sources/FitView/AppModel.swift`:
   - Change `private static let debugLogCap = 200` (line 60) to `1000`, matching the
     single cap the contract requires for both the in-memory array and the on-disk file.
   - Replace the in-memory trim in `log(_:)` (lines 492–494, `if debugLog.count >
@@ -232,7 +232,7 @@ Validation #1 (ring buffer cap).
     can pass it to `ShareLink`.
   - Remove `clearDebugLog()` (lines 466–471) — per the contract, "MUST NOT expose a manual
     'Clear Log' action once the cap is in place."
-- [ ] T013 [US4] In `Sources/FitView/Settings/SettingsView.swift`'s Debug Log section
+- [X] T013 [US4] In `Sources/FitView/Settings/SettingsView.swift`'s Debug Log section
   (lines 160–180), replace the scrollable `Text(model.debugLog.joined(...))` block and the
   "Clear Log" button with: a lightweight in-Settings state indicator (e.g. "No log entries
   yet." when `model.debugLog.isEmpty`, otherwise an entry count like "\(model.debugLog
@@ -253,14 +253,14 @@ no manual clear control remains. Validate with quickstart.md steps 1–5.
 **Purpose**: Confirm the plan's CI-wiring assumption and close out full-suite validation
 before considering the feature done.
 
-- [ ] T014 [P] Run `swift test` in `Packages/FitViewCore` and confirm
+- [X] T014 [P] Run `swift test` in `Packages/FitViewCore` and confirm
   `DiagnosticLogRingBufferTests` (T010) passes and the full package suite (including
   `DeviceNicknameStoreTests`, unaffected) is green.
-- [ ] T015 [P] Run `xcodegen generate`, then `xcodebuild test -scheme FitView-macOS
+- [X] T015 [P] Run `xcodegen generate`, then `xcodebuild test -scheme FitView-macOS
   -only-testing:FitViewTests -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO
   CODE_SIGNING_REQUIRED=NO` and confirm `PolarConnectionStateTests` (T004) passes and the
   rest of `FitViewTests` (e.g. `BatchOverviewModelTests`) is unaffected.
-- [ ] T016 Open `.github/workflows/tests.yml` and confirm both new test files (T004, T010)
+- [X] T016 Open `.github/workflows/tests.yml` and confirm both new test files (T004, T010)
   are picked up by the existing `fitviewcore-tests` (`swift test`, whole package) and
   `fitview-tests` (`-only-testing:FitViewTests`, whole target) jobs with no edits needed —
   per research.md §4's "must be verified once the actual files are added, not assumed."
