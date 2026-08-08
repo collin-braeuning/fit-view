@@ -96,6 +96,11 @@ targets:
     deploymentTarget: "14.0"
     sources:
       - path: Tests/FitViewTests
+      # Share Extension logic (ShareImportViewModel) is already SwiftUI-free
+      # but otherwise compiles only into the extension targets below, so
+      # nothing about it runs in CI — added here to close that gap; see
+      # specs/003-import-flow/research.md §1.
+      - path: Sources/ShareExtension/Shared
     dependencies:
       - target: FitView-macOS
       - package: FitViewCore
