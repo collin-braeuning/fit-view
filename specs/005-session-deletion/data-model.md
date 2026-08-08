@@ -23,31 +23,46 @@ leaves the blob. Reconciliation and in-app deletion both go through it.
 
 ### `FolderIngestReport` (`FitViewCore/FolderIngestor.swift`)
 
-Gains one field.
+Gains two fields.
 
 | Field | Type | Meaning |
 |---|---|---|
 | `discovered` | `Int` | Existing. `.fit` files currently in the folder, downloaded or not. |
 | `imported` | `Int` | Existing. Library growth, measured as a count delta. Re-baselined **after** removals so reconciliation cannot corrupt it. |
-| `removed` | `Int` | **New.** Items removed because their file left the folder (FR-009). Zero on every scan that removed nothing, which is the overwhelmingly common case. |
+| `removedSourceIds` | `[String]` | **New.** The `sourceId` of each item removed because its file left the folder (FR-009). Empty on every scan that removed nothing, which is the overwhelmingly common case. Itemised rather than counted so a reconciliation removal is as diagnosable from the log as an in-app deletion (FR-014, C10). |
+| `removalFailures` | `[RemovalFailure]` | **New.** Stale items whose removal threw. Still in the library; the pass continued past them (C5). |
 | `failures` | `[ImportFailure]` | Existing. New-but-unreadable files. |
 
-**Changed derived property:**
+**Changed derived properties:**
 
 ```swift
+var removed: Int { removedSourceIds.count }
 var didChangeLibrary: Bool { imported > 0 || removed > 0 }
 ```
 
-This is what drives `AppModel` to call `reload()`, so a scan that only removed items must
-report `true` or the activity list would keep showing activities that are gone.
+`removed` is derived, not stored, so the count and the itemised list cannot drift apart and
+break C6's truthful-counts rule. `didChangeLibrary` is what drives `AppModel` to call
+`reload()`, so a scan that only removed items must report `true` or the activity list would
+keep showing activities that are gone.
 
 **Invariants**
 
-- `removed` counts items whose `remove(itemId:)` call completed. A removal that throws is not
-  counted and does not abort the rest of the pass — same "one bad item must not sink the
-  batch" rule the failure collection already follows.
+- `removedSourceIds` holds exactly the items whose `remove(itemId:)` call completed. A removal
+  that throws lands in `removalFailures` instead and does not abort the rest of the pass —
+  same "one bad item must not sink the batch" rule the import failure collection already
+  follows. It is *recorded*, never discarded: a silently skipped removal would be invisible
+  everywhere afterwards, which Constitution V rules out.
 - `removed == 0` whenever the listing was untrustworthy, because no reconciliation is
   attempted at all in that case (FR-010).
+
+### `RemovalFailure` (`FitViewCore/FolderIngestor.swift`) — new
+
+Mirrors `ImportFailure`'s shape for the removal side of a scan.
+
+| Field | Type | Meaning |
+|---|---|---|
+| `item` | `LibraryItem` | The stale item that stayed in the library. Carried whole, the way `ImportFailure` carries its candidate, so a caller reports whichever part of its identity is meaningful to it. |
+| `message` | `String` | The thrown error, stringified. |
 
 ### `DeletionOutcome` (`Sources/FitView/AppModel.swift`) — new
 

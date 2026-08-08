@@ -424,6 +424,57 @@ struct FolderIngestorTests {
         #expect(!remainingIds.contains(survivingId), "the item whose removal succeeded is actually gone")
     }
 
+    @Test("both sides of the removal pass are itemised — what was removed, and what refused to be")
+    func removalOutcomesAreItemisedNotJustCounted() async throws {
+        let folder = makeTempDirectory()
+        try placeFitFile(named: "2026-07-23_pace4_run.fit", in: folder, from: "2026-07-23_pace4_run.fit")
+
+        let source = WatchedFolderSource(defaults: UserDefaults(suiteName: "FolderIngestorTests.\(UUID().uuidString)")!)
+        try await source.setFolder(folder)
+        let realStore = try makeStore(rootURL: makeTempDirectory())
+        let ingestor = FolderIngestor(source: source)
+        #expect(try await ingestor.ingest(into: realStore).imported == 1)
+
+        let failingItem = try await addItem(to: realStore, source: "folder", sourceId: "gone.fit", fileName: "gone.fit")
+        let wrapped = FailingRemovalStore(wrapping: realStore, failingToRemove: [failingItem.id])
+
+        try FileManager.default.removeItem(at: folder.appendingPathComponent("2026-07-23_pace4_run.fit"))
+        let report = try await ingestor.ingest(into: wrapped)
+
+        // C10 / FR-014: a count alone can't tell anyone *which* activity
+        // vanished, and a discarded failure can't tell them one refused to.
+        #expect(
+            report.removedSourceIds == ["2026-07-23_pace4_run.fit"],
+            "a successful reconciliation removal names the item it removed"
+        )
+        #expect(report.removed == report.removedSourceIds.count, "the count stays derived from the itemised list")
+
+        #expect(report.removalFailures.count == 1, "a removal that threw is captured, not silently discarded")
+        let failure = try #require(report.removalFailures.first)
+        #expect(failure.item.id == failingItem.id, "the captured failure names the item that stayed behind")
+        #expect(!failure.message.isEmpty, "the thrown error is carried, not just the fact that one was thrown")
+        #expect(
+            failure.message.contains("simulated removal failure"),
+            "the captured message describes the actual error, not a placeholder"
+        )
+    }
+
+    @Test("a clean reconciliation pass records no removal failures")
+    func cleanReconciliationHasNoRemovalFailures() async throws {
+        let folder = makeTempDirectory()
+        try placeFitFile(named: "2026-07-23_pace4_run.fit", in: folder, from: "2026-07-23_pace4_run.fit")
+
+        let ingestor = try await makeIngestor(watching: folder)
+        let store = try makeStore(rootURL: makeTempDirectory())
+        #expect(try await ingestor.ingest(into: store).imported == 1)
+
+        try FileManager.default.removeItem(at: folder.appendingPathComponent("2026-07-23_pace4_run.fit"))
+        let report = try await ingestor.ingest(into: store)
+
+        #expect(report.removedSourceIds == ["2026-07-23_pace4_run.fit"])
+        #expect(report.removalFailures.isEmpty, "nothing failed, so nothing is reported as failed")
+    }
+
     @Test("a scan that removes 2 and imports 2 reports both counts correctly")
     func removedAndImportedCountsAreBothTruthfulInOnePass() async throws {
         let folder = makeTempDirectory()

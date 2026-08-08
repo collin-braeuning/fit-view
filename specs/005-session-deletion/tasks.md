@@ -225,6 +225,15 @@ plan.md/quickstart.md rather than left implicit.
   (**BUILD SUCCEEDED**), confirming the whole app target compiles with these changes. Once
   pushed, still confirm `fitviewcore-tests`/`fitview-tests` actually ran green on the PR itself
   (Constitution VI) — a local pass is a convenience, not verification, per quickstart.md §3.
+  - **Re-run after Phase 6 (T020–T023)**: `swift test` now **168/168 passing**, and
+    `xcodebuild build-for-testing -scheme FitView-macOS` reports **TEST BUILD SUCCEEDED**, so
+    both targets still compile. `xcodebuild test -only-testing:FitViewTests` could **not be
+    run**: the test bundle fails to `dlopen` with "different Team IDs" — the host app is signed
+    with team `4GP83563V4` while `FitViewTests.xctest` is ad-hoc signed with no team. That is a
+    local signing-configuration mismatch, unrelated to these source changes (it reproduces on
+    both the default and an isolated `-derivedDataPath`, and the code compiles and links
+    cleanly). Nothing in Phase 6 touches `Tests/FitViewTests`, but the CI check on the PR is
+    now the only place `fitview-tests` will actually execute.
 - [X] T018 Deliberately break each new guard and confirm its test fails, then restore it
   (quickstart.md §4, Constitution VI's anti-vacuous-pass clause):
   1. removed the `sourceId != nil` clause from the reconciliation eligibility filter (T011) →
@@ -240,6 +249,11 @@ plan.md/quickstart.md rather than left implicit.
      corrected to describe what it actually validates (end-to-end "never reconciles on an
      unenumerable folder," not the specific enumerator/errorHandler mechanism)
   3. restored both, re-ran `swift test` — all 166 tests pass
+  4. **Phase 6 guards (T020/T021), same treatment**: restored the old `catch { continue }` in
+     the reconciliation removal loop → `removalOutcomesAreItemisedNotJustCounted` (T023) failed
+     on `removalFailures.count == 0`, as expected; recorded `item.id` instead of
+     `item.sourceId` for successful removals → both new identity assertions failed, naming a
+     UUID where a `sourceId` belongs. Restored both, re-ran `swift test` — all 168 pass.
 - [ ] T019 **Not run** — requires a real Xcode build/run against a live watched folder, which
   is outside this session's default scope per the project's workflow preference (no
   build/run/launch unless in a remote-control session). Run the manual passes in
@@ -334,3 +348,42 @@ target, with Phase 3 landing alongside it since both are small.
   anti-vacuous-pass clause, and the guard it exercises (FR-010) is what stands between a bad
   scan and unrecoverable data loss (data-model.md, research.md §2)
 - Commit after each task or logical group, per repo convention
+
+---
+
+## Phase 6: Convergence
+
+**Purpose**: `/speckit-converge` found that reconciliation removals (`FolderIngestor.ingest`)
+are diagnostically weaker than in-app deletion (`AppModel.deleteSession`): a removal that
+throws mid-pass is silently discarded with no captured detail, and successful removals are
+logged only as an aggregate count, never per-item. This falls short of contract C10
+("every removal... every deletion failure... MUST be recorded"), FR-014, quickstart.md §9's
+explicit checklist ("each removal, in-app and reconciliation, with what was removed"), and
+Constitution V ("Logging MUST NOT substitute for correct error handling — it accompanies a
+handled error... not a silent failure").
+
+- [X] T020 **CRITICAL** In `FolderIngestor.ingest(into:)`'s removal loop
+  (`Packages/FitViewCore/Sources/FitViewCore/FolderIngestor.swift:118-125`), stop discarding a
+  removal failure via `catch { continue }` — capture the failed item and the thrown error (a
+  `RemovalFailure` type mirroring `ImportFailure`'s `candidate`/`message` shape) and expose the
+  collected failures on `FolderIngestReport` (e.g. `public var removalFailures:
+  [RemovalFailure]`), matching the existing pattern `failures: [ImportFailure]` already follows
+  for import-side errors. The pass must still continue past a failed removal (C5 is unchanged)
+  per Constitution V (missing)
+- [X] T021 In the same removal loop, capture each successfully-removed stale item's identity
+  (e.g. `sourceId` or `id`) and expose it on `FolderIngestReport` (e.g. `public var
+  removedSourceIds: [String]`), so a reconciliation removal is itemized the same way an import
+  is — currently only `removed: Int`, a bare count, is available per C10 / FR-014 /
+  quickstart.md §9 (partial)
+- [X] T022 Update `AppModel.scanFolder`'s reconciliation logging
+  (`Sources/FitView/AppModel.swift:419-421`, the `if report.removed > 0 { log(...) }` block) to
+  log each removed item's identity (from T021) and each removal failure (from T020)
+  individually — one `log(...)` call per item, matching `deleteSession`'s existing per-device
+  logging pattern — instead of a single aggregate-count line, so a reconciliation outcome is as
+  diagnosable from the local log as an in-app deletion is per FR-014 / C10 (partial)
+- [X] T023 [P] Add test coverage in
+  `Packages/FitViewCore/Tests/FitViewCoreTests/FolderIngestorTests.swift` (alongside
+  `oneFailedRemovalDoesNotBlockTheRest`, line 401) asserting that a removal failure during
+  reconciliation is captured on `FolderIngestReport.removalFailures` (not silently discarded),
+  and that a successful reconciliation removal's identity appears in
+  `FolderIngestReport.removedSourceIds` — regression coverage for T020/T021 per C10 (missing)

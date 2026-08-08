@@ -416,8 +416,17 @@ final class AppModel {
             do {
                 let report = try await ingestor.ingest(into: store)
                 folderError = nil
-                if report.removed > 0 {
-                    log("scanFolder: reconciliation removed \(report.removed) item(s) whose file left the folder")
+                // Itemised, one line each, the way `deleteSession` logs per
+                // device — an aggregate count says a reconciliation happened
+                // but not to what, which is the difference between a log that
+                // explains a missing activity and one that only confirms it
+                // went missing (FR-014, contract C10).
+                for sourceId in report.removedSourceIds {
+                    log("scanFolder: reconciliation removed \(sourceId) — no longer in the folder")
+                }
+                for failure in report.removalFailures {
+                    let identity = failure.item.sourceId ?? failure.item.id
+                    log("scanFolder: reconciliation failed to remove \(identity): \(failure.message)")
                 }
                 // A routine rescan that found nothing new leaves the last
                 // meaningful report on screen instead of blanking it to zeroes.
