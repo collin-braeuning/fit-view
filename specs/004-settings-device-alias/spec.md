@@ -8,6 +8,14 @@
 
 **Input**: User description: "(4) Settings & device alias management"
 
+## Clarifications
+
+### Session 2026-08-08
+
+- Q: When the user taps the new "export log" control in Settings, what should it do with the full debug.log file? → A: System share sheet (AirDrop/Mail/Messages/Save to Files), replacing the in-app browsable log list. This also covers wireless transfer to a computer, alongside the existing wired Xcode devicectl retrieval path.
+- Q: Can we limit the diagnostic log file to a fixed number of lines, overwriting the oldest, so it does not grow unbounded? → A: Yes — cap it at 1000 entries, automatically discarding the oldest once the cap is reached (ring buffer). No manual "Clear Log" control is needed since growth is bounded automatically.
+- Q: When a connected Polar account's saved session silently expires (e.g., the token is revoked), should the user see an explicit "connection failed / reconnect needed" state, or is quietly reverting to "not connected" acceptable? → A: Surface it explicitly — show a distinct "connection lost, reconnect needed" state rather than silently looking identical to "never connected."
+
 **Note on scope**: This specification documents functionality that already exists in the
 codebase (`SettingsView`/`SettingsSheet`, `DeviceAliasSheet`, `DeviceNicknameStore`,
 `TokenStore`). It formalizes the existing, shipped behavior as the governing spec so that
@@ -113,26 +121,28 @@ remain in the library.
 
 ---
 
-### User Story 4 - Review a local diagnostic log (Priority: P3)
+### User Story 4 - Export a local diagnostic log (Priority: P3)
 
 A user (or a developer helping them) troubleshooting an import, sync, or connection problem can
-view a running, in-app record of what the app has recently done, without needing to reproduce
-the issue under a debugger.
+export a record of what the app has recently done as a file, without needing to reproduce the
+issue under a debugger.
 
 **Why this priority**: This supports diagnosing the other three stories when something goes
 wrong; it has no purpose on its own, so it's the lowest priority, but it materially shortens
 troubleshooting for the features above it.
 
-**Independent Test**: Trigger a failing sync or import, open the diagnostic log, and confirm
-the failure and its context appear in it.
+**Independent Test**: Trigger a failing sync or import, export the diagnostic log, and confirm
+the failure and its context appear in the exported file.
 
 **Acceptance Scenarios**:
 
-1. **Given** the user has performed import, sync, or connection actions, **When** they open the
-   diagnostic log, **Then** they see a running record of those actions and their outcomes,
-   most recent visible without extra navigation.
-2. **Given** the diagnostic log has entries, **When** the user chooses to clear it, **Then** the
-   visible log is emptied.
+1. **Given** the user has performed import, sync, or connection actions, **When** they choose to
+   export the diagnostic log, **Then** the system share sheet opens on a file containing a
+   record of those actions and their outcomes, which they can send off-device (e.g., via
+   AirDrop, Mail, or Save to Files) without a cable.
+2. **Given** the diagnostic log has been accumulating entries for a long time, **When** it
+   reaches its fixed size cap, **Then** the oldest entries are automatically discarded to make
+   room for new ones, with no manual clearing action required.
 
 ### Edge Cases
 
@@ -147,6 +157,11 @@ the failure and its context appear in it.
   activity — only configuration/connection state changes.
 - The third-party connect control depends on a folder already being configured; attempting to
   connect without one is prevented, not allowed to fail later during sync.
+- A previously connected account whose saved session becomes invalid (e.g., an expired or
+  revoked token) is surfaced as an explicit "connection lost, reconnect needed" state, not
+  silently treated as if the account had never been connected.
+- The diagnostic log file is capped at a fixed number of entries; once full, the oldest entries
+  are automatically discarded to make room for new ones, so it cannot grow unbounded.
 
 ## Requirements *(mandatory)*
 
@@ -178,11 +193,17 @@ the failure and its context appear in it.
 - **FR-011**: Settings MUST let a user reset a connected account's sync history, allowing
   previously retrieved activities to be re-checked, without deleting any activity already in
   the library.
-- **FR-012**: Settings MUST present a rolling, in-app diagnostic log of import, sync, and
-  connection activity, viewable without leaving the app.
-- **FR-013**: The user MUST be able to clear the visible diagnostic log.
+- **FR-012**: Settings MUST let a user export the diagnostic log of import, sync, and
+  connection activity as a file via the system share sheet, without needing a developer tool or
+  debugger.
+- **FR-013**: The diagnostic log MUST be capped at a fixed number of entries (1000), with the
+  oldest entries automatically discarded once the cap is reached, so it cannot grow unbounded
+  and requires no manual clearing action.
 - **FR-014**: Settings MUST be reachable from the app's main screen on every supported
   platform.
+- **FR-015**: If a connected third-party account's saved session becomes invalid (e.g., an
+  expired or revoked token), Settings MUST show an explicit "connection lost, reconnect needed"
+  state rather than silently reverting to appearing as never connected.
 
 ### Key Entities
 
@@ -192,10 +213,12 @@ the failure and its context appear in it.
 - **Data Source**: Which activity source/library is currently active — sample data, for trying
   the app, or a real, user-designated folder. Each keeps its own set of imported activities.
 - **Third-Party Connection**: A connected account's authorization state (not connected,
-  connected, or connection failed) and its own sync-history tracking, independent of the
+  connected, connection failed, or connection lost — a previously connected session that
+  became invalid and needs reconnecting) and its own sync-history tracking, independent of the
   library's contents.
-- **Diagnostic Log**: A rolling, in-app record of import, sync, and connection events, kept for
-  troubleshooting.
+- **Diagnostic Log**: A capped record (1000 most recent entries, oldest automatically
+  discarded) of import, sync, and connection events, exportable as a file via the system share
+  sheet for troubleshooting; not browsable within the app itself.
 
 ## Success Criteria *(mandatory)*
 
@@ -207,8 +230,8 @@ the failure and its context appear in it.
   the source not currently selected.
 - **SC-003**: Disconnecting or resetting a third-party connection never removes an activity
   already in the library.
-- **SC-004**: A user troubleshooting an import or sync problem can review a record of recent
-  activity without leaving the app or attaching a debugger.
+- **SC-004**: A user troubleshooting an import or sync problem can export a complete diagnostic
+  log as a file and send it off-device (e.g., via AirDrop) without a cable or a debugger.
 
 ## Assumptions
 
