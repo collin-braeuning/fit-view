@@ -7,8 +7,17 @@ import SwiftUI
 /// a density cloud by `SessionDetailModel` for the same reason as
 /// `BlandAltmanChart`.
 struct ConcordanceChart: View {
+    /// Height tracks width at this ratio rather than being fixed. A full-width
+    /// plot of fixed height flattens the line of equality towards horizontal on
+    /// a wide Mac window, which reads as far better agreement than the data
+    /// shows; letting height grow with width keeps the line a legible diagonal.
+    private static let plotAspectRatio: CGFloat = 1.6
+
     let data: ConcordancePlotData
-    var minHeight: CGFloat = 220
+    /// Caps how wide the plot grows in a scrolling detail column. `nil` lifts
+    /// the cap for the fullscreen presentation, where the plot should use
+    /// whatever the window gives it.
+    var maxWidth: CGFloat? = 720
 
     private func weight(_ point: DensityPoint) -> Double {
         densityWeight(count: point.count, maxCount: data.cloud.maxCount)
@@ -50,16 +59,18 @@ struct ConcordanceChart: View {
         }
         .chartXScale(domain: data.domain)
         .chartYScale(domain: data.domain)
-        // Equal domains alone are not enough — without a square plot area the
-        // line of equality renders at whatever angle the aspect ratio
-        // dictates, and a 45° line that isn't 45° silently misleads.
-        .chartPlotStyle { $0.aspectRatio(1, contentMode: .fit) }
         .chartXAxisLabel(data.xAxisTitle, alignment: .center)
         .chartYAxisLabel(data.yAxisTitle, position: .leading, alignment: .center)
         .chartLegend(.hidden)
-        .frame(minHeight: minHeight)
-        .frame(maxWidth: 460)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        // A square plot area used to be forced here so that y = x drew at a
+        // literal 45°, but paired with a 460pt cap it stranded a small chart
+        // on the leading edge of an iPad or Mac column. The equal x/y domains
+        // are what actually matter: they keep y = x on the corner-to-corner
+        // diagonal, so the cloud stays centred on the line of equality at any
+        // aspect ratio — it simply isn't drawn at 45° any more.
+        .aspectRatio(Self.plotAspectRatio, contentMode: .fit)
+        .frame(maxWidth: maxWidth)
+        .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Concordance plot")
         .accessibilityValue(accessibilitySummary)

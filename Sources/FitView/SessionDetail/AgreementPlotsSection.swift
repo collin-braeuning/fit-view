@@ -39,9 +39,9 @@ struct AgreementPlotsSection: View {
                         isPresentingFullScreen: $isPresentingBlandAltman
                     ) {
                         // Taller than the shared minHeight: unlike the concordance
-                        // plot, whose square aspect ratio already caps its height
-                        // to its width, this chart's height is otherwise governed
-                        // by minHeight alone.
+                        // plot, whose aspect ratio derives its height from its
+                        // width, this chart's height is governed by minHeight
+                        // alone.
                         BlandAltmanChart(data: blandAltman, minHeight: minHeight + 80)
                     }
                 }
@@ -53,7 +53,7 @@ struct AgreementPlotsSection: View {
                         caption: concordance.densityCaption,
                         isPresentingFullScreen: $isPresentingConcordance
                     ) {
-                        ConcordanceChart(data: concordance, minHeight: minHeight)
+                        ConcordanceChart(data: concordance)
                     }
                 }
             }
@@ -69,7 +69,7 @@ struct AgreementPlotsSection: View {
         .fullScreenCover(isPresented: $isPresentingConcordance) {
             if let concordance {
                 FullScreenPlotView(title: "Lin's Concordance") {
-                    ConcordanceChart(data: concordance)
+                    ConcordanceChart(data: concordance, maxWidth: nil)
                 }
             }
         }
@@ -85,7 +85,7 @@ struct AgreementPlotsSection: View {
         .sheet(isPresented: $isPresentingConcordance) {
             if let concordance {
                 FullScreenPlotView(title: "Lin's Concordance") {
-                    ConcordanceChart(data: concordance)
+                    ConcordanceChart(data: concordance, maxWidth: nil)
                 }
                 .frame(minWidth: 560, minHeight: 480)
             }
