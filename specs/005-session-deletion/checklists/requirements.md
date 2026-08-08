@@ -31,6 +31,13 @@
 
 ## Notes
 
+- **Updated 2026-08-08 after `/speckit-clarify`.** All 16 items still pass. The clarification
+  session changed this spec's character: it is no longer purely documentation of shipped
+  behavior. Folder reconciliation (FR-009 – FR-012, User Story 2) is new work, and the "Note on
+  scope" now says so explicitly. Items re-checked with that in mind — the new requirements are
+  testable, bounded, and free of implementation detail, and the two resurrection paths found
+  during the survey (watched-folder re-import, bundled-sample re-seed) are now stated rather than
+  left implicit.
 - This spec documents already-built functionality rather than a from-scratch feature. The
   "Note on scope" section intentionally names existing Swift types (`AppModel.deleteSession`,
   `LibraryStore.remove`) for traceability back to the current implementation, per the user's
@@ -49,3 +56,7 @@
   truthfully rather than assume full success.
 - No [NEEDS CLARIFICATION] markers were needed: all open questions were resolved by inspecting
   the existing codebase rather than guessed.
+- The original survey missed that `FolderIngestor.ingest` dedupes against `store.allItems()` and
+  `AppModel.rescanFolder` runs on every foreground, so an in-app deletion of a still-in-folder
+  activity silently undoes itself. That gap is what drove the 2026-08-08 clarification session
+  and FR-008 – FR-012.
