@@ -97,6 +97,7 @@
 		BC218D82609504468CC5AB15 /* SessionDetailPreviewFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */; };
 		BD18EA2C6A70E6774E873426 /* AgreementPlotsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750986A9A81E42EFFD4C6881 /* AgreementPlotsSection.swift */; };
 		C01325CDEE8B6A8582EFBDBF /* DataSourceMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */; };
+		C112F6882546F9DED6CE4D16 /* PolarConnectionStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10157BC1EF1260E6E457E073 /* PolarConnectionStateTests.swift */; };
 		C39E4CC614CE263058FCE5CA /* HeartRateComparisonChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */; };
 		C47CF6A546C34288B2AB2B32 /* BatchAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */; };
 		C631C5637FCAF9568A8DED63 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A575BE2CC196DA43BD6D6E /* ShareViewController.swift */; };
@@ -189,6 +190,7 @@
 		0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlandAltmanChart.swift; sourceTree = "<group>"; };
 		0D88540FFC88A8BE00B67CC8 /* FitView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitView.entitlements; sourceTree = "<group>"; };
 		0F9CB9A30C8878C12706368C /* ConcordanceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcordanceChart.swift; sourceTree = "<group>"; };
+		10157BC1EF1260E6E457E073 /* PolarConnectionStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConnectionStateTests.swift; sourceTree = "<group>"; };
 		11BE7C44AFE40287ADFB5958 /* FullScreenPlotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenPlotView.swift; sourceTree = "<group>"; };
 		1319ACDB1D9B550D6CE369A2 /* BatchOverviewCardList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewCardList.swift; sourceTree = "<group>"; };
 		1A5BCD71CF4B86B7D492685B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 			isa = PBXGroup;
 			children = (
 				44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */,
+				10157BC1EF1260E6E457E073 /* PolarConnectionStateTests.swift */,
 				EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */,
 				E57A257014984282B9C880CC /* ShareImportViewModelTests.swift */,
 				F67C87D0C2D47B1CC1AE668C /* Fixtures */,
@@ -788,6 +791,7 @@
 			files = (
 				9BD5E38635F11D4B18D78FED /* AgreementFixtures.swift in Sources */,
 				1CCE9ED2849DA45FF315D8EC /* BatchOverviewModelTests.swift in Sources */,
+				C112F6882546F9DED6CE4D16 /* PolarConnectionStateTests.swift in Sources */,
 				763341BA47176958C5EAE822 /* SessionDetailModelTests.swift in Sources */,
 				25A087DA317000F27EB6661B /* ShareEditView.swift in Sources */,
 				1B9E6036E58C203BA643553C /* ShareImportViewModel.swift in Sources */,

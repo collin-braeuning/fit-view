@@ -2,6 +2,41 @@ import FitViewCore
 import Foundation
 import Observation
 
+/// A connected account's authorization state — three structurally-distinct
+/// cases rather than a Bool, so "never connected" and "was connected, but the
+/// server rejected the stored token" (FR-015) can't collapse into the same
+/// on-screen state.
+enum PolarConnectionState: Equatable {
+    case notConnected
+    case connected
+    /// A session existed (a token was loaded/used successfully before), but
+    /// the server has since rejected it — HTTP 401 on an authenticated
+    /// request. Distinct from `.notConnected` so Settings can show "reconnect
+    /// needed" instead of silently reverting to the pre-connection prompt.
+    case connectionLost
+
+    /// Pure mapping from an authenticated request's failure to the resulting
+    /// state — tested directly in `PolarConnectionStateTests` without
+    /// instantiating `AppModel`. Only a live `.connected` session can go
+    /// stale; `.unauthorized` seen from any other state changes nothing.
+    static func afterFailedRequest(current: PolarConnectionState, error: Error) -> PolarConnectionState {
+        guard current == .connected, case ActivitySourceError.unauthorized = error else {
+            return current
+        }
+        return .connectionLost
+    }
+
+    /// Pure mapping applied after `PolarAccessLinkSource.restoreSession()`
+    /// succeeds in `syncPolar`. A restored session is only a cached token,
+    /// not proof it's still valid — promoting straight to `.connected` here
+    /// would clobber a `.connectionLost` state a prior 401 already set,
+    /// papering over "reconnect needed" until a request actually confirms
+    /// the token works again. Tested directly in `PolarConnectionStateTests`.
+    static func afterSessionRestored(current: PolarConnectionState) -> PolarConnectionState {
+        current == .connectionLost ? current : .connected
+    }
+}
+
 /// The app's single owner of "what data are we showing, and where did it come
 /// from" — the library store, the loaded batch, the chosen data source, and
 /// the watched folder.
@@ -40,11 +75,11 @@ final class AppModel {
     private(set) var folderError: String?
     private(set) var isScanning = false
 
-    /// Whether the last attempt to load a cached Polar session succeeded.
-    /// Reflects reality lazily — nothing probes the keychain until `activate()`
-    /// or an explicit sync runs `restoreSession()` — rather than being set
-    /// eagerly from `init`, since that would need to be `async`.
-    private(set) var isPolarConnected = false
+    /// The last-known state of the Polar connection. Reflects reality lazily
+    /// — nothing probes the keychain until `activate()` or an explicit sync
+    /// runs `restoreSession()` — rather than being set eagerly from `init`,
+    /// since that would need to be `async`.
+    private(set) var polarConnectionState: PolarConnectionState = .notConnected
     private(set) var isSyncingPolar = false
     /// The last sync's outcome, for the Settings summary. Same "only replaced
     /// by something meaningful" rule as `lastIngest`.
@@ -54,10 +89,12 @@ final class AppModel {
     /// actually did, most recent last. Exists because this connector can only
     /// ever be exercised live (no sandbox — see `PolarAccessLinkSource`'s doc
     /// comment), and "nothing visibly happened" is otherwise undebuggable
-    /// without a screenshot of every intermediate state. In-memory only,
-    /// capped, and never persisted — this is a debugging aid, not a feature.
+    /// without a screenshot of every intermediate state. Mirrors
+    /// `debugLogFileURL` on disk — seeded from it in `init` — so Settings'
+    /// entry count reflects the same history across app launches instead of
+    /// resetting to "this session only."
     private(set) var debugLog: [String] = []
-    private static let debugLogCap = 200
+    private static let debugLogCap = 1000
 
     var dataSource: DataSourceMode {
         didSet {
@@ -133,6 +170,8 @@ final class AppModel {
         self.dataSource = defaults.string(forKey: Self.dataSourceKey)
             .flatMap(DataSourceMode.init(rawValue:)) ?? .bundledSamples
         self.isFolderConfigured = watchedFolder.isConfigured
+        self.debugLog = (try? String(contentsOf: Self.debugLogFileURL, encoding: .utf8))
+            .map(DiagnosticLogRingBuffer.parsing) ?? []
     }
 
     // MARK: - Lifecycle
@@ -365,12 +404,25 @@ final class AppModel {
     func connectPolar() async {
         log("connectPolar: starting authorize()")
         polarError = nil
+        if polarConnectionState == .connectionLost {
+            // The cached token is the very one that got revoked —
+            // `authorize()` finds it via `restoreSession()` and returns
+            // immediately without ever presenting OAuth, making "Reconnect"
+            // a permanent no-op. Clear it first so authorize() is forced
+            // through a real sign-in round-trip. Best-effort: even if the
+            // keychain clear fails, `authorize()` below still tries.
+            try? await polarSource.disconnect()
+            log("connectPolar: cleared stale session before reconnecting")
+        }
         do {
             try await polarSource.authorize()
-            isPolarConnected = true
+            polarConnectionState = .connected
             log("connectPolar: authorize() succeeded")
         } catch {
-            isPolarConnected = false
+            // Postcondition on failure: state is left unchanged (not reset to
+            // `.notConnected`) — a failed reconnect attempt from
+            // `.connectionLost` must not erase the fact that reconnecting is
+            // still what's needed.
             let message = describePolarError(error)
             polarError = message
             log("connectPolar: authorize() threw — \(message)")
@@ -391,7 +443,7 @@ final class AppModel {
             polarError = message
             log("disconnectPolar: tokenStore.clear() threw — \(message)")
         }
-        isPolarConnected = false
+        polarConnectionState = .notConnected
         lastPolarSync = nil
     }
 
@@ -423,11 +475,11 @@ final class AppModel {
         }
 
         guard await polarSource.restoreSession() else {
-            isPolarConnected = false
+            polarConnectionState = .notConnected
             log("syncPolar: stopped — no cached session (restoreSession() found nothing)")
             return
         }
-        isPolarConnected = true
+        polarConnectionState = PolarConnectionState.afterSessionRestored(current: polarConnectionState)
         log("syncPolar: session restored, calling RemoteActivitySync")
 
         isSyncingPolar = true
@@ -439,6 +491,11 @@ final class AppModel {
         do {
             let report = try await remoteSync.sync(source: polarSource, into: polarFolderBookmark)
             polarError = nil
+            // A request that actually succeeds is proof the token is good,
+            // even if it was left at `.connectionLost` above — don't leave
+            // "reconnect needed" showing once a sync has just demonstrated
+            // otherwise.
+            polarConnectionState = .connected
             lastPolarSync = report
             log("syncPolar: succeeded — \(report.discovered) discovered, "
                 + "\(report.downloaded) downloaded, \(report.failures.count) failed")
@@ -449,6 +506,10 @@ final class AppModel {
         } catch {
             let message = describePolarError(error)
             polarError = message
+            polarConnectionState = PolarConnectionState.afterFailedRequest(
+                current: polarConnectionState,
+                error: error
+            )
             log("syncPolar: RemoteActivitySync threw — \(message)")
         }
     }
@@ -463,52 +524,41 @@ final class AppModel {
         log("resetPolarSyncState: cleared the downloaded-ids set")
     }
 
-    /// Clears the in-memory debug log — Settings' "Clear Log" button. Leaves
-    /// the on-disk copy alone; that one is append-only, for pulling with
-    /// `devicectl device copy from` after the fact.
-    func clearDebugLog() {
-        debugLog.removeAll()
-    }
-
     private static let debugLogTimeFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm:ss.SSS"
         return formatter
     }()
 
-    /// In the app's own Documents directory — reachable from a development
-    /// Mac via `xcrun devicectl device copy from --domain-type
+    /// In the app's own Documents directory — the export payload for
+    /// Settings' "Export Log…" share sheet, and (still) reachable from a
+    /// development Mac via `xcrun devicectl device copy from --domain-type
     /// appDataContainer --domain-identifier com.fitview.app --source
-    /// Documents/debug.log`, without needing Files-app sharing enabled or a
-    /// screenshot of the in-app log. Append-only and not size-managed: this
-    /// is a debugging aid for the Polar work, not a shipped feature.
-    private static let debugLogFileURL = FileManager.default
+    /// Documents/debug.log`. Capped at `debugLogCap` entries in lockstep with
+    /// the in-memory `debugLog` array — see `appendToLogFile`.
+    static let debugLogFileURL = FileManager.default
         .urls(for: .documentDirectory, in: .userDomainMask)[0]
         .appendingPathComponent("debug.log")
 
     private func log(_ message: String) {
         let line = "\(Self.debugLogTimeFormatter.string(from: Date())) \(message)"
-        debugLog.append(line)
-        if debugLog.count > Self.debugLogCap {
-            debugLog.removeFirst(debugLog.count - Self.debugLogCap)
-        }
+        debugLog = DiagnosticLogRingBuffer.appending(line, to: debugLog, cap: Self.debugLogCap)
         appendToLogFile(line)
     }
 
-    /// Appends a line to `debugLogFileURL`, creating it if needed. Best
-    /// effort — a failure here (disk full, sandbox oddity) shouldn't take
-    /// down whatever Polar operation is actually being logged, so this
-    /// swallows its own errors rather than propagating them.
+    /// Appends a line to `debugLogFileURL`, capping it at `debugLogCap` lines
+    /// by reading, trimming, and rewriting — the same rule `log(_:)` applies
+    /// to the in-memory array, so the file and the in-memory view never drift
+    /// to different lengths. Best effort — a failure here (disk full, sandbox
+    /// oddity) shouldn't take down whatever Polar operation is actually being
+    /// logged, so this swallows its own errors rather than propagating them.
     private func appendToLogFile(_ line: String) {
-        guard let data = (line + "\n").data(using: .utf8) else { return }
         let url = Self.debugLogFileURL
-        if let handle = try? FileHandle(forWritingTo: url) {
-            defer { try? handle.close() }
-            _ = try? handle.seekToEnd()
-            try? handle.write(contentsOf: data)
-        } else {
-            try? data.write(to: url)
-        }
+        let existingLines = (try? String(contentsOf: url, encoding: .utf8))
+            .map(DiagnosticLogRingBuffer.parsing) ?? []
+        let trimmed = DiagnosticLogRingBuffer.appending(line, to: existingLines, cap: Self.debugLogCap)
+        guard let data = DiagnosticLogRingBuffer.serializing(trimmed).data(using: .utf8) else { return }
+        try? data.write(to: url)
     }
 
     private func describePolarError(_ error: Error) -> String {

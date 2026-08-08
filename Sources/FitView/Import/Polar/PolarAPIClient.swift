@@ -133,6 +133,13 @@ struct PolarAPIClient: Sendable {
     private static func requireSuccess(_ response: URLResponse, data: Data) throws {
         guard let httpResponse = response as? HTTPURLResponse else { return }
         guard (200..<300).contains(httpResponse.statusCode) else {
+            // 401 specifically means the stored token was rejected (revoked/
+            // expired) — thrown as `.unauthorized` rather than folded into the
+            // generic `.underlying` message so callers can distinguish "the
+            // session went stale" from an ordinary transient failure (FR-015).
+            if httpResponse.statusCode == 401 {
+                throw ActivitySourceError.unauthorized
+            }
             let body = String(data: data, encoding: .utf8) ?? "<\(data.count) bytes>"
             throw ActivitySourceError.underlying("Polar returned HTTP \(httpResponse.statusCode): \(body)")
         }

@@ -108,23 +108,37 @@ struct SettingsContent: View {
                         + "(see Secrets.xcconfig.template).")
                         .font(.callout)
                         .foregroundStyle(.secondary)
-                } else if !model.isPolarConnected {
-                    Button("Connect Polar Flow…") {
-                        Task { await model.connectPolar() }
-                    }
-                    .disabled(!model.isFolderConfigured)
                 } else {
-                    Button("Sync Now") {
-                        Task { await model.syncPolar(force: true) }
-                    }
-                    .disabled(model.isSyncingPolar)
+                    switch model.polarConnectionState {
+                    case .notConnected:
+                        Button("Connect Polar Flow…") {
+                            Task { await model.connectPolar() }
+                        }
+                        .disabled(!model.isFolderConfigured)
+                    case .connectionLost:
+                        Label("Connection lost — reconnect needed", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                        Button("Reconnect Polar Flow…") {
+                            Task { await model.connectPolar() }
+                        }
+                        .disabled(!model.isFolderConfigured)
 
-                    Button("Disconnect", role: .destructive) {
-                        Task { await model.disconnectPolar() }
-                    }
+                        Button("Disconnect", role: .destructive) {
+                            Task { await model.disconnectPolar() }
+                        }
+                    case .connected:
+                        Button("Sync Now") {
+                            Task { await model.syncPolar(force: true) }
+                        }
+                        .disabled(model.isSyncingPolar)
 
-                    Button("Forget Downloaded Activities", role: .destructive) {
-                        model.resetPolarSyncState()
+                        Button("Disconnect", role: .destructive) {
+                            Task { await model.disconnectPolar() }
+                        }
+
+                        Button("Forget Downloaded Activities", role: .destructive) {
+                            model.resetPolarSyncState()
+                        }
                     }
                 }
 
@@ -163,20 +177,19 @@ struct SettingsContent: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text(model.debugLog.joined(separator: "\n"))
-                        .font(.system(.caption, design: .monospaced))
-                        .textSelection(.enabled)
+                    Text("\(model.debugLog.count) entr\(model.debugLog.count == 1 ? "y" : "ies") recorded.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
 
-                Button("Clear Log", role: .destructive) {
-                    model.clearDebugLog()
-                }
-                .disabled(model.debugLog.isEmpty)
+                ShareLink("Export Log…", item: AppModel.debugLogFileURL)
+                    .disabled(model.debugLog.isEmpty)
             } header: {
                 Text("Debug Log")
             } footer: {
                 Text("A running trace of what Connect/Sync/Disconnect actually did — useful for "
-                    + "diagnosing a sync that appears to do nothing. Not saved between launches.")
+                    + "diagnosing a sync that appears to do nothing. Export it to send off-device "
+                    + "(AirDrop, Mail, Save to Files). Capped at the most recent 1000 entries.")
             }
         }
         .formStyle(.grouped)
