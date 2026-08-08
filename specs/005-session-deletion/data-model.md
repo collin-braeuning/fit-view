@@ -73,7 +73,7 @@ Gains one case:
 
 | Case | Raised when |
 |---|---|
-| `directoryNotEnumerable(path: String)` | **New.** `FileManager.enumerator(at:)` returned `nil` — the URL is not an enumerable directory (replaced by a regular file, permissions lost, no longer resolves). Previously returned an empty listing with no error. |
+| `directoryNotEnumerable(path: String)` | **New.** The URL is not an enumerable directory (replaced by a regular file, permissions lost, no longer resolves). Detected via `enumerator(at:...)`'s `errorHandler` callback, which fires with the real underlying error — **not** via the enumerator's `nil` return, which was verified empirically to stay non-`nil` for these cases and is kept only as defense in depth. Previously none of this was checked, so the failure returned an empty listing with no error. |
 
 This is the type-level change that makes FR-010's guard possible: without it, "folder is
 empty" and "folder is unreadable" are the same value.

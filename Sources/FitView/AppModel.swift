@@ -37,6 +37,54 @@ enum PolarConnectionState: Equatable {
     }
 }
 
+/// The result of one `deleteSession` attempt — three structurally-distinct
+/// cases rather than the first-error-only `String?` this replaces, so
+/// "nothing was removed" and "some of it was removed, some wasn't" (FR-006)
+/// can't collapse into the same flat failure. No case implies rollback:
+/// removals that already succeeded are never undone by a later failure.
+enum DeletionOutcome: Equatable {
+    /// Every device file for the session was removed.
+    case succeeded
+    /// Some device files were removed, some were not. Requires `removed > 0
+    /// && failed > 0` — a two-device activity where both removals fail is
+    /// `.failed`, not this, because nothing was actually removed.
+    case partiallyFailed(removed: Int, failed: Int, firstError: String)
+    /// No device file was removed.
+    case failed(firstError: String)
+
+    /// Pure mapping from per-device removal counts to the outcome the user
+    /// should see. Tested directly in `DeletionOutcomeTests` without
+    /// instantiating `AppModel`, same reasoning `PolarConnectionState`'s
+    /// static functions document.
+    static func from(removedCount: Int, failedCount: Int, firstError: String?) -> DeletionOutcome {
+        guard failedCount > 0 else { return .succeeded }
+        guard removedCount > 0 else { return .failed(firstError: firstError ?? "Unknown error") }
+        return .partiallyFailed(removed: removedCount, failed: failedCount, firstError: firstError ?? "Unknown error")
+    }
+
+    /// `nil` for `.succeeded` — the view dismisses instead of showing an
+    /// alert.
+    var alertTitle: String? {
+        switch self {
+        case .succeeded: return nil
+        case .partiallyFailed: return "Deletion Incomplete"
+        case .failed: return "Couldn't Delete"
+        }
+    }
+
+    /// `nil` for `.succeeded`, matching `alertTitle`.
+    var alertMessage: String? {
+        switch self {
+        case .succeeded:
+            return nil
+        case .partiallyFailed(_, _, let firstError):
+            return "The deletion was incomplete — part of the activity remains. \(firstError)"
+        case .failed(let firstError):
+            return firstError
+        }
+    }
+}
+
 /// The app's single owner of "what data are we showing, and where did it come
 /// from" — the library store, the loaded batch, the chosen data source, and
 /// the watched folder.
@@ -237,21 +285,27 @@ final class AppModel {
     ///
     /// Every removal is attempted even if an earlier one fails, and the batch
     /// is always reloaded afterward, so the UI reflects whatever actually
-    /// happened on disk rather than stopping partway through. Returns the
-    /// first error encountered, if any.
+    /// happened on disk rather than stopping partway through (FR-006, FR-007).
     @discardableResult
-    func deleteSession(_ session: ActivitySession) async -> String? {
-        guard let store else { return "No library open." }
+    func deleteSession(_ session: ActivitySession) async -> DeletionOutcome {
+        guard let store else { return .failed(firstError: "No library open.") }
+        var removedCount = 0
+        var failedCount = 0
         var firstError: String?
         for file in session.filesByDeviceKey.values {
             do {
                 try await store.remove(itemId: file.fileName)
+                removedCount += 1
+                log("deleteSession: removed \(file.deviceKey)/\(file.fileName)")
             } catch {
-                if firstError == nil { firstError = String(describing: error) }
+                failedCount += 1
+                let message = String(describing: error)
+                if firstError == nil { firstError = message }
+                log("deleteSession: failed to remove \(file.deviceKey)/\(file.fileName) — \(message)")
             }
         }
         await reload()
-        return firstError
+        return DeletionOutcome.from(removedCount: removedCount, failedCount: failedCount, firstError: firstError)
     }
 
     private func loadBatch(store: some LibraryStore, mode: DataSourceMode) async throws {
@@ -362,6 +416,9 @@ final class AppModel {
             do {
                 let report = try await ingestor.ingest(into: store)
                 folderError = nil
+                if report.removed > 0 {
+                    log("scanFolder: reconciliation removed \(report.removed) item(s) whose file left the folder")
+                }
                 // A routine rescan that found nothing new leaves the last
                 // meaningful report on screen instead of blanking it to zeroes.
                 if isForced || report.didChangeLibrary || !report.failures.isEmpty {
@@ -372,6 +429,12 @@ final class AppModel {
                 }
             } catch {
                 folderError = describeFolderError(error)
+                // Invisible in the UI by design (FR-013) — a scan that can't
+                // confirm it read the folder completely declines to
+                // reconcile anything (FR-010). Without this log line, "the
+                // guard is working" and "the guard is stuck on" look
+                // identical from outside the app (contract C10).
+                log("scanFolder: declined to reconcile — listing was untrustworthy (\(folderError ?? "unknown error"))")
             }
             // A request queued mid-scan must not then be swallowed by the
             // debounce on the next pass either.

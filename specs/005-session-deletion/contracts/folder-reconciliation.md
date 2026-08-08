@@ -12,8 +12,10 @@ This is an app-internal contract; FitView exposes no network or public API surfa
 > entire contents. A source that cannot determine its full contents MUST throw.
 
 **Obligation on `WatchedFolderSource`**: satisfied once `coordinatedContents(of:recursive:)`
-throws `FileCoordinationError.directoryNotEnumerable` instead of returning `[]` when
-`FileManager.enumerator(at:)` yields `nil`.
+throws `FileCoordinationError.directoryNotEnumerable` instead of returning `[]` when the
+directory can't actually be enumerated. Detected via `enumerator(at:...)`'s `errorHandler`
+callback (confirmed to fire with the real underlying error); `enumerator(at:)`'s `nil` return
+is also checked, but empirically does not fire for these cases on its own.
 
 **Right of `FolderIngestor`**: may treat a returned candidate list as complete, and therefore
 may treat any folder-sourced library item absent from it as genuinely deleted.

@@ -51,6 +51,7 @@
 		49FD8667441194A81685CA37 /* BatchAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */; };
 		4B44160D8472BF5CBF2486D8 /* FitViewCore in Frameworks */ = {isa = PBXBuildFile; productRef = 66F0FBBB1428C87F899106CD /* FitViewCore */; };
 		4B5E0522DB6E69CFBDD34ED9 /* DeviceAliasSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */; };
+		4C32ADB70AF422A3B0A3FBD8 /* SessionDeletionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68B70322F5B88C69E7D82A45 /* SessionDeletionTests.swift */; };
 		4CF26FE326797757D63DD0F3 /* 2026-07-26_polarSense_run.FIT in Resources */ = {isa = PBXBuildFile; fileRef = 8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */; };
 		54AAD6688D91BD6A67272DFE /* ShareEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C159DD253A36EBC7D725AEC /* ShareEditView.swift */; };
 		54C2DEF0F8084552B2574F8C /* BatchOverviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */; };
@@ -213,6 +214,7 @@
 		57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "FitView-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-28_pace4_run.fit"; sourceTree = "<group>"; };
 		5EA9E25D23AA7688456330C8 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
+		68B70322F5B88C69E7D82A45 /* SessionDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDeletionTests.swift; sourceTree = "<group>"; };
 		6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = "FitViewShareExtension-iOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
 		6E8C62A64BDB36B547972409 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -311,6 +313,7 @@
 			children = (
 				44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */,
 				10157BC1EF1260E6E457E073 /* PolarConnectionStateTests.swift */,
+				68B70322F5B88C69E7D82A45 /* SessionDeletionTests.swift */,
 				EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */,
 				E57A257014984282B9C880CC /* ShareImportViewModelTests.swift */,
 				F67C87D0C2D47B1CC1AE668C /* Fixtures */,
@@ -792,6 +795,7 @@
 				9BD5E38635F11D4B18D78FED /* AgreementFixtures.swift in Sources */,
 				1CCE9ED2849DA45FF315D8EC /* BatchOverviewModelTests.swift in Sources */,
 				C112F6882546F9DED6CE4D16 /* PolarConnectionStateTests.swift in Sources */,
+				4C32ADB70AF422A3B0A3FBD8 /* SessionDeletionTests.swift in Sources */,
 				763341BA47176958C5EAE822 /* SessionDetailModelTests.swift in Sources */,
 				25A087DA317000F27EB6661B /* ShareEditView.swift in Sources */,
 				1B9E6036E58C203BA643553C /* ShareImportViewModel.swift in Sources */,

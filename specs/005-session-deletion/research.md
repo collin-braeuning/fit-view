@@ -45,18 +45,30 @@ guard let enumerator = FileManager.default.enumerator(
 ) else { return }        // <- result stays [], no error thrown
 ```
 
-`FileManager.enumerator(at:)` returns `nil` when the URL is not an enumerable directory —
-it was replaced by a regular file, permissions were lost, or the path no longer resolves to a
-directory. The function then returns an **empty array and no error**. Reconciliation keyed on
-"didn't throw" would interpret that as "the folder is empty, remove everything," which is
-unrecoverable (`remove` drops the manifest entry; the orphaned blob is not exposed by any
-in-app affordance). This is exactly the failure FR-010 was written to prevent, and the current
-code cannot detect it.
+The original hypothesis — `FileManager.enumerator(at:)` returns `nil` when the URL is not an
+enumerable directory — turned out to be **empirically false** for the failure modes that
+matter here. Verified directly (a throwaway script against a regular file in place of a
+directory, a missing path, and a permission-denied directory): in all three cases
+`enumerator(at:)` returns a **non-`nil`** enumerator that simply yields zero items when
+iterated. The `guard let ... else { return }` above is therefore dead code for these cases —
+it never fires, and the function returns `[]` with no error exactly as before.
 
-**Fix**: throw a new `FileCoordinationError.directoryNotEnumerable(path:)` instead of
-returning. This is correct for every existing caller — none of them want "empty" to be
-indistinguishable from "unreadable" — so it is fixed at the source rather than papered over
-in the ingestor.
+The real signal is the enumerator's optional `errorHandler:` callback
+(`enumerator(at:includingPropertiesForKeys:options:errorHandler:)`), which **does** fire for
+the top-level URL with the actual underlying error (confirmed: `NSPOSIXErrorDomain Code=20
+"Not a directory"` for the regular-file case). This code doesn't pass that callback today, so
+the error is silently discarded and enumeration just stops. Reconciliation keyed on "didn't
+throw" would read the resulting empty list as "the folder is empty, remove everything," which
+is unrecoverable (`remove` drops the manifest entry; the orphaned blob is not exposed by any
+in-app affordance). This is exactly the failure FR-010 was written to prevent.
+
+**Fix**: pass an `errorHandler` closure that records the first error and returns `false` (stop
+enumerating — the listing is no longer trustworthy); if it fired, throw a new
+`FileCoordinationError.directoryNotEnumerable(path:)` instead of returning the partial result.
+The nil-check on `enumerator(at:)`'s return value is kept as defense in depth (still throws the
+same error), but the `errorHandler` is what actually catches the cases this fix targets. This is
+correct for every existing caller — none of them want "empty" to be indistinguishable from
+"unreadable" — so it is fixed at the source rather than papered over in the ingestor.
 
 **What is already safe and needs no work**:
 

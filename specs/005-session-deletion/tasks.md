@@ -50,18 +50,19 @@ own test suite depend on. Nothing in Phase 4 can be written correctly until a sc
 **⚠️ CRITICAL**: Phase 4 (US2) cannot start until this phase is complete — reconciliation's
 core safety property (FR-010) has no basis without it (research.md §2).
 
-- [ ] T001 Add `case directoryNotEnumerable(path: String)` to `FileCoordinationError` in
+- [X] T001 Add `case directoryNotEnumerable(path: String)` to `FileCoordinationError` in
   `Packages/FitViewCore/Sources/FitViewCore/FileCoordination.swift` (near the existing
   `materializationTimedOut`/`accessorNeverRan` cases, line ~4-13)
-- [ ] T002 In `coordinatedContents(of:recursive:)`
-  (`Packages/FitViewCore/Sources/FitViewCore/FileCoordination.swift:112-118`), replace the
-  `guard let enumerator = ... else { return }` with a throw of
-  `FileCoordinationError.directoryNotEnumerable(path: readURL.path)` when
-  `FileManager.default.enumerator(at:)` returns `nil`, routed through `thrown` the same way the
-  `catch` block below it already propagates errors out of the coordinator closure
-- [ ] T003 [P] Add `Packages/FitViewCore/Tests/FitViewCoreTests/FileCoordinationTests.swift`
-  with a test that replaces a directory with a regular file of the same name (or otherwise makes
-  `FileManager.enumerator(at:)` return `nil`) and asserts `coordinatedContents(of:recursive:
+- [X] T002 In `coordinatedContents(of:recursive:)`
+  (`Packages/FitViewCore/Sources/FitViewCore/FileCoordination.swift:112-118`) — **implementation
+  note**: the nil-check originally planned here was verified empirically to never fire for a
+  regular file, a missing path, or a permission-denied directory; the real fix passes an
+  `errorHandler` closure to `enumerator(at:...)` and throws
+  `FileCoordinationError.directoryNotEnumerable(path: readURL.path)` when it fires, with the
+  nil-check kept as defense in depth. research.md/data-model.md/contracts updated to match.
+- [X] T003 [P] Add `Packages/FitViewCore/Tests/FitViewCoreTests/FileCoordinationTests.swift`
+  with a test that replaces a directory with a regular file of the same name and asserts
+  `coordinatedContents(of:recursive:
   true)` throws `FileCoordinationError.directoryNotEnumerable` instead of returning `[]`
   (quickstart.md §1 "Directory replaced by a regular file", contract C1)
 
@@ -86,7 +87,7 @@ success.
 
 ### Tests for User Story 1
 
-- [ ] T004 [P] [US1] Add `Tests/FitViewTests/SessionDeletionTests.swift` with tests for
+- [X] T004 [P] [US1] Add `Tests/FitViewTests/SessionDeletionTests.swift` with tests for
   `DeletionOutcome` construction from removal results: both succeed → `.succeeded`; one succeeds
   one fails → `.partiallyFailed(removed: 1, failed: 1, firstError:)`; both fail → `.failed`, not
   `.partiallyFailed` (data-model.md's invariant: `partiallyFailed` requires `removed > 0 &&
@@ -94,20 +95,20 @@ success.
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Add `enum DeletionOutcome` to `Sources/FitView/AppModel.swift` with cases
+- [X] T005 [US1] Add `enum DeletionOutcome` to `Sources/FitView/AppModel.swift` with cases
   `succeeded`, `partiallyFailed(removed: Int, failed: Int, firstError: String)`, and
   `failed(firstError: String)`, matching the invariants in data-model.md (`partiallyFailed`
   requires `removed > 0 && failed > 0`; no case implies rollback)
-- [ ] T006 [US1] Change `deleteSession(_:)` in `Sources/FitView/AppModel.swift:243-255` to
+- [X] T006 [US1] Change `deleteSession(_:)` in `Sources/FitView/AppModel.swift:243-255` to
   return `DeletionOutcome` instead of `String?` — count successful vs. failed removals across
   `session.filesByDeviceKey.values` (still attempting every device regardless of earlier
   failures per FR-006/C9) and map the counts to the new enum; keep `await reload()` unconditional
   so the UI reflects the library's actual state either way (FR-007)
-- [ ] T007 [US1] Add a `log(...)` call in `deleteSession` for each device removal outcome
+- [X] T007 [US1] Add a `log(...)` call in `deleteSession` for each device removal outcome
   (succeeded/failed, and which device) so a deletion or partial failure is diagnosable from the
   local log alone (FR-014, contract C10) — follow the existing pattern in
   `Sources/FitView/AppModel.swift`'s `syncPolar`/`connectPolar` (e.g. line ~500-513)
-- [ ] T008 [US1] Update `delete(_:)` and the "Couldn't Delete" alert in
+- [X] T008 [US1] Update `delete(_:)` and the "Couldn't Delete" alert in
   `Sources/FitView/SessionDetail/SessionDetailView.swift:128-153` to switch on `DeletionOutcome`:
   `.succeeded` dismisses as today; `.partiallyFailed` shows a message that the deletion was
   incomplete and part of the activity remains (not the flat "Couldn't Delete" title, since data
@@ -139,7 +140,7 @@ library — then repeat with the folder made unreadable and confirm nothing is r
 > Per quickstart.md §4, these must be checked to fail when the guards they cover are removed —
 > do this deliberately once implementation lands, not skipped as a formality.
 
-- [ ] T009 [P] [US2] Add reconciliation test cases to
+- [X] T009 [P] [US2] Add reconciliation test cases to
   `Packages/FitViewCore/Tests/FitViewCoreTests/FolderIngestorTests.swift` covering the
   quickstart.md §1 table:
   - file removed from folder, scan runs → item gone from store, `report.removed == 1` (FR-009,
@@ -163,27 +164,27 @@ library — then repeat with the folder made unreadable and confirm nothing is r
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Add `public var removed: Int` to `FolderIngestReport` in
+- [X] T010 [US2] Add `public var removed: Int` to `FolderIngestReport` in
   `Packages/FitViewCore/Sources/FitViewCore/FolderIngestor.swift:4-31`, defaulted to `0` in
   `init`, and change `didChangeLibrary` to `imported > 0 || removed > 0` (data-model.md)
-- [ ] T011 [US2] In `FolderIngestor.ingest(into:)`
+- [X] T011 [US2] In `FolderIngestor.ingest(into:)`
   (`Packages/FitViewCore/Sources/FitViewCore/FolderIngestor.swift:82-124`), remove the early
   `guard !candidates.isEmpty else { return FolderIngestReport() }` short-circuit (research.md
   §4 — an empty-but-successful listing is now a meaningful state, not a no-op) and compute the
   `stale` set: library items where `source == source.id`, `sourceId != nil`, and `sourceId` is
   absent from the candidate set's `sourceId`s (contract C2)
-- [ ] T012 [US2] In the same `ingest(into:)`, remove every item in `stale` via
+- [X] T012 [US2] In the same `ingest(into:)`, remove every item in `stale` via
   `store.remove(itemId:)` before the import phase, counting successful removals into
   `removed`; a removal that throws must not abort the pass — continue to the remaining removals
   and the import phase regardless (contract C5), matching the existing "one bad item doesn't
   sink the batch" pattern used for import `failures`
   (`Packages/FitViewCore/Sources/FitViewCore/FolderIngestor.swift:105-112`)
-- [ ] T013 [US2] Re-read `store.allItems()` after the removal phase and use it (not the
+- [X] T013 [US2] Re-read `store.allItems()` after the removal phase and use it (not the
   original `itemsBefore`) as the baseline for the `imported` count delta, so `removed` and
   `imported` are both truthful in the same pass (research.md §4, contract C6); ensure the
   returned `FolderIngestReport` carries both `removed` and `imported` together with `discovered`
   and `failures`
-- [ ] T014 [US2] In `Sources/FitView/AppModel.swift`'s `scanFolder`
+- [X] T014 [US2] In `Sources/FitView/AppModel.swift`'s `scanFolder`
   (`Sources/FitView/AppModel.swift:329-380`), add a `log(...)` call for a scan whose `catch`
   branch fires — this is the "declined to reconcile because the listing was untrustworthy" case
   from contract C10, invisible in the UI by design (FR-014, FR-010) — and a `log(...)` call
@@ -197,11 +198,11 @@ below.
 
 ### UI Surface for User Story 2
 
-- [ ] T015 [US2] Update `scanSummary(_:)` in
+- [X] T015 [US2] Update `scanSummary(_:)` in
   `Sources/FitView/Settings/SettingsView.swift:217-237` to show `report.removed` alongside
   `report.imported` when `removed > 0` — no alert or modal, in the same summary text/line that
   already reports imports (FR-012, contract C8)
-- [ ] T016 [US2] Rewrite the footer text at
+- [X] T016 [US2] Rewrite the footer text at
   `Sources/FitView/Settings/SettingsView.swift:99-102` — it currently says "removing one from
   the folder won't remove it here," which is now the opposite of FR-009's behavior (research.md
   §7); correct it to state that removing a file from the watched folder removes the
@@ -217,21 +218,36 @@ implemented and independently testable per quickstart.md §6.
 **Purpose**: Verification steps that span both stories, called out explicitly by
 plan.md/quickstart.md rather than left implicit.
 
-- [ ] T017 Confirm CI job names, no workflow edit needed (research.md §8): run
-  `gh pr checks` and verify both `fitviewcore-tests` and `fitview-tests` from
-  `.github/workflows/tests.yml` actually ran and passed on the PR (Constitution VI)
-- [ ] T018 Deliberately break each new guard and confirm its test fails, then restore it
+- [ ] T017 **Partially verified locally, `gh pr checks` itself not run** (needs a pushed PR).
+  Ran the local equivalent of both CI jobs directly: `swift test` in `Packages/FitViewCore`
+  (166/166 passing) and `xcodebuild test -scheme FitView-macOS -only-testing:FitViewTests`
+  (31/31 passing, **TEST SUCCEEDED**) — also ran `xcodebuild build -scheme FitView-macOS`
+  (**BUILD SUCCEEDED**), confirming the whole app target compiles with these changes. Once
+  pushed, still confirm `fitviewcore-tests`/`fitview-tests` actually ran green on the PR itself
+  (Constitution VI) — a local pass is a convenience, not verification, per quickstart.md §3.
+- [X] T018 Deliberately break each new guard and confirm its test fails, then restore it
   (quickstart.md §4, Constitution VI's anti-vacuous-pass clause):
-  1. remove the `sourceId != nil` clause from the reconciliation eligibility filter (T011) →
-     the legacy-item test (T009) MUST fail
-  2. revert the `directoryNotEnumerable` throw (T002) back to `return` → the
-     untrustworthy-listing tests (T003, T009) MUST fail
-  3. restore both, re-run `swift test` and confirm everything passes again
-- [ ] T019 Run the manual passes in quickstart.md §5–§9 in Xcode against a real watched
-  folder: deletion (already-shipped, confirm unaffected), reconciliation, the safety guard
-  (rename the folder, then replace it with a regular file), the open detail view during a
-  reconciling scan (FR-013), and exporting the diagnostic log to confirm it records removals,
-  failures, and declined-reconciliation scans (FR-014)
+  1. removed the `sourceId != nil` clause from the reconciliation eligibility filter (T011) →
+     the legacy-item test (T009) failed as expected, confirmed via `swift test`
+  2. reverted the `directoryNotEnumerable` throw (T002) back to `return` → `FileCoordinationTests`
+     (T003) failed as expected. **Finding**: `unenumerableFolderDoesNotReconcile` (T009) did
+     *not* fail — at the full `WatchedFolderSource` pipeline level, replacing the watched
+     folder with a regular file is independently caught one layer up, by
+     `FolderBookmark.resolve()`'s `URL(resolvingBookmarkData:...)` noticing the resource's type
+     changed, before `coordinatedContents` is ever reached. `FileCoordinationTests` remains the
+     precise regression test for the `coordinatedContents` fix itself (it calls the function
+     directly, bypassing bookmark resolution); the FolderIngestor-level test's comment was
+     corrected to describe what it actually validates (end-to-end "never reconciles on an
+     unenumerable folder," not the specific enumerator/errorHandler mechanism)
+  3. restored both, re-ran `swift test` — all 166 tests pass
+- [ ] T019 **Not run** — requires a real Xcode build/run against a live watched folder, which
+  is outside this session's default scope per the project's workflow preference (no
+  build/run/launch unless in a remote-control session). Run the manual passes in
+  quickstart.md §5–§9 in Xcode against a real watched folder: deletion (already-shipped,
+  confirm unaffected), reconciliation, the safety guard (rename the folder, then replace it
+  with a regular file), the open detail view during a reconciling scan (FR-013), and exporting
+  the diagnostic log to confirm it records removals, failures, and declined-reconciliation
+  scans (FR-014)
 
 ---
 
