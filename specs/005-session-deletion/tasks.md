@@ -218,22 +218,24 @@ implemented and independently testable per quickstart.md §6.
 **Purpose**: Verification steps that span both stories, called out explicitly by
 plan.md/quickstart.md rather than left implicit.
 
-- [ ] T017 **Partially verified locally, `gh pr checks` itself not run** (needs a pushed PR).
-  Ran the local equivalent of both CI jobs directly: `swift test` in `Packages/FitViewCore`
-  (166/166 passing) and `xcodebuild test -scheme FitView-macOS -only-testing:FitViewTests`
-  (31/31 passing, **TEST SUCCEEDED**) — also ran `xcodebuild build -scheme FitView-macOS`
-  (**BUILD SUCCEEDED**), confirming the whole app target compiles with these changes. Once
-  pushed, still confirm `fitviewcore-tests`/`fitview-tests` actually ran green on the PR itself
-  (Constitution VI) — a local pass is a convenience, not verification, per quickstart.md §3.
-  - **Re-run after Phase 6 (T020–T023)**: `swift test` now **168/168 passing**, and
-    `xcodebuild build-for-testing -scheme FitView-macOS` reports **TEST BUILD SUCCEEDED**, so
-    both targets still compile. `xcodebuild test -only-testing:FitViewTests` could **not be
-    run**: the test bundle fails to `dlopen` with "different Team IDs" — the host app is signed
-    with team `4GP83563V4` while `FitViewTests.xctest` is ad-hoc signed with no team. That is a
-    local signing-configuration mismatch, unrelated to these source changes (it reproduces on
-    both the default and an isolated `-derivedDataPath`, and the code compiles and links
-    cleanly). Nothing in Phase 6 touches `Tests/FitViewTests`, but the CI check on the PR is
-    now the only place `fitview-tests` will actually execute.
+- [X] T017 **Verified green on PR #37** — `gh pr checks 37`: `FitViewCore unit tests` **pass**
+  (1m16s) and `FitViewTests (BatchOverviewModel)` **pass** (2m14s), on run
+  [31276273803](https://github.com/collin-braeuning/fit-view/actions/runs/31276273803). Job log
+  confirms the app-layer suite was not a vacuous pass: **31 tests in 5 suites**, including the
+  `DeletionOutcome` suite this feature added. (The `Executed 0 tests` line in that log is the
+  legacy XCTest harness reporting no XCTest-style cases; the swift-testing run is the `Test run
+  with 31 tests passed` line immediately after.)
+  - **Local signing issue below is resolved and was never a code problem.** CI runs `xcodebuild
+    test` with `CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO`; adding those two flags makes
+    the local run succeed identically (**31 tests, TEST SUCCEEDED**). Use them when running this
+    suite from the command line — without them the ad-hoc-signed test bundle can't load into the
+    team-signed host app.
+
+  - Local state after Phase 6, for the record: `swift test` **168/168**,
+    `xcodebuild build-for-testing` **TEST BUILD SUCCEEDED**, `xcodebuild test
+    -only-testing:FitViewTests` (with the two signing flags above) **31/31**. A local pass is
+    still a convenience rather than verification, per quickstart.md §3 — the PR checks are the
+    gate.
 - [X] T018 Deliberately break each new guard and confirm its test fails, then restore it
   (quickstart.md §4, Constitution VI's anti-vacuous-pass clause):
   1. removed the `sourceId != nil` clause from the reconciliation eligibility filter (T011) →
