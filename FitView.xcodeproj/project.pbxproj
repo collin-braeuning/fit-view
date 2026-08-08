@@ -66,7 +66,7 @@
 		6E6CA6D0339946158DEB2489 /* 2026-07-26-pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = 835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */; };
 		70A653DD82FD317863AEA376 /* ShareImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */; };
 		70AD62F62EF0A54F8F045244 /* BundledSampleSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3886B442F95B35D4EB410680 /* BundledSampleSource.swift */; };
-		7256BCD37293F05E79CFB8D0 /* FitViewShareExtension-macOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7256BCD37293F05E79CFB8D0 /* FitViewShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A280F83CE634DD3430E75E32 /* FitViewShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		751D5200DADA3B4ECEBA84F1 /* BatchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */; };
 		763341BA47176958C5EAE822 /* SessionDetailModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */; };
 		764F8BE8121F9006DA92C284 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 744711A6152DC8D944BBAC03 /* AppModel.swift */; };
@@ -85,7 +85,7 @@
 		97E86A2BA796E72967987FBB /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5D9CF7CA8098BBE6CBF566A /* ShareViewController.swift */; };
 		9BD5E38635F11D4B18D78FED /* AgreementFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = D78E021871CD8BBE8029C71C /* AgreementFixtures.swift */; };
 		9D480D73639EDCCE60A52ADD /* ShareImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */; };
-		9DB756380643642C717F29BB /* FitViewShareExtension-iOS.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9DB756380643642C717F29BB /* FitViewShare.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6ADE9C868F70851B4FE928CF /* FitViewShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9F81584544442D3A7508F2FB /* 2026-07-30_pace4_run.fit in Resources */ = {isa = PBXBuildFile; fileRef = FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */; };
 		9F8D466B9B0AD9196446AE9C /* ExplainerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E49A2AE5AB4EB0C934D36AE /* ExplainerButton.swift */; };
 		A11E7DB613738CD62AE0234E /* PolarAccessLinkSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */; };
@@ -165,7 +165,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				9DB756380643642C717F29BB /* FitViewShareExtension-iOS.appex in Embed Foundation Extensions */,
+				9DB756380643642C717F29BB /* FitViewShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -176,7 +176,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				7256BCD37293F05E79CFB8D0 /* FitViewShareExtension-macOS.appex in Embed Foundation Extensions */,
+				7256BCD37293F05E79CFB8D0 /* FitViewShare.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -185,7 +185,7 @@
 
 /* Begin PBXFileReference section */
 		0186D2D3F56A9BD9FAE96EDE /* LoadedBatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadedBatch.swift; sourceTree = "<group>"; };
-		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
+		01A3AF8E86C66F71C2A15372 /* 2026-07-31_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-31_pace4_run.fit"; sourceTree = "<group>"; };
 		06E8FDFC0A9320D1D97D6B03 /* FullScreenHeartRateChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullScreenHeartRateChartView.swift; sourceTree = "<group>"; };
 		07AC6F4CFF81C7DBC7B0642C /* SessionDetailModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModel.swift; sourceTree = "<group>"; };
 		0A6B11341A789CAA32B3EFFD /* BlandAltmanChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlandAltmanChart.swift; sourceTree = "<group>"; };
@@ -201,7 +201,7 @@
 		2EFBAF76469F54663220648C /* FitViewCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FitViewCore; path = Packages/FitViewCore; sourceTree = SOURCE_ROOT; };
 		3736C57073C2AF495A7D214B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3886B442F95B35D4EB410680 /* BundledSampleSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledSampleSource.swift; sourceTree = "<group>"; };
-		398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-23_pace4_run.fit"; sourceTree = "<group>"; };
+		398630142CE4F78A56B7717A /* 2026-07-23_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-23_pace4_run.fit"; sourceTree = "<group>"; };
 		3CBB05856B8F40A606A0377B /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		40471BFBA88C733FC02B9D8D /* ShareImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareImportViewModel.swift; sourceTree = "<group>"; };
 		44582E2A4FCF7DCC9BA10A1E /* BatchOverviewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModelTests.swift; sourceTree = "<group>"; };
@@ -209,14 +209,14 @@
 		48333B51754FF425528666D2 /* FitViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FitViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F2BB1F8F0D3B0BC65CCB3D3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4F5CABEB21B6EDBB3EAD5C98 /* MetricExplainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricExplainerView.swift; sourceTree = "<group>"; };
-		54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-23_polarSense_run.FIT"; sourceTree = "<group>"; };
+		54456847988A8C60D82F62C0 /* 2026-07-23_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-23_polarSense_run.FIT"; sourceTree = "<group>"; };
 		54B398142104968E231BDF7E /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
-		57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "FitView-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-28_pace4_run.fit"; sourceTree = "<group>"; };
+		57DDAB7210CFB9E361BE0D0C /* FitView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C72779773F5AD733A2F0245 /* 2026-07-28_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-28_pace4_run.fit"; sourceTree = "<group>"; };
 		5EA9E25D23AA7688456330C8 /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 		68B70322F5B88C69E7D82A45 /* SessionDeletionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDeletionTests.swift; sourceTree = "<group>"; };
-		6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = "FitViewShareExtension-iOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
+		6ADE9C868F70851B4FE928CF /* FitViewShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FitViewShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6CC95D6D8DEA48287DF31310 /* 2026-07-28_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-28_polarSense_run.FIT"; sourceTree = "<group>"; };
 		6E8C62A64BDB36B547972409 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		720F1C6C44E88CCE08AD31EE /* BatchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchBuilder.swift; sourceTree = "<group>"; };
 		7307DB1EFFEAE4CB45B138D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -224,24 +224,24 @@
 		744711A6152DC8D944BBAC03 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		746597FD90593E4915FD43D2 /* SessionDetailPreviewFixture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailPreviewFixture.swift; sourceTree = "<group>"; };
 		750986A9A81E42EFFD4C6881 /* AgreementPlotsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgreementPlotsSection.swift; sourceTree = "<group>"; };
-		779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-25_polarSense_run.FIT"; sourceTree = "<group>"; };
+		779BABD2110CD3A866AFA300 /* 2026-07-25_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-25_polarSense_run.FIT"; sourceTree = "<group>"; };
 		7C48CA5A3DE5B7E1173BADED /* CorosSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorosSource.swift; sourceTree = "<group>"; };
-		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
-		8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-26_polarSense_run.FIT"; sourceTree = "<group>"; };
-		8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-24_polarSense_run.FIT"; sourceTree = "<group>"; };
+		835C68FA5363F6B8A3F4CC7E /* 2026-07-26-pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-26-pace4_run.fit"; sourceTree = "<group>"; };
+		8439706BC09F7DAA1864CF63 /* 2026-07-26_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-26_polarSense_run.FIT"; sourceTree = "<group>"; };
+		8859262FEC42410701049FEF /* 2026-07-24_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-24_polarSense_run.FIT"; sourceTree = "<group>"; };
 		88BB54D81AEC26DF2139727B /* HeartRateComparisonChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeartRateComparisonChart.swift; sourceTree = "<group>"; };
 		8B77BE2D9A414813D4E3F6BF /* TokenStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenStore.swift; sourceTree = "<group>"; };
-		9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-31_polarSense_run.FIT"; sourceTree = "<group>"; };
-		9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-30_polarSense_run.FIT"; sourceTree = "<group>"; };
-		A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "FitViewShareExtension-macOS.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9473AC730C8EEE10EC405FE5 /* 2026-07-31_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-31_polarSense_run.FIT"; sourceTree = "<group>"; };
+		9FE1EC3D7F94B126B73BE2E1 /* 2026-07-30_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-30_polarSense_run.FIT"; sourceTree = "<group>"; };
+		A280F83CE634DD3430E75E32 /* FitViewShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FitViewShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8DAACAD82D811B8E2C56844 /* PolarConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarConfiguration.swift; sourceTree = "<group>"; };
 		AB6468BD236AEE7A49D4481F /* BatchOverviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewModel.swift; sourceTree = "<group>"; };
-		BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */ = {isa = PBXFileReference; path = "2026-07-27_polarSense_run.FIT"; sourceTree = "<group>"; };
+		BC9796264AAB65D7707EE844 /* 2026-07-27_polarSense_run.FIT */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-27_polarSense_run.FIT"; sourceTree = "<group>"; };
 		BCAC09A78D074A3067C6D102 /* DataSourceMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceMode.swift; sourceTree = "<group>"; };
 		C5B9760BE34970E1C74C305F /* ShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShareExtension.entitlements; sourceTree = "<group>"; };
 		C5D9CF7CA8098BBE6CBF566A /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		CB8D79FCEBD931E6CD8704D0 /* PolarAccessLinkSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarAccessLinkSource.swift; sourceTree = "<group>"; };
-		CC65984041C307E9C026CCB5 /* FitView-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FitView-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC65984041C307E9C026CCB5 /* FitView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD4C428207FFDEE0AA997974 /* FormatDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormatDate.swift; sourceTree = "<group>"; };
 		CDA9A961E5A7E06FC1EDD945 /* BatchAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchAssembler.swift; sourceTree = "<group>"; };
 		D1A575BE2CC196DA43BD6D6E /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -250,18 +250,18 @@
 		E1C8063E07F5506B1752D2A8 /* FitView.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FitView.entitlements; sourceTree = "<group>"; };
 		E3C03519E7F1FC369F1841A6 /* StatTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatTile.swift; sourceTree = "<group>"; };
 		E57A257014984282B9C880CC /* ShareImportViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareImportViewModelTests.swift; sourceTree = "<group>"; };
-		E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-24_pace4_run.fit"; sourceTree = "<group>"; };
+		E5B3B71858D8F4D156621312 /* 2026-07-24_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-24_pace4_run.fit"; sourceTree = "<group>"; };
 		E70098EDEF6B3DD1A7E03EE5 /* PolarAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolarAPIClient.swift; sourceTree = "<group>"; };
 		EBE39F3EFC86D76BA21DF86D /* DeviceAliasSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceAliasSheet.swift; sourceTree = "<group>"; };
 		EC834ACDE619E97128AF19D8 /* SessionDetailModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailModelTests.swift; sourceTree = "<group>"; };
 		ED2468CD13769E17A4380CC4 /* FitViewApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitViewApp.swift; sourceTree = "<group>"; };
 		F01D3A90F5A8F9132C718742 /* SessionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionCard.swift; sourceTree = "<group>"; };
 		F1EEFD40AC516981A1C8CC0C /* ImportSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSheet.swift; sourceTree = "<group>"; };
-		F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-27_pace4_run.fit"; sourceTree = "<group>"; };
+		F519D4339CC4F6F9979320D2 /* 2026-07-27_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-27_pace4_run.fit"; sourceTree = "<group>"; };
 		F5FDB60B17320BE6DB9611F4 /* BatchOverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchOverviewView.swift; sourceTree = "<group>"; };
-		FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-30_pace4_run.fit"; sourceTree = "<group>"; };
+		FA9F44680B8BD08D7018B8CE /* 2026-07-30_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-30_pace4_run.fit"; sourceTree = "<group>"; };
 		FB4DF09A2D0F71B42B61E36C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */ = {isa = PBXFileReference; path = "2026-07-25_pace4_run.fit"; sourceTree = "<group>"; };
+		FD9454BD44F67E167E7F2691 /* 2026-07-25_pace4_run.fit */ = {isa = PBXFileReference; lastKnownFileType = file; path = "2026-07-25_pace4_run.fit"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -486,10 +486,10 @@
 		D9EA7C92DF44EF8212995442 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */,
-				CC65984041C307E9C026CCB5 /* FitView-macOS.app */,
-				6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */,
-				A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */,
+				57DDAB7210CFB9E361BE0D0C /* FitView.app */,
+				CC65984041C307E9C026CCB5 /* FitView.app */,
+				6ADE9C868F70851B4FE928CF /* FitViewShare.appex */,
+				A280F83CE634DD3430E75E32 /* FitViewShare.appex */,
 				48333B51754FF425528666D2 /* FitViewTests.xctest */,
 			);
 			name = Products;
@@ -555,7 +555,7 @@
 				C53564CABEE0EF227C839435 /* FitViewCore */,
 			);
 			productName = "FitViewShareExtension-iOS";
-			productReference = 6ADE9C868F70851B4FE928CF /* FitViewShareExtension-iOS.appex */;
+			productReference = 6ADE9C868F70851B4FE928CF /* FitViewShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		AC7ED7F447DC2734CBFA509F /* FitView-iOS */ = {
@@ -577,7 +577,7 @@
 				02BED5B526334DACF65C5370 /* FitViewCore */,
 			);
 			productName = "FitView-iOS";
-			productReference = 57DDAB7210CFB9E361BE0D0C /* FitView-iOS.app */;
+			productReference = 57DDAB7210CFB9E361BE0D0C /* FitView.app */;
 			productType = "com.apple.product-type.application";
 		};
 		B3A5746AC17419436D81806D /* FitViewTests */ = {
@@ -616,7 +616,7 @@
 				4F74B73EF88181791D1724CF /* FitViewCore */,
 			);
 			productName = "FitViewShareExtension-macOS";
-			productReference = A280F83CE634DD3430E75E32 /* FitViewShareExtension-macOS.appex */;
+			productReference = A280F83CE634DD3430E75E32 /* FitViewShare.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		EDAD7ED43F5769299B50F163 /* FitView-macOS */ = {
@@ -638,7 +638,7 @@
 				66F0FBBB1428C87F899106CD /* FitViewCore */,
 			);
 			productName = "FitView-macOS";
-			productReference = CC65984041C307E9C026CCB5 /* FitView-macOS.app */;
+			productReference = CC65984041C307E9C026CCB5 /* FitView.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1030,7 +1030,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-macOS/FitView.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Sources/FitView-macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1040,6 +1043,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac;
 				PRODUCT_NAME = FitView;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -1048,7 +1052,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/macOS/ShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/ShareExtension/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1059,6 +1066,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac.share;
 				PRODUCT_NAME = FitViewShare;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -1067,7 +1075,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/macOS/ShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/ShareExtension/macOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1078,6 +1089,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac.share;
 				PRODUCT_NAME = FitViewShare;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -1181,7 +1193,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-macOS/FitView.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = "Sources/FitView-macOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1191,6 +1206,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fitview.app.mac;
 				PRODUCT_NAME = FitView;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
