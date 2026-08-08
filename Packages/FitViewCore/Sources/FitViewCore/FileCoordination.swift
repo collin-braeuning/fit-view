@@ -10,6 +10,17 @@ public enum FileCoordinationError: Error, Sendable, Equatable {
     /// the accessor block. Not documented as possible, but the alternative to
     /// reporting it is force-unwrapping a `nil` result.
     case accessorNeverRan(path: String)
+    /// The URL is not an enumerable directory — replaced by a regular file,
+    /// permissions lost, or no longer resolves. Detected via the
+    /// `errorHandler` callback of `FileManager.enumerator(at:...)`, which
+    /// fires with the real underlying error (e.g. POSIX "Not a directory");
+    /// the enumerator's `nil` return is checked too, but empirically does not
+    /// fire for these cases — the callback is what actually catches them.
+    /// Previously none of this was checked, so the failure surfaced as an
+    /// empty listing with no error, indistinguishable from a folder the user
+    /// genuinely emptied — exactly the ambiguity that makes folder
+    /// reconciliation unable to tell "nothing here" from "couldn't look."
+    case directoryNotEnumerable(path: String)
 }
 
 /// Downloads (if needed) and waits for a ubiquitous item to stop being an
@@ -110,12 +121,49 @@ func coordinatedContents(of directoryURL: URL, recursive: Bool) throws -> [URL] 
     ) { readURL in
         do {
             if recursive {
-                guard let enumerator = FileManager.default.enumerator(
+                // `enumerator(at:)` itself essentially never returns `nil` in
+                // practice (verified empirically against a regular file, a
+                // missing path, and a permission-denied directory — all three
+                // still hand back a live enumerator that just yields zero
+                // items). The real failure surfaces only through the
+                // `errorHandler` callback below, invoked with the offending
+                // URL and the underlying POSIX error (e.g. "Not a
+                // directory"). Any invocation of it means the listing did not
+                // see everything, so per this function's contract that must
+                // throw rather than return a possibly-partial `result` — the
+                // nil-check stays only as defense in depth for whatever edge
+                // case Apple's docs allow it for.
+                // `enumerator(at:)` itself essentially never returns `nil` in
+                // practice (verified empirically against a regular file, a
+                // missing path, and a permission-denied directory — all three
+                // still hand back a live enumerator that just yields zero
+                // items). The real failure surfaces only through the
+                // `errorHandler` callback below, invoked with the offending
+                // URL and the underlying POSIX error (e.g. "Not a
+                // directory"). Any invocation of it means the listing did not
+                // see everything, so per this function's contract that must
+                // throw rather than return a possibly-partial `result` — the
+                // nil-check stays only as defense in depth for whatever edge
+                // case Apple's docs allow it for.
+                var enumerationError: Error?
+                let enumerator = FileManager.default.enumerator(
                     at: readURL,
                     includingPropertiesForKeys: keys,
-                    options: [.skipsPackageDescendants]
-                ) else { return }
+                    options: [.skipsPackageDescendants],
+                    errorHandler: { _, error in
+                        enumerationError = error
+                        return false // stop — the listing is no longer trustworthy
+                    }
+                )
+                guard let enumerator else {
+                    thrown = FileCoordinationError.directoryNotEnumerable(path: readURL.path)
+                    return
+                }
                 result = enumerator.compactMap { $0 as? URL }
+                if enumerationError != nil {
+                    thrown = FileCoordinationError.directoryNotEnumerable(path: readURL.path)
+                    return
+                }
             } else {
                 result = try FileManager.default.contentsOfDirectory(
                     at: readURL, includingPropertiesForKeys: keys, options: [.skipsPackageDescendants]

@@ -15,7 +15,7 @@ struct SessionDetailView: View {
     @State private var isPresentingFullScreenChart = false
     @State private var isPresentingDeleteConfirmation = false
     @State private var isDeleting = false
-    @State private var deleteErrorMessage: String?
+    @State private var deleteOutcome: DeletionOutcome?
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     #endif
@@ -126,28 +126,32 @@ struct SessionDetailView: View {
             Text("Removes it from FitView's library. The original file, if any, is left untouched.")
         }
         .alert(
-            "Couldn't Delete",
+            deleteOutcome?.alertTitle ?? "",
             isPresented: Binding(
-                get: { deleteErrorMessage != nil },
-                set: { if !$0 { deleteErrorMessage = nil } }
+                get: { deleteOutcome?.alertMessage != nil },
+                set: { if !$0 { deleteOutcome = nil } }
             ),
-            presenting: deleteErrorMessage
+            presenting: deleteOutcome
         ) { _ in
             Button("OK", role: .cancel) {}
-        } message: { message in
-            Text(message)
+        } message: { outcome in
+            Text(outcome.alertMessage ?? "")
         }
     }
 
     private func delete(_ model: SessionDetailModel) {
         isDeleting = true
         Task {
-            let error = await appModel.deleteSession(model.session)
+            let outcome = await appModel.deleteSession(model.session)
             isDeleting = false
-            if let error {
-                deleteErrorMessage = error
-            } else {
+            if outcome == .succeeded {
                 dismiss()
+            } else {
+                // `.partiallyFailed` still removed part of the activity —
+                // reported as incomplete rather than a flat "Couldn't
+                // Delete", which would misdescribe data that was in fact
+                // removed (FR-006, contract C9).
+                deleteOutcome = outcome
             }
         }
     }

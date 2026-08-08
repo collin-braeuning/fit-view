@@ -1,5 +1,26 @@
 import Foundation
 
+/// A stale library item reconciliation tried to remove and couldn't.
+///
+/// Mirrors `ImportFailure` on both counts: collected rather than thrown, so
+/// one item the store refuses to drop doesn't cost the pass its remaining
+/// removals or its import phase (C5) — but *collected*, not discarded, so the
+/// failure is diagnosable afterwards. A removal that silently vanishes is the
+/// case Constitution V rules out: logging accompanies a handled error, it
+/// doesn't substitute for handling one.
+public struct RemovalFailure: Sendable, Equatable {
+    /// The item that stayed in the library. Carried whole, the way
+    /// `ImportFailure` carries its candidate, so a caller can report whichever
+    /// part of its identity is meaningful to it.
+    public var item: LibraryItem
+    public var message: String
+
+    public init(item: LibraryItem, message: String) {
+        self.item = item
+        self.message = message
+    }
+}
+
 /// What one folder scan did.
 public struct FolderIngestReport: Sendable, Equatable {
     /// How many `.fit` files the folder currently holds, downloaded or not.
@@ -18,16 +39,44 @@ public struct FolderIngestReport: Sendable, Equatable {
     /// should be visible, not quietly hidden" principle the rest of this
     /// package follows.
     public var failures: [ImportFailure]
+    /// The `sourceId` of every library item removed because its file left the
+    /// folder (FR-009) — itemised rather than counted, so a reconciliation
+    /// removal is as diagnosable from the local log as an in-app deletion is
+    /// (FR-014, C10). Empty on every scan that removed nothing, which is the
+    /// overwhelmingly common case, and always empty when the listing was
+    /// untrustworthy (FR-010), since no reconciliation is attempted at all in
+    /// that case.
+    public var removedSourceIds: [String]
+    /// Stale items whose removal threw. They are still in the library, and
+    /// the pass continued past them (C5).
+    public var removalFailures: [RemovalFailure]
 
-    public init(discovered: Int = 0, imported: Int = 0, failures: [ImportFailure] = []) {
+    public init(
+        discovered: Int = 0,
+        imported: Int = 0,
+        failures: [ImportFailure] = [],
+        removedSourceIds: [String] = [],
+        removalFailures: [RemovalFailure] = []
+    ) {
         self.discovered = discovered
         self.imported = imported
         self.failures = failures
+        self.removedSourceIds = removedSourceIds
+        self.removalFailures = removalFailures
     }
 
+    /// How many items reconciliation actually removed — derived, not stored,
+    /// so the count and the itemised list can't drift apart and break C6's
+    /// truthful-counts rule. Counts only removals that completed: an item
+    /// whose removal threw is in `removalFailures` and is still in the
+    /// library.
+    public var removed: Int { removedSourceIds.count }
+
     /// Whether this scan changed the library — the signal a caller needs to
-    /// decide whether to rebuild the on-screen batch.
-    public var didChangeLibrary: Bool { imported > 0 }
+    /// decide whether to rebuild the on-screen batch. A removal-only scan
+    /// (nothing new imported) still counts: without this, reconciled-away
+    /// items would stay visible until something else forced a reload.
+    public var didChangeLibrary: Bool { imported > 0 || removed > 0 }
 }
 
 /// Scans a `WatchedFolderSource`, works out which files aren't in the library
@@ -81,14 +130,54 @@ public actor FolderIngestor {
     @discardableResult
     public func ingest(into store: any LibraryStore) async throws -> FolderIngestReport {
         let candidates = try await source.listAvailable()
-        guard !candidates.isEmpty else { return FolderIngestReport() }
 
         let itemsBefore = try await store.allItems()
+        let present = Set(candidates.map(\.sourceId))
         let known = Set(
             itemsBefore
                 .filter { $0.source == source.id }
                 .compactMap(\.sourceId)
         )
+        // FR-011/FR-010: only items this same source owns, whose sourceId is
+        // set (a legacy item predating that field can't be matched and must
+        // not be inferred missing — C2), and whose file this listing didn't
+        // see. `candidates` is trusted complete here only because
+        // `listAvailable()` returned without throwing (C1); an empty
+        // `candidates` from a genuinely empty folder is a legitimate
+        // observation, not a failure, so it reconciles away every remaining
+        // folder item just like a partially-emptied folder would.
+        let stale = itemsBefore.filter {
+            $0.source == source.id && $0.sourceId != nil && !present.contains($0.sourceId!)
+        }
+
+        // A removal that throws must not abort the pass (C5) — matches the
+        // "one bad item doesn't sink the batch" rule import failures already
+        // follow. Both outcomes are recorded per-item rather than tallied:
+        // `removedSourceIds` names what actually left the library (the
+        // property FR-012's report and C6's truthful-counts rule need), and
+        // `removalFailures` keeps what didn't, since a removal failure that
+        // is merely skipped is invisible everywhere afterwards (C10).
+        var removedSourceIds: [String] = []
+        var removalFailures: [RemovalFailure] = []
+        for item in stale {
+            do {
+                try await store.remove(itemId: item.id)
+                // Non-nil for every item in `stale` — the filter above
+                // requires it — but fall back rather than force-unwrap, since
+                // an identity in the log matters more than the distinction.
+                removedSourceIds.append(item.sourceId ?? item.id)
+            } catch {
+                removalFailures.append(RemovalFailure(item: item, message: String(describing: error)))
+            }
+        }
+
+        // Re-baselined against a post-removal read when anything was removed,
+        // so removing 3 and importing 3 in the same pass can't be corrupted
+        // into reporting 0 imported (research.md §4, contract C6) — taken
+        // *before* the import phase runs, and the extra read is paid only on
+        // scans that actually removed something.
+        let importBaseline = removedSourceIds.isEmpty ? itemsBefore : try await store.allItems()
+
         // A folder can legitimately contain the same file twice under
         // different paths; dedupe within the scan too, or a single pass would
         // import one of them and then re-import it as "new" forever after.
@@ -99,7 +188,11 @@ public actor FolderIngestor {
         }
 
         guard !fresh.isEmpty else {
-            return FolderIngestReport(discovered: candidates.count)
+            return FolderIngestReport(
+                discovered: candidates.count,
+                removedSourceIds: removedSourceIds,
+                removalFailures: removalFailures
+            )
         }
 
         guard let result = await coordinator.startImport(from: source, candidates: fresh, store: store) else {
@@ -108,7 +201,11 @@ public actor FolderIngestor {
             // covers the same folder, so reporting nothing here is right;
             // merging a discarded result is exactly what the atomic-batch rule
             // forbids.
-            return FolderIngestReport(discovered: candidates.count)
+            return FolderIngestReport(
+                discovered: candidates.count,
+                removedSourceIds: removedSourceIds,
+                removalFailures: removalFailures
+            )
         }
 
         // `result.files.count` is decodes, not library growth — with the
@@ -118,8 +215,10 @@ public actor FolderIngestor {
         let itemsAfter = try await store.allItems()
         return FolderIngestReport(
             discovered: candidates.count,
-            imported: itemsAfter.count - itemsBefore.count,
-            failures: result.failures
+            imported: itemsAfter.count - importBaseline.count,
+            failures: result.failures,
+            removedSourceIds: removedSourceIds,
+            removalFailures: removalFailures
         )
     }
 }
