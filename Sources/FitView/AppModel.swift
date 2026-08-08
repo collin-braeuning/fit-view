@@ -79,8 +79,10 @@ final class AppModel {
     /// actually did, most recent last. Exists because this connector can only
     /// ever be exercised live (no sandbox — see `PolarAccessLinkSource`'s doc
     /// comment), and "nothing visibly happened" is otherwise undebuggable
-    /// without a screenshot of every intermediate state. In-memory only,
-    /// capped, and never persisted — this is a debugging aid, not a feature.
+    /// without a screenshot of every intermediate state. Mirrors
+    /// `debugLogFileURL` on disk — seeded from it in `init` — so Settings'
+    /// entry count reflects the same history across app launches instead of
+    /// resetting to "this session only."
     private(set) var debugLog: [String] = []
     private static let debugLogCap = 1000
 
@@ -158,6 +160,8 @@ final class AppModel {
         self.dataSource = defaults.string(forKey: Self.dataSourceKey)
             .flatMap(DataSourceMode.init(rawValue:)) ?? .bundledSamples
         self.isFolderConfigured = watchedFolder.isConfigured
+        self.debugLog = (try? String(contentsOf: Self.debugLogFileURL, encoding: .utf8))
+            .map { $0.split(separator: "\n", omittingEmptySubsequences: true).map(String.init) } ?? []
     }
 
     // MARK: - Lifecycle
