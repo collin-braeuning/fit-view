@@ -25,6 +25,16 @@ enum PolarConnectionState: Equatable {
         }
         return .connectionLost
     }
+
+    /// Pure mapping applied after `PolarAccessLinkSource.restoreSession()`
+    /// succeeds in `syncPolar`. A restored session is only a cached token,
+    /// not proof it's still valid — promoting straight to `.connected` here
+    /// would clobber a `.connectionLost` state a prior 401 already set,
+    /// papering over "reconnect needed" until a request actually confirms
+    /// the token works again. Tested directly in `PolarConnectionStateTests`.
+    static func afterSessionRestored(current: PolarConnectionState) -> PolarConnectionState {
+        current == .connectionLost ? current : .connected
+    }
 }
 
 /// The app's single owner of "what data are we showing, and where did it come
@@ -161,7 +171,7 @@ final class AppModel {
             .flatMap(DataSourceMode.init(rawValue:)) ?? .bundledSamples
         self.isFolderConfigured = watchedFolder.isConfigured
         self.debugLog = (try? String(contentsOf: Self.debugLogFileURL, encoding: .utf8))
-            .map { $0.split(separator: "\n", omittingEmptySubsequences: true).map(String.init) } ?? []
+            .map(DiagnosticLogRingBuffer.parsing) ?? []
     }
 
     // MARK: - Lifecycle
@@ -394,6 +404,16 @@ final class AppModel {
     func connectPolar() async {
         log("connectPolar: starting authorize()")
         polarError = nil
+        if polarConnectionState == .connectionLost {
+            // The cached token is the very one that got revoked —
+            // `authorize()` finds it via `restoreSession()` and returns
+            // immediately without ever presenting OAuth, making "Reconnect"
+            // a permanent no-op. Clear it first so authorize() is forced
+            // through a real sign-in round-trip. Best-effort: even if the
+            // keychain clear fails, `authorize()` below still tries.
+            try? await polarSource.disconnect()
+            log("connectPolar: cleared stale session before reconnecting")
+        }
         do {
             try await polarSource.authorize()
             polarConnectionState = .connected
@@ -459,7 +479,7 @@ final class AppModel {
             log("syncPolar: stopped — no cached session (restoreSession() found nothing)")
             return
         }
-        polarConnectionState = .connected
+        polarConnectionState = PolarConnectionState.afterSessionRestored(current: polarConnectionState)
         log("syncPolar: session restored, calling RemoteActivitySync")
 
         isSyncingPolar = true
@@ -471,6 +491,11 @@ final class AppModel {
         do {
             let report = try await remoteSync.sync(source: polarSource, into: polarFolderBookmark)
             polarError = nil
+            // A request that actually succeeds is proof the token is good,
+            // even if it was left at `.connectionLost` above — don't leave
+            // "reconnect needed" showing once a sync has just demonstrated
+            // otherwise.
+            polarConnectionState = .connected
             lastPolarSync = report
             log("syncPolar: succeeded — \(report.discovered) discovered, "
                 + "\(report.downloaded) downloaded, \(report.failures.count) failed")
@@ -530,9 +555,9 @@ final class AppModel {
     private func appendToLogFile(_ line: String) {
         let url = Self.debugLogFileURL
         let existingLines = (try? String(contentsOf: url, encoding: .utf8))
-            .map { $0.split(separator: "\n", omittingEmptySubsequences: true).map(String.init) } ?? []
+            .map(DiagnosticLogRingBuffer.parsing) ?? []
         let trimmed = DiagnosticLogRingBuffer.appending(line, to: existingLines, cap: Self.debugLogCap)
-        guard let data = (trimmed.joined(separator: "\n") + "\n").data(using: .utf8) else { return }
+        guard let data = DiagnosticLogRingBuffer.serializing(trimmed).data(using: .utf8) else { return }
         try? data.write(to: url)
     }
 

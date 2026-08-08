@@ -17,4 +17,18 @@ public enum DiagnosticLogRingBuffer {
         }
         return result
     }
+
+    /// Parses a persisted log file's contents into entries, one per line —
+    /// the inverse of `serializing(_:)`. Empty lines are dropped so the
+    /// trailing newline `serializing(_:)` always writes doesn't produce a
+    /// spurious empty final entry.
+    public static func parsing(_ fileContents: String) -> [String] {
+        fileContents.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
+    }
+
+    /// Serializes entries back to the newline-delimited text format
+    /// `debug.log` is persisted in — the inverse of `parsing(_:)`.
+    public static func serializing(_ entries: [String]) -> String {
+        entries.joined(separator: "\n") + "\n"
+    }
 }

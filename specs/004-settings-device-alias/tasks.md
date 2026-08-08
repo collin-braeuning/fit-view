@@ -370,3 +370,45 @@ build-up-from-nothing sequence. Recommended order:
   `swift test` invocations are test runs, not app launches, and are fine to run; Xcode
   manual verification (quickstart.md's "Manual Validation" section) is the user's own
   step.
+
+---
+
+## Phase 8: Convergence
+
+- [X] T018 Make reconnecting from `.connectionLost` actually re-authorize: today
+  `SettingsView.swift:121`'s "Reconnect Polar Flow…" calls `AppModel.connectPolar()`, whose
+  `polarSource.authorize()` returns early whenever `restoreSession()` finds a cached token
+  (`Sources/FitView/Import/Polar/PolarAccessLinkSource.swift:62`) — and a 401-revoked token
+  is still in the keychain, so no OAuth sheet is ever presented and the state cycles
+  `.connectionLost` → `.connected` → 401 → `.connectionLost` forever. Clear the stale
+  session before re-authorizing (e.g. `AppModel.connectPolar(forcingFreshAuth: Bool = false)`
+  that calls `polarSource.disconnect()` first, or an `authorize(ignoringCachedSession:)`
+  parameter on `PolarAccessLinkSource`), and have the `.connectionLost` branch use it, so
+  the reconnect action the contract requires to be "reachable" is also functional
+  per FR-015 / `contracts/polar-connection-contract.md` (partial)
+- [X] T019 In `Sources/FitView/Settings/SettingsView.swift`'s `.connectionLost` branch
+  (lines 118–124), add a reachable "Disconnect" control alongside the reconnect button so a
+  user with a permanently-dead token has an in-app escape that clears the session (today
+  Disconnect only renders under `.connected`, leaving `.connectionLost` with no way to reset
+  the connection) per FR-015 / FR-010 (partial). UI-affecting — land separately and pause
+  for the user's manual review per CLAUDE.md.
+- [X] T020 In `Sources/FitView/AppModel.swift`'s `syncPolar` (line 462), stop unconditionally
+  setting `polarConnectionState = .connected` after `restoreSession()` returns true: a
+  restored *cached* token is not evidence the session is still valid, so from
+  `.connectionLost` a subsequent sync that fails for a non-auth reason (offline →
+  `ActivitySourceError.underlying`) leaves the state stuck at `.connected` and hides
+  "reconnect needed." Promote to `.connected` only from `.notConnected` (or only after a
+  request actually succeeds), leaving `.connectionLost` intact — the clobber T008 explicitly
+  warned against — and extend `Tests/FitViewTests/PolarConnectionStateTests.swift` to cover
+  it per FR-015 (partial)
+- [X] T021 Extract the diagnostic log's file ↔ entries codec (the
+  `split(separator: "\n", omittingEmptySubsequences: true)` parse duplicated verbatim in
+  `AppModel.init` line 163–164 and `appendToLogFile` line 532–533, plus the
+  `joined(separator: "\n") + "\n"` serialize at line 535) into a pure helper in
+  `Packages/FitViewCore/Sources/FitViewCore/DiagnosticLogRingBuffer.swift` (or an adjacent
+  file), and add round-trip coverage to
+  `Packages/FitViewCore/Tests/FitViewCoreTests/DiagnosticLogRingBufferTests.swift` asserting
+  that entries written and re-read yield the same count — the behavior FR-016's "count read
+  from the persisted log at launch must match what an export contains" depends on, currently
+  duplicated inline and untested (FR-016 was added to spec.md after tasks.md was generated
+  and has no earlier task) per FR-016 / Constitution I / Constitution VI (partial)

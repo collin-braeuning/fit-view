@@ -122,6 +122,10 @@ struct SettingsContent: View {
                             Task { await model.connectPolar() }
                         }
                         .disabled(!model.isFolderConfigured)
+
+                        Button("Disconnect", role: .destructive) {
+                            Task { await model.disconnectPolar() }
+                        }
                     case .connected:
                         Button("Sync Now") {
                             Task { await model.syncPolar(force: true) }

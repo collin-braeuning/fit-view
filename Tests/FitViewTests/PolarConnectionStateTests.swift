@@ -44,4 +44,22 @@ struct PolarConnectionStateTests {
         )
         #expect(result == .connectionLost)
     }
+
+    @Test("restoring a session while notConnected promotes to connected")
+    func sessionRestoredWhileNotConnectedPromotesToConnected() {
+        let result = PolarConnectionState.afterSessionRestored(current: .notConnected)
+        #expect(result == .connected)
+    }
+
+    @Test("restoring a session while already connected stays connected")
+    func sessionRestoredWhileConnectedStaysConnected() {
+        let result = PolarConnectionState.afterSessionRestored(current: .connected)
+        #expect(result == .connected)
+    }
+
+    @Test("restoring a session while connectionLost does not clobber it — a cached token isn't proof it's valid")
+    func sessionRestoredWhileConnectionLostStaysConnectionLost() {
+        let result = PolarConnectionState.afterSessionRestored(current: .connectionLost)
+        #expect(result == .connectionLost)
+    }
 }

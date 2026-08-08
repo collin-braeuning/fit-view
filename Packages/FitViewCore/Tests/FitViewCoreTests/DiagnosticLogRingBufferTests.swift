@@ -38,4 +38,22 @@ struct DiagnosticLogRingBufferTests {
         }
         #expect(entries == ["entry-7", "entry-8", "entry-9", "entry-10"])
     }
+
+    @Test("serializing then parsing round-trips entries exactly — FR-016's launch count must match an export")
+    func serializeParseRoundTrip() {
+        let entries = ["first entry", "second entry", "third entry"]
+        let roundTripped = DiagnosticLogRingBuffer.parsing(DiagnosticLogRingBuffer.serializing(entries))
+        #expect(roundTripped == entries)
+        #expect(roundTripped.count == entries.count)
+    }
+
+    @Test("parsing drops the trailing empty line serializing always writes")
+    func parsingDropsTrailingNewline() {
+        #expect(DiagnosticLogRingBuffer.parsing("one\ntwo\n") == ["one", "two"])
+    }
+
+    @Test("parsing an empty string yields no entries")
+    func parsingEmptyStringYieldsNoEntries() {
+        #expect(DiagnosticLogRingBuffer.parsing("").isEmpty)
+    }
 }
