@@ -195,14 +195,14 @@ struct SessionDetailView: View {
         if model.agreement != nil {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
                 if let matchedSecondsText = model.matchedSecondsText {
-                    StatTile(
+                    MetricTile(
                         label: "Matched Seconds",
                         value: matchedSecondsText,
                         explainer: MetricKind.matchedSeconds.explainer
                     )
                 }
                 if let bias = model.bias {
-                    StatTile(
+                    MetricTile(
                         label: "Bias",
                         value: bias.text,
                         level: bias.level,
@@ -210,14 +210,14 @@ struct SessionDetailView: View {
                     )
                 }
                 if let loaText = model.loaText {
-                    StatTile(
+                    MetricTile(
                         label: "95% LoA",
                         value: loaText,
                         explainer: MetricKind.limitsOfAgreement.explainer
                     )
                 }
                 if let meanAbsDiff = model.meanAbsDiff {
-                    StatTile(
+                    MetricTile(
                         label: "Mean |Diff|",
                         value: meanAbsDiff.text,
                         level: meanAbsDiff.level,
@@ -225,14 +225,14 @@ struct SessionDetailView: View {
                     )
                 }
                 if let maxAbsDiffText = model.maxAbsDiffText {
-                    StatTile(
+                    MetricTile(
                         label: "Max |Diff|",
                         value: maxAbsDiffText,
                         explainer: MetricKind.maxAbsoluteDifference.explainer
                     )
                 }
                 if let ccc = model.ccc {
-                    StatTile(
+                    MetricTile(
                         label: "CCC",
                         value: ccc.text,
                         level: ccc.level,

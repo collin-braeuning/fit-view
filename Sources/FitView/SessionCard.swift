@@ -84,32 +84,32 @@ struct SessionCard: View {
         VStack(alignment: .leading, spacing: 8) {
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top) {
-                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
+                    MetricTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
                     Spacer()
                     if let bias = row.bias {
-                        detailTile(label: "Bias", value: bias.text, level: bias.level)
+                        MetricTile(label: "Bias", value: bias.text, level: bias.level, style: .inline)
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
+                    MetricTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
                     if let bias = row.bias {
-                        detailTile(label: "Bias", value: bias.text, level: bias.level)
+                        MetricTile(label: "Bias", value: bias.text, level: bias.level, style: .inline)
                     }
                 }
             }
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top) {
                     if let loaText = row.loaText {
-                        detailTile(label: "95% LoA", value: loaText, level: nil)
+                        MetricTile(label: "95% LoA", value: loaText, style: .inline)
                     }
                     Spacer()
-                    detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
+                    MetricTile(label: "Max |Diff|", value: row.maxAbsDiffText, style: .inline)
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     if let loaText = row.loaText {
-                        detailTile(label: "95% LoA", value: loaText, level: nil)
+                        MetricTile(label: "95% LoA", value: loaText, style: .inline)
                     }
-                    detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
+                    MetricTile(label: "Max |Diff|", value: row.maxAbsDiffText, style: .inline)
                 }
             }
         }
@@ -142,44 +142,6 @@ struct SessionCard: View {
                 .font(.subheadline.monospacedDigit())
         }
         .accessibilityElement(children: .combine)
-    }
-
-    @ViewBuilder
-    private func statTile(label: String, metric: Metric) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            HStack(spacing: 4) {
-                Image(systemName: metric.level.symbolName)
-                    .font(.caption2)
-                Text(metric.text)
-                    .font(.subheadline.monospacedDigit())
-            }
-            .foregroundStyle(metric.level.color)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(label) \(metric.text), \(metric.level.spokenWord) agreement")
-    }
-
-    @ViewBuilder
-    private func detailTile(label: String, value: String, level: AgreementLevel?) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            HStack(spacing: 4) {
-                if let level {
-                    Image(systemName: level.symbolName)
-                        .font(.caption2)
-                }
-                Text(value)
-                    .font(.subheadline.monospacedDigit())
-            }
-            .foregroundStyle(level?.color ?? .primary)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(level.map { "\(label) \(value), \($0.spokenWord) agreement" } ?? "\(label) \(value)")
     }
 
     @ViewBuilder
