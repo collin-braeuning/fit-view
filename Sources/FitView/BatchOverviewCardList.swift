@@ -11,7 +11,6 @@ import SwiftUI
 /// avoid. A plain `VStack` doesn't have that failure mode.
 struct BatchOverviewCardList: View {
     let model: BatchOverviewModel
-    @State private var expandedSessionIds: Set<String> = []
 
     var body: some View {
         ScrollView {
@@ -28,11 +27,7 @@ struct BatchOverviewCardList: View {
                         // to be tappable, so plain `ScrollView` content gets that for
                         // free without needing a hidden-link workaround.
                         NavigationLink(value: SessionRoute(sessionId: row.id)) {
-                            SessionCard(
-                                row: row,
-                                isExpanded: expandedSessionIds.contains(row.id),
-                                onToggleExpanded: { toggleExpanded(row.id) }
-                            )
+                            SessionCard(row: row)
                         }
                         .buttonStyle(.plain)
                         .padding(.horizontal, 16)
@@ -63,14 +58,6 @@ struct BatchOverviewCardList: View {
                 }
             }
             .padding(.vertical, 6)
-        }
-    }
-
-    private func toggleExpanded(_ id: String) {
-        withAnimation(.default) {
-            if !expandedSessionIds.insert(id).inserted {
-                expandedSessionIds.remove(id)
-            }
         }
     }
 }
