@@ -38,22 +38,44 @@ to protect in the other direction.
 **Decision**: Leave `expandedSessionIds: Set<String>` owned by `BatchOverviewCardList`, not
 `SessionCard`. No code change from this spec.
 
-**Rationale**: Principle II's rule is "own state intrinsic to it" so a parent isn't forced to
-puppet a child's internals. Here the *reason* the parent holds a `Set<String>` keyed by session
-ID — rather than each `SessionCard` holding its own `@State private var isExpanded`— is that
-`BatchOverviewCardList` recreates its `SessionRow` array (and therefore its `SessionCard`
-instances) whenever `model.rows` changes upstream (e.g., a reload after import), and a
-per-instance `@State` would silently reset on any such rebuild since SwiftUI doesn't guarantee
-identity-preserving state across a `ForEach` diff the way a stable, externally-keyed `Set` does.
-This is a deliberate identity/lifecycle tradeoff already made in the shipped code, not an
-oversight — re-litigating it isn't in scope for a spec that documents existing behavior as
-correct per Acceptance Scenario 4 (disclosure "without navigating away from the list").
+**Rationale**: An earlier version of this entry justified the decision by claiming a
+per-instance `@State private var isExpanded` inside `SessionCard` would silently reset
+whenever `BatchOverviewCardList` rebuilds its `SessionRow`/`SessionCard` array (e.g., on a
+reload after import), because SwiftUI supposedly doesn't preserve identity-keyed state across
+a `ForEach` diff. **That claim was tested directly with a standalone SwiftUI probe
+(`NSHostingView` in a plain AppKit window, macOS 26.5) and found false.** `@State` is keyed to
+view identity, and `ForEach` over stable `Identifiable` IDs is exactly what supplies that
+identity, so replacing the backing array with fresh values carrying the same IDs is a value
+update, not an identity change — state survives it. The probe included a negative control
+(changing the container's own `.id()`, which must reset its children) that did reset,
+confirming the probe could actually detect a reset when one occurred; a second run confirmed
+state also survives scrolling 300 rows away and back in a verifiably-lazy `LazyVStack`, ruling
+out lazy-row recycling as a hidden reset path too. Caveats worth keeping in mind: the probe
+exercised `SessionCard`-shaped views in isolation, not the real app, where each `SessionCard`
+is additionally wrapped in a `NavigationLink` (unmodeled by the probe); and it ran on macOS
+only, not iOS/iPadOS, which this app also ships to.
+
+That myth aside, keeping `expandedSessionIds` parent-owned is still the right call, on
+different grounds. First, expansion here is list-level state: a future "collapse all"
+affordance needs to read and mutate every card's expansion at once, which a parent-owned
+`Set` gives for free and N independent child `@State`s do not. Second, while the probe found
+no reset on macOS 26.5, Apple documents no contract that a lazy container retains per-row
+`@State` across an array replacement — "observed to hold on the OS version tested" is weaker
+than "keyed externally, so retention can't matter," across the iOS 17+ / macOS 14+ range this
+app ships to. The cost of keeping state external — `expandedSessionIds` plus a
+`toggleExpanded` helper, roughly six lines — is small enough that trading a documented
+guarantee for merely-observed behavior isn't worth it.
 
 **Alternatives considered**:
-- *Move to `@State private var isExpanded` inside `SessionCard`*: rejected per the identity
-  argument above; would reintroduce a reload-resets-expansion bug.
-- *Keep as-is and treat as a documented, accepted exception*: chosen — recorded here so a
-  future contributor doesn't "fix" it without understanding why.
+- *Move to `@State private var isExpanded` inside `SessionCard`*: this is exactly what
+  Principle II's "own state intrinsic to it" language cuts toward, and the probe shows it
+  would work correctly on macOS today — it does not reintroduce a reload-resets-expansion bug,
+  because that bug doesn't exist. It's still declined: it trades an externally-keyed guarantee
+  for behavior that's observed rather than documented, and it forecloses the bulk "collapse
+  all" case above without reinventing a parent-side lookup anyway.
+- *Keep as-is and treat as a documented, deliberate choice*: chosen — recorded here on
+  corrected grounds, so a future contributor doesn't "fix" it into a subtly worse design, and
+  doesn't re-derive the disproven identity claim from the old text either.
 
 ## 3. Are agreement-level thresholds (Principle IV: "Configurable, Not Hardcoded") in scope to fix here?
 
