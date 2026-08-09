@@ -1,8 +1,8 @@
 import FitViewCore
 import SwiftUI
 
-/// A bare "what does this mean" button for a title row that isn't a `StatTile`
-/// — e.g. a plot's header. Matches `StatTile`'s info glyph and popover/sheet
+/// A bare "what does this mean" button for a title row that isn't a `MetricTile`
+/// — e.g. a plot's header. Matches `MetricTile`'s info glyph and popover/sheet
 /// behavior via `metricExplainerPopover`.
 struct ExplainerButton: View {
     let explainer: MetricExplainer
