@@ -11,7 +11,7 @@ struct ConcordanceChart: View {
     /// plot of fixed height flattens the line of equality towards horizontal on
     /// a wide Mac window, which reads as far better agreement than the data
     /// shows; letting height grow with width keeps the line a legible diagonal.
-    private static let plotAspectRatio: CGFloat = 1.6
+    private static let plotAspectRatio: CGFloat = 1.35
 
     let data: ConcordancePlotData
     /// Caps how wide the plot grows in a scrolling detail column. `nil` lifts
