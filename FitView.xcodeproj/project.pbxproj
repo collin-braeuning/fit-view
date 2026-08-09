@@ -652,9 +652,23 @@
 				TargetAttributes = {
 					6B471912DE0FDF3E72BB33AF = {
 						DevelopmentTeam = 4GP83563V4;
+						ProvisioningStyle = Automatic;
 					};
 					AC7ED7F447DC2734CBFA509F = {
 						DevelopmentTeam = 4GP83563V4;
+						ProvisioningStyle = Automatic;
+					};
+					B3A5746AC17419436D81806D = {
+						DevelopmentTeam = 4GP83563V4;
+						ProvisioningStyle = Automatic;
+					};
+					B456014F1837BF6670586880 = {
+						DevelopmentTeam = 4GP83563V4;
+						ProvisioningStyle = Automatic;
+					};
+					EDAD7ED43F5769299B50F163 = {
+						DevelopmentTeam = 4GP83563V4;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -882,7 +896,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-iOS/FitView.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = "Sources/FitView-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -932,9 +945,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1000,9 +1015,11 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 4GP83563V4;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1086,7 +1103,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/iOS/ShareExtension.entitlements;
-				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = Sources/ShareExtension/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1107,7 +1123,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Sources/FitView-iOS/FitView.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = "Sources/FitView-iOS/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1125,7 +1140,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Sources/ShareExtension/iOS/ShareExtension.entitlements;
-				DEVELOPMENT_TEAM = 4GP83563V4;
 				INFOPLIST_FILE = Sources/ShareExtension/iOS/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (

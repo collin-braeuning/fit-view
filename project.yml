@@ -10,6 +10,8 @@ configs:
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    DEVELOPMENT_TEAM: 4GP83563V4
+    CODE_SIGN_STYLE: Automatic
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
     ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -45,7 +47,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app
         INFOPLIST_FILE: Sources/FitView-iOS/Info.plist
         TARGETED_DEVICE_FAMILY: "1,2"
-        DEVELOPMENT_TEAM: 4GP83563V4
     # App Sandbox + the shared App Group are new here — needed so the share
     # extension (always sandboxed) can read the folder bookmark this app
     # persists in Settings. See FolderBookmark/AppGroup in FitViewCore.
@@ -124,7 +125,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.fitview.app.share
         INFOPLIST_FILE: Sources/ShareExtension/iOS/Info.plist
         TARGETED_DEVICE_FAMILY: "1,2"
-        DEVELOPMENT_TEAM: 4GP83563V4
     entitlements:
       path: Sources/ShareExtension/iOS/ShareExtension.entitlements
       properties:
