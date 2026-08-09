@@ -98,8 +98,9 @@ struct SettingsContent: View {
             } footer: {
                 Text("Pick a folder (ideally in iCloud Drive) holding your FIT files, named like "
                     + "2026-07-26_pace4_run.fit. New files are picked up when the app launches and "
-                    + "each time you return to it. Files are copied into the app's library, so "
-                    + "removing one from the folder won't remove it here.")
+                    + "each time you return to it. The folder is the source of truth: removing a "
+                    + "file from it removes the matching activity here too, on the next successful "
+                    + "scan.")
             }
 
             Section {
@@ -217,7 +218,14 @@ struct SettingsContent: View {
     private func scanSummary(_ report: FolderIngestReport) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("\(report.discovered) file\(report.discovered == 1 ? "" : "s") in the folder, "
-                + "\(report.imported) newly imported.")
+                + "\(report.imported) newly imported"
+                // Only mentioned when it happened — zero removed is the
+                // overwhelmingly common case, and always showing "0 removed"
+                // would bury the rare, worth-noticing case in noise
+                // (FR-012, contract C8: reported, not announced — no alert).
+                + (report.removed > 0
+                    ? ", \(report.removed) removed (no longer in the folder)."
+                    : "."))
                 .font(.callout)
             if !report.failures.isEmpty {
                 // Named individually rather than counted: a file that won't
