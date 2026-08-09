@@ -15,7 +15,7 @@ agreement and bias between 2 devices. (2c) Lin's Concordance Correlation Coeffic
 a graph that shows how much the devices correlate."
 
 **Note on scope**: This specification documents functionality that already exists in the
-codebase (`SessionDetailView`, `StatTile`, `AgreementPlotsSection`, `BlandAltmanChart`,
+codebase (`SessionDetailView`, `MetricTile`, `AgreementPlotsSection`, `BlandAltmanChart`,
 `ConcordanceChart`, `MetricExplainerView`). It formalizes the existing, shipped behavior as the
 governing spec so that future changes go through the Spec Kit workflow instead of ad hoc edits.
 Elements (2a) Data Point Card, (2b) Bland-Altman plot, and (2c) concordance plot are **not**
@@ -64,9 +64,11 @@ agreement plots for that specific activity, matching the numbers shown for it in
    user opens its detail view, **Then** the statistics grid and agreement plots are replaced
    by a clear explanation of why no comparison could be computed, rather than blank or
    zeroed-out values.
-4. **Given** the detail view's heart-rate chart, **When** the user requests to expand it,
-   **Then** it opens in a full-screen presentation for closer inspection, and can be dismissed
-   back to the detail view.
+4. **Given** the detail view's heart-rate chart on iOS/iPadOS, **When** the user requests to
+   expand it, **Then** it opens in a full-screen presentation for closer inspection, and can be
+   dismissed back to the detail view. On macOS there is no expand affordance for the chart —
+   it is already rendered at its maximum available width there, and there is no device
+   rotation to design for.
 
 Deleting the activity from this view is covered by `005-session-deletion`.
 
@@ -125,7 +127,9 @@ of that specific metric appears, addressed to the metric shown, without navigati
 - **FR-003**: The detail view MUST show a grid of individual statistic tiles (Data Point
   Cards) covering, at minimum: matched seconds, bias, 95% limits of agreement, mean absolute
   difference, max absolute difference, and concordance — each tile independently omitted when
-  its underlying value is not computable, rather than shown as zero or blank.
+  its underlying value is not computable, rather than shown as zero or blank. A tile whose value
+  carries an agreement level MUST convey that level using both color and a non-color indicator
+  (a glyph), not color alone.
 - **FR-004**: The detail view MUST show the Bland-Altman agreement plot and the concordance
   plot as independent elements, each rendered only when its underlying data is computable, so
   that one being unavailable never blocks or blanks the other.
@@ -140,11 +144,15 @@ of that specific metric appears, addressed to the metric shown, without navigati
   applies: one device's file is missing entirely for that date, the devices have no overlapping
   seconds at all, or they overlap but too few seconds were matched to compute agreement
   statistics.
-- **FR-008**: The heart-rate comparison chart MUST support an on-demand full-screen
-  presentation that the user can dismiss back to the detail view.
+- **FR-008**: On iOS/iPadOS, the heart-rate comparison chart MUST support an on-demand
+  full-screen presentation that the user can dismiss back to the detail view. On macOS, the
+  chart offers no such expansion — it is already rendered at its maximum available width, and
+  there is no device rotation to design for.
 - **FR-009**: A statistic tile or agreement plot that has an associated explanation MUST be
   visually identifiable as tappable, and tapping it MUST show an in-context, plain-language
-  explanation of that specific metric without navigating away from the detail view.
+  explanation of that specific metric without navigating away from the detail view. The
+  explanation MUST render its full copy — title, summary, detail text, and any scale bands —
+  at a readable width with no line truncated or clipped, regardless of platform.
 - **FR-010**: A statistic tile with no associated explanation MUST NOT be presented as
   tappable.
 - **FR-011**: The Data Point Card (statistic tile), the Bland-Altman plot, and the concordance
@@ -157,8 +165,8 @@ of that specific metric appears, addressed to the metric shown, without navigati
 ### Key Entities
 
 - **Statistic Tile (Data Point Card)**: A single labeled value (e.g., "Bias", "CCC") with an
-  optional agreement level, an optional qualifying detail line, and an optional in-context
-  explanation.
+  optional agreement level — conveyed by both color and a non-color glyph, not color alone — an
+  optional qualifying detail line, and an optional in-context explanation.
 - **Agreement Plot**: A visual (Bland-Altman or concordance) built from one activity's matched
   reading pairs across its two devices; independently present or absent per activity depending
   on whether its underlying statistic is computable.
@@ -182,7 +190,7 @@ of that specific metric appears, addressed to the metric shown, without navigati
 
 - Elements (2a) Data Point Card, (2b) Bland-Altman plot, and (2c) concordance plot are already
   implemented as separate, independently reusable SwiftUI components in the codebase
-  (`StatTile`, `BlandAltmanChart`, `ConcordanceChart`) and are composed together inside this
+  (`MetricTile`, `BlandAltmanChart`, `ConcordanceChart`) and are composed together inside this
   detail view. This spec keeps that separation: each is testable and reusable on its own,
   matching the project constitution's requirement that a component own its own state (e.g.,
   each tile independently owns whether its explanation popover is showing).

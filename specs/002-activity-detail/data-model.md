@@ -49,22 +49,28 @@ in `batch.grouping.sessions`).
   comparison so ties keep the primary device) — the two devices lap independently, so overlaying
   both would draw a meaningless divider from whichever recorded only one lap for the whole run.
 
-## Statistic Tile (Data Point Card) — `StatTile` view model
+## Statistic Tile (Data Point Card) — `MetricTile` view model
 
-Not a separate presenter type — `SessionDetailView.statsGrid` constructs one `StatTile` per
+Not a separate presenter type — `SessionDetailView.statsGrid` constructs one `MetricTile` per
 computable stat directly from `SessionDetailModel`'s fields above.
+
+`MetricTile` lives at `Sources/FitView/MetricTile.swift`, one level above this feature's
+folder, because `001-activity-list`'s `SessionCard` renders the same tile in its `.inline`
+style. This screen uses the `.card` style; `style` drives only the value's font, the row
+spacing, and whether the card chrome is applied.
 
 | Field | Type | Notes |
 |---|---|---|
 | `label` | `String` | e.g. `"Bias"`, `"CCC"`. |
 | `value` | `String` | Formatted stat text. |
-| `level` | `AgreementLevel?` | Colors the value; `nil` for stats with no good/warn/bad scale (matched seconds, max \|diff\|). |
+| `level` | `AgreementLevel?` | Colors the value *and* draws its `symbolName` glyph, so level is never conveyed by color alone (FR-003); `nil` for stats with no good/warn/bad scale (matched seconds, max \|diff\|). |
 | `detail` | `String?` | Qualifying line — only `ccc` uses this (`cccDetailText`). |
-| `explainer` | `MetricExplainer?` | When set, tile is tappable (FR-009); when `nil`, tile is inert (FR-010). |
+| `explainer` | `MetricExplainer?` | When set, tile is tappable (FR-009); when `nil`, tile is inert (FR-010). `SessionCard`'s inline tiles pass nothing here today — see #26. |
+| `style` | `MetricTile.Style` | `.card` on this screen (larger value, chrome); `.inline` on the overview card. |
 
 **Derivation rule**: a tile is included in the grid at all only when its backing model field is
 non-`nil` — FR-003's "each tile independently omitted... rather than shown as zero or blank" is
-enforced by `SessionDetailView.statsGrid`'s `if let` per tile, not by `StatTile` itself (which
+enforced by `SessionDetailView.statsGrid`'s `if let` per tile, not by `MetricTile` itself (which
 has no notion of "should I render").
 
 ## Agreement Plot — `BlandAltmanPlotData` / `ConcordancePlotData`
@@ -121,7 +127,7 @@ re-derives level from a raw double).
 - `SessionDetailView`: `isPresentingFullScreenChart` (FR-008), `isPresentingDeleteConfirmation`/
   `isDeleting`/`deleteErrorMessage` (delete entry point, FR-012 — full contract in
   `005-session-deletion`).
-- `StatTile.isShowingExplainer` — owned per-tile (FR-011, Principle II).
+- `MetricTile.isShowingExplainer` — owned per-tile (FR-011, Principle II).
 - `AgreementPlotsSection.isPresentingBlandAltman` / `.isPresentingConcordance` — owned per-plot,
   independently (FR-011, Principle II).
 

@@ -90,9 +90,9 @@ view re-derives the level from a raw double.
 
 ## State (not persisted)
 
-- `BatchOverviewCardList.expandedSessionIds: Set<String>` — which cards are disclosed, keyed by
-  `sessionId`. View-local, not part of `BatchOverviewModel`; see research.md §2 for why this is
-  owned by the list, not each card.
+- `SessionCard.isExpanded: Bool` — whether that one card is disclosed. Card-local `@State`, not
+  part of `BatchOverviewModel`; see research.md §2 for why the card owns this rather than the
+  list holding a `Set<String>` of expanded session IDs.
 - `BatchOverviewView.layout: OverviewLayout` (`.table` | `.cards`) — derived per-render from
   platform + `horizontalSizeClass` (or `layoutOverride` for previews), never stored.
 

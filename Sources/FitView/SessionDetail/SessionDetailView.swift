@@ -12,7 +12,9 @@ struct SessionDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var model: SessionDetailModel?
+    #if os(iOS)
     @State private var isPresentingFullScreenChart = false
+    #endif
     @State private var isPresentingDeleteConfirmation = false
     @State private var isDeleting = false
     @State private var deleteOutcome: DeletionOutcome?
@@ -64,7 +66,9 @@ struct SessionDetailView: View {
                     minHeight: chartMinHeight
                 )
                 .overlay(alignment: .topTrailing) {
+                    #if os(iOS)
                     expandChartButton
+                    #endif
                 }
                 if let lapSourceLabel = model.lapSourceLabel {
                     Text("Lap dividers from \(lapSourceLabel)")
@@ -89,11 +93,6 @@ struct SessionDetailView: View {
         #if os(iOS)
         .fullScreenCover(isPresented: $isPresentingFullScreenChart) {
             fullScreenChart(for: model)
-        }
-        #else
-        .sheet(isPresented: $isPresentingFullScreenChart) {
-            fullScreenChart(for: model)
-                .frame(minWidth: 700, minHeight: 420)
         }
         #endif
         .toolbar {
@@ -156,6 +155,7 @@ struct SessionDetailView: View {
         }
     }
 
+    #if os(iOS)
     private var expandChartButton: some View {
         Button {
             isPresentingFullScreenChart = true
@@ -178,6 +178,7 @@ struct SessionDetailView: View {
             lapBoundaries: model.lapBoundaries
         )
     }
+    #endif
 
     private func header(for model: SessionDetailModel) -> some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -194,14 +195,14 @@ struct SessionDetailView: View {
         if model.agreement != nil {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
                 if let matchedSecondsText = model.matchedSecondsText {
-                    StatTile(
+                    MetricTile(
                         label: "Matched Seconds",
                         value: matchedSecondsText,
                         explainer: MetricKind.matchedSeconds.explainer
                     )
                 }
                 if let bias = model.bias {
-                    StatTile(
+                    MetricTile(
                         label: "Bias",
                         value: bias.text,
                         level: bias.level,
@@ -209,14 +210,14 @@ struct SessionDetailView: View {
                     )
                 }
                 if let loaText = model.loaText {
-                    StatTile(
+                    MetricTile(
                         label: "95% LoA",
                         value: loaText,
                         explainer: MetricKind.limitsOfAgreement.explainer
                     )
                 }
                 if let meanAbsDiff = model.meanAbsDiff {
-                    StatTile(
+                    MetricTile(
                         label: "Mean |Diff|",
                         value: meanAbsDiff.text,
                         level: meanAbsDiff.level,
@@ -224,14 +225,14 @@ struct SessionDetailView: View {
                     )
                 }
                 if let maxAbsDiffText = model.maxAbsDiffText {
-                    StatTile(
+                    MetricTile(
                         label: "Max |Diff|",
                         value: maxAbsDiffText,
                         explainer: MetricKind.maxAbsoluteDifference.explainer
                     )
                 }
                 if let ccc = model.ccc {
-                    StatTile(
+                    MetricTile(
                         label: "CCC",
                         value: ccc.text,
                         level: ccc.level,

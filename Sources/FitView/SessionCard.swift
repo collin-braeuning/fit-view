@@ -7,11 +7,14 @@ import SwiftUI
 /// be allowed to drift apart visually.
 ///
 /// Expansion is an explicit disclosure control, not a whole-card tap — the
-/// tap is reserved for the not-yet-built single-session drill-down.
+/// tap is reserved for the not-yet-built single-session drill-down. That
+/// expansion is the card's own state (Principle II): `@State` is keyed to
+/// view identity, and the list's `ForEach` over stable `SessionRow` IDs
+/// supplies that identity, so a `model.rows` reload is a value update and
+/// leaves an expanded card expanded.
 struct SessionCard: View {
     let row: SessionRow
-    var isExpanded: Bool = false
-    var onToggleExpanded: (() -> Void)?
+    @State private var isExpanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -31,9 +34,7 @@ struct SessionCard: View {
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
 
-            if let onToggleExpanded {
-                disclosureButton(action: onToggleExpanded)
-            }
+            disclosureButton
         }
         .padding(14)
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12))
@@ -83,32 +84,32 @@ struct SessionCard: View {
         VStack(alignment: .leading, spacing: 8) {
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top) {
-                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
+                    MetricTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
                     Spacer()
                     if let bias = row.bias {
-                        detailTile(label: "Bias", value: bias.text, level: bias.level)
+                        MetricTile(label: "Bias", value: bias.text, level: bias.level, style: .inline)
                     }
                 }
                 VStack(alignment: .leading, spacing: 8) {
-                    statTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
+                    MetricTile(label: "Mean |Diff|", metric: row.meanAbsDiff)
                     if let bias = row.bias {
-                        detailTile(label: "Bias", value: bias.text, level: bias.level)
+                        MetricTile(label: "Bias", value: bias.text, level: bias.level, style: .inline)
                     }
                 }
             }
             ViewThatFits(in: .horizontal) {
                 HStack(alignment: .top) {
                     if let loaText = row.loaText {
-                        detailTile(label: "95% LoA", value: loaText, level: nil)
+                        MetricTile(label: "95% LoA", value: loaText, style: .inline)
                     }
                     Spacer()
-                    detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
+                    MetricTile(label: "Max |Diff|", value: row.maxAbsDiffText, style: .inline)
                 }
                 VStack(alignment: .leading, spacing: 8) {
                     if let loaText = row.loaText {
-                        detailTile(label: "95% LoA", value: loaText, level: nil)
+                        MetricTile(label: "95% LoA", value: loaText, style: .inline)
                     }
-                    detailTile(label: "Max |Diff|", value: row.maxAbsDiffText, level: nil)
+                    MetricTile(label: "Max |Diff|", value: row.maxAbsDiffText, style: .inline)
                 }
             }
         }
@@ -144,44 +145,6 @@ struct SessionCard: View {
     }
 
     @ViewBuilder
-    private func statTile(label: String, metric: Metric) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            HStack(spacing: 4) {
-                Image(systemName: metric.level.symbolName)
-                    .font(.caption2)
-                Text(metric.text)
-                    .font(.subheadline.monospacedDigit())
-            }
-            .foregroundStyle(metric.level.color)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(label) \(metric.text), \(metric.level.spokenWord) agreement")
-    }
-
-    @ViewBuilder
-    private func detailTile(label: String, value: String, level: AgreementLevel?) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            HStack(spacing: 4) {
-                if let level {
-                    Image(systemName: level.symbolName)
-                        .font(.caption2)
-                }
-                Text(value)
-                    .font(.subheadline.monospacedDigit())
-            }
-            .foregroundStyle(level?.color ?? .primary)
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(level.map { "\(label) \(value), \($0.spokenWord) agreement" } ?? "\(label) \(value)")
-    }
-
-    @ViewBuilder
     private func deviceSpanRow(_ coverage: DeviceCoverageDetail) -> some View {
         VStack(alignment: .leading, spacing: 1) {
             Text(coverage.label)
@@ -193,8 +156,10 @@ struct SessionCard: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func disclosureButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    private var disclosureButton: some View {
+        Button {
+            withAnimation(.default) { isExpanded.toggle() }
+        } label: {
             HStack(spacing: 4) {
                 Text(isExpanded ? "Hide Details" : "Details")
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")

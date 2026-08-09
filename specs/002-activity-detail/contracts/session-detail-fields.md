@@ -34,8 +34,10 @@ the Clarifications entry in spec.md and the updated FR-007.
 
 A tile's `explainer` is non-`nil` for every tile currently shown (all six `MetricKind` cases
 have explainer copy) — FR-010's "not presented as tappable" case does not currently occur for
-any tile in this grid, but the contract (`StatTile`'s `explainer: MetricExplainer?`) supports it
-for any future tile that doesn't have one.
+any tile in this grid, but the contract (`MetricTile`'s `explainer: MetricExplainer?`) supports
+it for any future tile that doesn't have one. `MetricTile` is also used, with `style: .inline`,
+by the overview card list (`001-activity-list`'s `SessionCard`) — this contract's field-presence
+rules are specific to the detail screen's `style: .card` grid.
 
 ## Agreement-plot independence (FR-004, Edge Case 2)
 
@@ -62,10 +64,14 @@ owns its own `isShowing`/`isPresenting` flag).
 
 | Element | iOS/iPadOS | macOS |
 |---|---|---|
-| HR chart | `fullScreenCover` | `sheet`, `frame(minWidth: 700, minHeight: 420)` |
-| Bland-Altman / concordance plot | `fullScreenCover` | `sheet`, `frame(minWidth: 560, minHeight: 480)` |
+| HR chart | `fullScreenCover` | No expand affordance |
+| Bland-Altman / concordance plot | `fullScreenCover` | No expand affordance |
 
 "Full-screen presentation" (spec.md's platform-neutral wording, per Assumptions) means the
-platform's primary modal-takeover presentation — `fullScreenCover` on iOS/iPadOS, a large
-resizable `sheet` on macOS (which has no `fullScreenCover` equivalent). Both are dismissible
-back to the detail view.
+platform's primary modal-takeover presentation — `fullScreenCover` on iOS/iPadOS. macOS
+previously mirrored this with a large resizable `sheet`, but that affordance was removed for
+all three elements (HR chart, Bland-Altman plot, concordance plot): on macOS the chart/plots
+are already rendered at their maximum available width, and there is no device rotation to
+design for, so the expand control (and the `FullScreenHeartRateChartView`/`FullScreenPlotView`
+types it presented) no longer exist on that platform. `fullScreenCover` is dismissible back to
+the detail view.
