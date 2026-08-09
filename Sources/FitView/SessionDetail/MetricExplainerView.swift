@@ -58,8 +58,20 @@ extension View {
     func metricExplainerPopover(_ explainer: MetricExplainer, isPresented: Binding<Bool>) -> some View {
         popover(isPresented: isPresented, arrowEdge: .top) {
             MetricExplainerView(explainer: explainer)
+                // `.frame(idealWidth:)` only sets an ideal, not a constraint:
+                // the popover asks its content for a size, and each `Text`
+                // reports its single-line ideal height at that point, so
+                // without a real width constraint the popover sizes to about
+                // one line per `Text` and ellipsizes every line of body copy.
+                // A hard width forces each `Text` to wrap and report its true
+                // multi-line height instead. Only macOS gets the hard width —
+                // inside an iPhone/iPad sheet it would fight the sheet's own
+                // sizing, so iOS keeps the ideal-width + adaptation approach.
+                #if os(macOS)
+                .frame(width: 320)
+                .fixedSize(horizontal: false, vertical: true)
+                #else
                 .frame(idealWidth: 320)
-                #if os(iOS)
                 .presentationCompactAdaptation(.sheet)
                 .presentationDetents([.medium, .large])
                 #endif
