@@ -12,7 +12,9 @@ struct SessionDetailView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var model: SessionDetailModel?
+    #if os(iOS)
     @State private var isPresentingFullScreenChart = false
+    #endif
     @State private var isPresentingDeleteConfirmation = false
     @State private var isDeleting = false
     @State private var deleteOutcome: DeletionOutcome?
@@ -64,7 +66,9 @@ struct SessionDetailView: View {
                     minHeight: chartMinHeight
                 )
                 .overlay(alignment: .topTrailing) {
+                    #if os(iOS)
                     expandChartButton
+                    #endif
                 }
                 if let lapSourceLabel = model.lapSourceLabel {
                     Text("Lap dividers from \(lapSourceLabel)")
@@ -89,11 +93,6 @@ struct SessionDetailView: View {
         #if os(iOS)
         .fullScreenCover(isPresented: $isPresentingFullScreenChart) {
             fullScreenChart(for: model)
-        }
-        #else
-        .sheet(isPresented: $isPresentingFullScreenChart) {
-            fullScreenChart(for: model)
-                .frame(minWidth: 700, minHeight: 420)
         }
         #endif
         .toolbar {
@@ -156,6 +155,7 @@ struct SessionDetailView: View {
         }
     }
 
+    #if os(iOS)
     private var expandChartButton: some View {
         Button {
             isPresentingFullScreenChart = true
@@ -178,6 +178,7 @@ struct SessionDetailView: View {
             lapBoundaries: model.lapBoundaries
         )
     }
+    #endif
 
     private func header(for model: SessionDetailModel) -> some View {
         VStack(alignment: .leading, spacing: 2) {

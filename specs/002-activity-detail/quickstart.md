@@ -45,9 +45,11 @@ sessions (`data-model.md`, `contracts/session-detail-fields.md`).
    three skip reasons applies (missing file names the device; no-overlap and too-few-points read
    distinctly per `contracts/session-detail-fields.md`).
 
-3. **Expand the chart (Scenario 4, FR-008)** — Tap the expand control on the HR chart. Confirm
-   it opens full-screen (iOS/iPadOS) or as a large resizable sheet (macOS), and dismisses back to
-   the detail view. Repeat for each agreement plot's expand control.
+3. **Expand the chart (Scenario 4, FR-008)** — On iOS/iPadOS, tap the expand control on the HR
+   chart. Confirm it opens full-screen and dismisses back to the detail view. Repeat for each
+   agreement plot's expand control. On macOS, confirm no expand control is present on the HR
+   chart or either agreement plot — they're already at maximum width there, so there's nothing
+   to expand into.
 
 4. **Explain a statistic (User Story 2, Scenario 1)** — Tap a stat tile that shows an info glyph
    (e.g., CCC or Bias). Confirm an in-context explanation appears (popover on Mac/iPad, sheet on

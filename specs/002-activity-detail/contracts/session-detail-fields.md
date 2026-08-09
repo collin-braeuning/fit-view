@@ -62,10 +62,14 @@ owns its own `isShowing`/`isPresenting` flag).
 
 | Element | iOS/iPadOS | macOS |
 |---|---|---|
-| HR chart | `fullScreenCover` | `sheet`, `frame(minWidth: 700, minHeight: 420)` |
-| Bland-Altman / concordance plot | `fullScreenCover` | `sheet`, `frame(minWidth: 560, minHeight: 480)` |
+| HR chart | `fullScreenCover` | No expand affordance |
+| Bland-Altman / concordance plot | `fullScreenCover` | No expand affordance |
 
 "Full-screen presentation" (spec.md's platform-neutral wording, per Assumptions) means the
-platform's primary modal-takeover presentation — `fullScreenCover` on iOS/iPadOS, a large
-resizable `sheet` on macOS (which has no `fullScreenCover` equivalent). Both are dismissible
-back to the detail view.
+platform's primary modal-takeover presentation — `fullScreenCover` on iOS/iPadOS. macOS
+previously mirrored this with a large resizable `sheet`, but that affordance was removed for
+all three elements (HR chart, Bland-Altman plot, concordance plot): on macOS the chart/plots
+are already rendered at their maximum available width, and there is no device rotation to
+design for, so the expand control (and the `FullScreenHeartRateChartView`/`FullScreenPlotView`
+types it presented) no longer exist on that platform. `fullScreenCover` is dismissible back to
+the detail view.

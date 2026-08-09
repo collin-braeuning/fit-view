@@ -10,8 +10,30 @@ struct AgreementPlotsSection: View {
     let concordance: ConcordancePlotData?
     var minHeight: CGFloat = 220
 
+    #if os(iOS)
     @State private var isPresentingBlandAltman = false
     @State private var isPresentingConcordance = false
+    #endif
+
+    // `plotBlock` always takes a binding so its signature doesn't need to
+    // fork by platform; on macOS there's no expand button to drive it (see
+    // `plotBlock`'s `#if os(iOS)` around the button itself), so these are
+    // just inert placeholders there.
+    private var blandAltmanFullScreenBinding: Binding<Bool> {
+        #if os(iOS)
+        $isPresentingBlandAltman
+        #else
+        .constant(false)
+        #endif
+    }
+
+    private var concordanceFullScreenBinding: Binding<Bool> {
+        #if os(iOS)
+        $isPresentingConcordance
+        #else
+        .constant(false)
+        #endif
+    }
 
     var body: some View {
         // Each block below renders independently — a session can have
@@ -36,7 +58,7 @@ struct AgreementPlotsSection: View {
                         subtitle: "Mean vs difference",
                         explainer: MetricKind.blandAltmanPlot.explainer,
                         caption: blandAltman.densityCaption,
-                        isPresentingFullScreen: $isPresentingBlandAltman
+                        isPresentingFullScreen: blandAltmanFullScreenBinding
                     ) {
                         // Taller than the shared minHeight: unlike the concordance
                         // plot, whose aspect ratio derives its height from its
@@ -51,7 +73,7 @@ struct AgreementPlotsSection: View {
                         subtitle: "Reading against reading",
                         explainer: MetricKind.concordancePlot.explainer,
                         caption: concordance.densityCaption,
-                        isPresentingFullScreen: $isPresentingConcordance
+                        isPresentingFullScreen: concordanceFullScreenBinding
                     ) {
                         ConcordanceChart(data: concordance)
                     }
@@ -73,23 +95,6 @@ struct AgreementPlotsSection: View {
                 }
             }
         }
-        #else
-        .sheet(isPresented: $isPresentingBlandAltman) {
-            if let blandAltman {
-                FullScreenPlotView(title: "Bland-Altman Agreement") {
-                    BlandAltmanChart(data: blandAltman)
-                }
-                .frame(minWidth: 560, minHeight: 480)
-            }
-        }
-        .sheet(isPresented: $isPresentingConcordance) {
-            if let concordance {
-                FullScreenPlotView(title: "Lin's Concordance") {
-                    ConcordanceChart(data: concordance, maxWidth: nil)
-                }
-                .frame(minWidth: 560, minHeight: 480)
-            }
-        }
         #endif
     }
 
@@ -109,7 +114,9 @@ struct AgreementPlotsSection: View {
                     .lineLimit(2)
                 ExplainerButton(explainer: explainer)
                 Spacer()
+                #if os(iOS)
                 expandButton(isPresentingFullScreen)
+                #endif
             }
             Text(subtitle)
                 .font(.caption)

@@ -1,5 +1,10 @@
 import SwiftUI
 
+// iOS/iPadOS only — on macOS the plots are already at max width and there's
+// no device rotation, so there's no fullscreen affordance to present this
+// from (see `AgreementPlotsSection`).
+#if os(iOS)
+
 /// Generic fullscreen container shared by both agreement plots, mirroring
 /// `FullScreenHeartRateChartView`'s structure. Deliberately not rotating the
 /// view — the system's own orientation relayout already drives a correct
@@ -38,3 +43,5 @@ struct FullScreenPlotView<Chart: View>: View {
         .padding()
     }
 }
+
+#endif
