@@ -34,8 +34,10 @@ the Clarifications entry in spec.md and the updated FR-007.
 
 A tile's `explainer` is non-`nil` for every tile currently shown (all six `MetricKind` cases
 have explainer copy) — FR-010's "not presented as tappable" case does not currently occur for
-any tile in this grid, but the contract (`StatTile`'s `explainer: MetricExplainer?`) supports it
-for any future tile that doesn't have one.
+any tile in this grid, but the contract (`MetricTile`'s `explainer: MetricExplainer?`) supports
+it for any future tile that doesn't have one. `MetricTile` is also used, with `style: .inline`,
+by the overview card list (`001-activity-list`'s `SessionCard`) — this contract's field-presence
+rules are specific to the detail screen's `style: .card` grid.
 
 ## Agreement-plot independence (FR-004, Edge Case 2)
 
