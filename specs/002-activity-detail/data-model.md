@@ -75,7 +75,7 @@ has no notion of "should I render").
 | Both | `xDomain`/`yDomain` or `domain` | Padded axis bounds so edge points and (Bland-Altman) limit lines aren't clipped. |
 | Both | `xAxisTitle`, `yAxisTitle`, `densityCaption` | Display strings; `densityCaption` is the plot's legend substitute ("N of M pairs · darker means more overlapping readings"). |
 | `BlandAltmanPlotData` | `bias`, `upperLimit`, `lowerLimit` | The three reference lines drawn on the plot. |
-| `ConcordancePlotData` | *(domain is square — identical range both axes)* | So the plot area renders as a literal square, matching CCC's x=y reference line. |
+| `ConcordancePlotData` | *(domain is square — identical range both axes)* | Keeps CCC's x=y reference line on the corner-to-corner diagonal, so the cloud reads as centred on it whatever the plot's aspect ratio (see #34 — the plot area itself is no longer forced square). |
 
 Each is constructed only when its `SessionAgreement` field is non-`nil` (see
 `SessionDetailModel` rules above) — this is the mechanism behind FR-004's independence

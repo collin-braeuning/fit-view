@@ -31,9 +31,9 @@ struct SessionDetailView: View {
     /// Secondary to the HR chart above, so it shouldn't out-size it.
     private var scatterMinHeight: CGFloat {
         #if os(iOS)
-        horizontalSizeClass == .regular ? 260 : 200
+        horizontalSizeClass == .regular ? 300 : 240
         #else
-        260
+        300
         #endif
     }
 
