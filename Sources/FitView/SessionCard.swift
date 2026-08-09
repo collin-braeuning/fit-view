@@ -7,11 +7,14 @@ import SwiftUI
 /// be allowed to drift apart visually.
 ///
 /// Expansion is an explicit disclosure control, not a whole-card tap — the
-/// tap is reserved for the not-yet-built single-session drill-down.
+/// tap is reserved for the not-yet-built single-session drill-down. That
+/// expansion is the card's own state (Principle II): `@State` is keyed to
+/// view identity, and the list's `ForEach` over stable `SessionRow` IDs
+/// supplies that identity, so a `model.rows` reload is a value update and
+/// leaves an expanded card expanded.
 struct SessionCard: View {
     let row: SessionRow
-    var isExpanded: Bool = false
-    var onToggleExpanded: (() -> Void)?
+    @State private var isExpanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -31,9 +34,7 @@ struct SessionCard: View {
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
 
-            if let onToggleExpanded {
-                disclosureButton(action: onToggleExpanded)
-            }
+            disclosureButton
         }
         .padding(14)
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 12))
@@ -193,8 +194,10 @@ struct SessionCard: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func disclosureButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
+    private var disclosureButton: some View {
+        Button {
+            withAnimation(.default) { isExpanded.toggle() }
+        } label: {
             HStack(spacing: 4) {
                 Text(isExpanded ? "Hide Details" : "Details")
                 Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
