@@ -64,9 +64,11 @@ agreement plots for that specific activity, matching the numbers shown for it in
    user opens its detail view, **Then** the statistics grid and agreement plots are replaced
    by a clear explanation of why no comparison could be computed, rather than blank or
    zeroed-out values.
-4. **Given** the detail view's heart-rate chart, **When** the user requests to expand it,
-   **Then** it opens in a full-screen presentation for closer inspection, and can be dismissed
-   back to the detail view.
+4. **Given** the detail view's heart-rate chart on iOS/iPadOS, **When** the user requests to
+   expand it, **Then** it opens in a full-screen presentation for closer inspection, and can be
+   dismissed back to the detail view. On macOS there is no expand affordance for the chart —
+   it is already rendered at its maximum available width there, and there is no device
+   rotation to design for.
 
 Deleting the activity from this view is covered by `005-session-deletion`.
 
@@ -140,11 +142,15 @@ of that specific metric appears, addressed to the metric shown, without navigati
   applies: one device's file is missing entirely for that date, the devices have no overlapping
   seconds at all, or they overlap but too few seconds were matched to compute agreement
   statistics.
-- **FR-008**: The heart-rate comparison chart MUST support an on-demand full-screen
-  presentation that the user can dismiss back to the detail view.
+- **FR-008**: On iOS/iPadOS, the heart-rate comparison chart MUST support an on-demand
+  full-screen presentation that the user can dismiss back to the detail view. On macOS, the
+  chart offers no such expansion — it is already rendered at its maximum available width, and
+  there is no device rotation to design for.
 - **FR-009**: A statistic tile or agreement plot that has an associated explanation MUST be
   visually identifiable as tappable, and tapping it MUST show an in-context, plain-language
-  explanation of that specific metric without navigating away from the detail view.
+  explanation of that specific metric without navigating away from the detail view. The
+  explanation MUST render its full copy — title, summary, detail text, and any scale bands —
+  at a readable width with no line truncated or clipped, regardless of platform.
 - **FR-010**: A statistic tile with no associated explanation MUST NOT be presented as
   tappable.
 - **FR-011**: The Data Point Card (statistic tile), the Bland-Altman plot, and the concordance

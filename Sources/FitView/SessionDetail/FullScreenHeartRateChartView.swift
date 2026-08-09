@@ -1,5 +1,10 @@
 import SwiftUI
 
+// iOS/iPadOS only — on macOS the chart is already at max width and there's
+// no device rotation, so there's no fullscreen affordance to present this
+// from (see `SessionDetailView`).
+#if os(iOS)
+
 /// Full-screen presentation of `HeartRateComparisonChart`.
 ///
 /// This intentionally does *not* fake a landscape layout by rotating the
@@ -51,3 +56,5 @@ struct FullScreenHeartRateChartView: View {
         .padding()
     }
 }
+
+#endif
